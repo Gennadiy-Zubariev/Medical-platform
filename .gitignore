@@ -1,0 +1,20 @@
+# Python / Django
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.venv
+venv/
+env/
+db.sqlite3
+.DS_Store
+
+# Django specific
+*.log
+local_settings.py
+media/
+static_collected/
+
+# Secrets (MUST be ignored)
+# Всі файли, що містять секретні ключі або паролі (наприклад, файли .env)
+.env
