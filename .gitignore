@@ -18,3 +18,6 @@ static_collected/
 # Secrets (MUST be ignored)
 # Всі файли, що містять секретні ключі або паролі (наприклад, файли .env)
 .env
+
+# IDE files
+.idea/
