@@ -1,3 +1,6 @@
 from django.contrib import admin
+from .models import MedicalCard, MedicalRecord
 
-# Register your models here.
+
+admin.site.register(MedicalCard)
+admin.site.register(MedicalRecord)

@@ -1,70 +1,74 @@
+from django.contrib.auth import get_user_model
+from rest_framework import viewsets, permissions, status
 from rest_framework.decorators import action
-from rest_framework import generics, status
-from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 
-from backend.accounts.serializers import (
+from .models import PatientProfile, DoctorProfile
+from .serializers import (
+    UserSerializer,
     RegisterPatientSerializer,
     RegisterDoctorSerializer,
-    UserProfileSerializer,
     PatientProfileSerializer,
     DoctorProfileSerializer,
 )
-from django.contrib.auth import get_user_model
+from .permissions import IsOwnerOrReadOnly
 
 User = get_user_model()
 
-class RegisterPatientView(generics.CreateAPIView):
-    serializer_class = RegisterPatientSerializer
-    permission_classes = [AllowAny]
+class UserViewSet(viewsets.ModelViewSet):
+    queryset = User.objects.all()
+    serializer_class = UserSerializer
+    permission_classes = [permissions.IsAuthenticated]
 
+    def get_permissions(self):
+        if self.action in ['list', 'destroy']:
+            return [permissions.IsAdminUser()]
+        return super().get_permissions()
 
-class RegisterDoctorView(generics.CreateAPIView):
-    serializer_class = RegisterDoctorSerializer
-    permission_classes = [AllowAny]
-
-
-class ProfileView(generics.RetrieveUpdateAPIView):
-    serializer_class = UserProfileSerializer
-    permission_classes = [IsAuthenticated]
-
-    def get_object(self):
-        return self.request.user
-
-
-    @action(
-    detail=False,
-    methods=['post'],
-    url_path='deactivate',
-    permission_classes=[IsAuthenticated]
-    )
-    def deactivate(self, request):
+    @action(methods=['get', 'patch'], detail=False, url_path='me')
+    def me(self, request):
         user = request.user
-        if not user.is_active:
-            return Response(
-                {'detail': 'User is already deactivated'},
-                status=status.HTTP_400_BAD_REQUEST
-            )
 
-        request.user.is_active = False
-        request.user.save()
-        return Response(
-            {'detail': 'User deactivated successfully'},
-            status=status.HTTP_200_OK
-        )
+        if request.method == 'GET':
+            return Response(UserSerializer(user).data)
+
+        serializer = UserSerializer(user, data=request.data, partial=True)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        return Response(serializer.data)
+
+########у міксіни
+class PatientRegisterViewSet(viewsets.GenericViewSet):
+    serializer_class = RegisterPatientSerializer
+    permission_classes = [permissions.AllowAny]
+
+    @action(detail=False, methods=['post'])
+    def register(self, request):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        user = serializer.save()
+        return Response(UserSerializer(user).data, status=status.HTTP_201_CREATED)
+
+########у міксіни
+class DoctorRegisterViewSet(viewsets.GenericViewSet):
+    serializer_class = RegisterDoctorSerializer
+    permission_classes = [permissions.AllowAny]
+
+    @action(detail=False, methods=['post'])
+    def register(self, request):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        user = serializer.save()
+        return Response(UserSerializer(user).data, status=status.HTTP_201_CREATED)
 
 
-class PatientProfileDetailView(generics.RetrieveUpdateAPIView):
+class PatientProfileViewSet(viewsets.ModelViewSet):
+    queryset = PatientProfile.objects.select_related('user')
     serializer_class = PatientProfileSerializer
-    permission_classes = [IsAuthenticated]
+    permission_classes = [permissions.IsAuthenticated, IsOwnerOrReadOnly]
 
-    def get_object(self):
-        return self.request.user.patient_profile
-
-
-class DoctorProfileDetailView(generics.RetrieveUpdateAPIView):
+class DoctorProfileViewSet(viewsets.ModelViewSet):
+    queryset = DoctorProfile.objects.select_related('user')
     serializer_class = DoctorProfileSerializer
-    permission_classes = [IsAuthenticated]
+    permission_classes = [permissions.IsAuthenticated, IsOwnerOrReadOnly]
 
-    def get_object(self):
-        return self.request.user.doctor_profile

@@ -1,41 +1,51 @@
 from django.db import models
-from django.conf import settings
-from backend.accounts.models import PatientProfile
-from django.core.validators import MinValueValidator
 from django.utils import timezone
-from datetime import time
+from datetime import timedelta
+from accounts.models import PatientProfile, DoctorProfile
+
 
 
 
 class Appointment(models.Model):
-    STATUS_CHOICES = [
-        ('pending', 'Pending'),
-        ('confirmed', 'Confirmed'),
-        ('completed', 'Completed'),
-        ('canceled', 'Canceled'),
-    ]
+
+    class Status(models.TextChoices):
+        PENDING = "pending", "Очікує підтвердження"
+        CONFIRMED = "confirmed", "Підтверджено"
+        COMPLETED = "completed", "Завершено"
+        CANCELED = "canceled", "Скасовано"
 
     patient = models.ForeignKey(
         PatientProfile,
         on_delete=models.CASCADE,
-        related_name='patient_appointments'
+        related_name='appointments',
+        help_text='Профіль пацієнта, який записався на прийом.'
     )
     doctor = models.ForeignKey(
-        settings.AUTH_USER_MODEL,
+        DoctorProfile,
         on_delete=models.CASCADE,
-        limit_choices_to={'doctor_profile__isnull': False},
-        related_name='doctor_appointments'
+        related_name='appointments',
+        help_text='Профіль лікаря, до якого записуються.'
     )
-    date = models.DateField(validators=[MinValueValidator(timezone.now().date())])
-    time = models.TimeField()
-    reason = models.TextField(blank=True)
-    status = models.CharField(max_length=10, choices=STATUS_CHOICES, default='pending')
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
+    start_datetime = models.DateTimeField(help_text='Дата та час початку консультації.')
+    duration_minutes = models.PositiveIntegerField(default=30, help_text='Тривалість прийому в хвилинах (за замовчуванням 30 хв).')
+    status = models.CharField(choices=Status.choices, max_length=20, default=Status.PENDING, help_text='Поточний статус запису.')
+    reason = models.TextField(blank=True, help_text='Причина звернення, короткий опис симптомів тощо.')
+    created_at = models.DateTimeField(auto_now_add=True, help_text='Дата й час створення запису.')
+    updated_at = models.DateTimeField(auto_now_add=True, help_text='Дата й час останнього оновлення запису.')
 
     class Meta:
-        unique_together = ('patient', 'date', 'time')
-        ordering = ['-date', '-time']
+        ordering = ['-start_datetime']
+        unique_together = ('patient', 'doctor', 'start_datetime')
+
 
     def __str__(self):
-        return f'{self.patient} {self.doctor} | {self.date} {self.time}'
+        return (
+            f'Пацієнт - {self.patient.user.username}'
+            f'Доктор - {self.doctor.user.username}'
+        )
+
+    @property
+    def end_datatime(self):
+        return self.start_datetime + timedelta(minutes=self.duration_minutes)
+
+

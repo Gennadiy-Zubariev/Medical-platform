@@ -1,32 +1,59 @@
-from rest_framework import viewsets
-from rest_framework.permissions import IsAuthenticated
-from backend.accounts.permissions import IsDoctor, IsPatient, IsDoctorOrPatient
-from backend.medical.models import MedicalCard, MedicalRecord
-from backend.medical.serializers import MedicalCardSerializer, MedicalRecordSerializer
-from backend.medical.permissions import IsDoctorAndOwner
+from rest_framework import viewsets, permissions, status
+from rest_framework.response import Response
+from rest_framework.decorators import action
+
+from accounts.permissions import IsDoctor
+from .models import MedicalCard, MedicalRecord
+from .serializers import MedicalCardSerializer, MedicalRecordSerializer
 
 class MedicalCardViewSet(viewsets.ReadOnlyModelViewSet):
-    """Пацієнт і лікар можуть переглядати картку"""
+
+    queryset = MedicalCard.objects.all()
     serializer_class = MedicalCardSerializer
-    permission_classes = [IsDoctorOrPatient]
+    permission_classes = [permissions.IsAuthenticated]
 
     def get_queryset(self):
-        if self.request.user.is_patient:
-            return MedicalCard.objects.filter(patient__user=self.request.user)
-        if self.request.user.is_doctor:
-            return MedicalCard.objects.filter(
-                patient__appointments__doctor=self.request.user
-            ).distinct()
+        user = self.request.user
+
+        if user.is_superuser:
+            return self.queryset
+
+        if user.is_patient():
+            return self.queryset.filter(patient__user=user)
+
+        if user.is_doctor():
+            return self.queryset  # можливо потім обмежимо
+
+        return self.queryset.none()
+
 
 class MedicalRecordViewSet(viewsets.ModelViewSet):
-    """Тільки лікарі створюють/редагують записи"""
+
+    queryset = MedicalRecord.objects.select_related(
+        'card__patient__user',
+        'doctor__user',
+        'appointment'
+    ).all()
     serializer_class = MedicalRecordSerializer
-    permission_classes = [IsDoctor, IsDoctorAndOwner]
+    permission_classes = [permissions.IsAuthenticated]
 
     def get_queryset(self):
-        if self.request.user.is_doctor:
-            return MedicalRecord.objects.filter(doctor=self.request.user)
-        return MedicalRecord.objects.filter(card__patient__user=self.request.user)
+        user = self.request.user
+        qs = self.queryset
+
+        if user.is_superuser or user.is_doctor():
+            return qs
+
+        if user.is_patient():
+            return qs.filter(card__patient__user=user)
+
+        return qs.none()
 
     def perform_create(self, serializer):
-        serializer.save(doctor=self.request.user)
+
+        user = self.request.user
+
+        if not user.is_doctor():
+            raise PermissionError('Тільки лікар може створювати записи.')
+
+        serializer.save(doctor=user.doctor_profile)

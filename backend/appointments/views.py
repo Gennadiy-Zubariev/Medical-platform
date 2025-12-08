@@ -1,61 +1,64 @@
-from rest_framework import viewsets, filters
+from rest_framework import viewsets, permissions,status
 from rest_framework.decorators import action
 from rest_framework.response import Response
-from django.shortcuts import get_object_or_404
-from backend.appointments.models import Appointment
-from backend.appointments.serializers import AppointmentSerializer
-from backend.appointments.permissions import IsOwnerOrDoctor
-from backend.accounts.permissions import IsDoctor, IsPatient, IsDoctorOrPatient
+from accounts.permissions import IsDoctor, IsPatient
+from .models import Appointment
+from .serializers import AppointmentReadSerializer, AppointmentsWriteSerializer
 
 class AppointmentViewSet(viewsets.ModelViewSet):
-    queryset = Appointment.objects.all()
-    serializer_class = AppointmentSerializer
-    permission_classes = [IsDoctorOrPatient]
-    filter_backends = [filters.SearchFilter, filters.OrderingFilter]
-    search_fields = [
-        'reason',
-        'doctor__user__first_name',
-        'doctor__user__last_name',
-        'patient__user__first_name',
-        'patient__user__last_name'
-    ]
-    ordering_fields = ['date', 'time']
+    queryset = Appointment.objects.select_related(
+        'patient__user',
+        'doctor__user',
+    ).all()
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get_serializer_class(self):
+        if self.action in ['list', 'retrieve']:
+            return AppointmentReadSerializer
+        return AppointmentsWriteSerializer
 
     def get_queryset(self):
-        if self.request.user.is_patient:
-            return Appointment.objects.filter(patient__user=self.request.user)
-        if self.request.user.is_doctor:
-            return Appointment.objects.filter(doctor=self.request.user)
-        return Appointment.objects.none()
+        user = self.request.user
+        qs = super().get_queryset()
 
-    def get_permissions(self):
-        if self.action in ['update', 'partial_update', 'destroy']:
-            return [IsOwnerOrDoctor()]
-        return super().get_permissions()
+        if user.is_superuser:
+            return qs
+
+        if hasattr(user, 'patient_profile') and user.is_patient():
+            return qs.filter(patient__user=user)
+
+        if hasattr(user, 'doctor_profile') and user.is_doctor():
+            return qs.filter(doctor__user=user)
+
+        return qs.none()
 
 
     def perform_create(self, serializer):
-        serializer.save(patient=self.request.user.patient_profile)
+        user = self.request.user
 
-    @action(detail=True, methods=['post'], permission_classes=[IsDoctor])
-    def confirm(self, request, pk=None):
+        if hasattr(user, 'patient_profile') and user.is_patient():
+            patient_profile = user.patient_profile
+            serializer.save(patient=patient_profile)
+
+        serializer.save()
+
+    @action(
+        detail=True,
+        methods=['post'],
+        permission_classes=[permissions.IsAuthenticated, IsDoctor],
+        url_path='set-status'
+    )
+    def set_status(self,request,pk=None):
         appointment = self.get_object()
-        appointment.status = 'confirmed'
-        appointment.save()
-        return Response({'status': 'confirmed'})
+        new_status = request.data.get('status')
 
-    @action()
-    def completed(self, request, pk=None):
-        appointment = self.get_object()
-        appointment.status = 'completed'
+        valid_statuses = {choise[0] for choise in Appointment.Status.choices}
+        if new_status not in valid_statuses:
+            return Response({'detail': 'Невалідний статус.'}, status=status.HTTP_400_BAD_REQUEST)
+        appointment.status = new_status
         appointment.save()
-        return Response({'status': 'completed'})
-
-    @action(detail=True, methods=['post'], permission_classes=[IsOwnerOrDoctor])
-    def cancel(self, request, pk=None):
-        appointment = self.get_object()
-        appointment.status = 'cancelled'
-        appointment.save()
-        return Response({'status': 'cancelled'})
-
+        return Response(
+            AppointmentReadSerializer(appointment).data,
+            status=status.HTTP_200_OK
+        )
 
