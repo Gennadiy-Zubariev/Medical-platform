@@ -1,63 +1,208 @@
-from rest_framework import serializers
 from django.contrib.auth import get_user_model
-from .models import PatientProfile, DoctorProfile
+from rest_framework import serializers
+
+from .models import DoctorProfile, PatientProfile
+from registry.models import DoctorLicense, InsurancePolicy
 
 User = get_user_model()
 
 
-
 class UserSerializer(serializers.ModelSerializer):
+    """Базовий серіалізатор юзера (для /users/me/ тощо)."""
 
     class Meta:
         model = User
-        fields = ['id', 'username', 'first_name', 'last_name', 'email', 'role', 'phone_number']
+        fields = ("id", "username", "email", "first_name", "last_name", "role")
 
 
-class RegisterUserSerializer(serializers.ModelSerializer):
-    password = serializers.CharField( write_only=True, min_length=6)
+class PatientRegisterSerializer(serializers.ModelSerializer):
+    """
+    Серіалізатор для реєстрації пацієнта.
+    Створює User з роллю PATIENT + PatientProfile.
+    """
+
+    insurance_policy = serializers.CharField(write_only=True)
 
     class Meta:
         model = User
-        fields = ['id', 'username', 'first_name', 'last_name', 'email', 'password']
+        fields = (
+            "username",
+            "password",
+            "email",
+            "first_name",
+            "last_name",
+            "insurance_policy",
+        )
+        extra_kwargs = {
+            "password": {"write_only": True},
+            "email": {"required": True},
+        }
+
+    def validate_insurance_policy(self, value: str):
+        """
+        1) Перевіряємо, що такий номер є в офіційному реєстрі.
+        2) Перевіряємо, що він ще не прив’язаний до іншого пацієнта.
+        """
+        try:
+            insurance_obj = InsurancePolicy.objects.get(insurance_policy=value)
+        except InsurancePolicy.DoesNotExist:
+            raise serializers.ValidationError("Невірний номер страховки!")
+
+
+        if hasattr(insurance_obj, "patient"):
+            raise serializers.ValidationError("Ця страховка вже використовується іншою особою.")
+
+
+        self._insurance_obj = insurance_obj
+        return value
 
     def create(self, validated_data):
-        password = validated_data.pop('password')
-        user = User(**validated_data)
-        user.set_password(password)
-        user.save()
+        insurance_policy = validated_data.pop("insurance_policy")
+        insurance_obj = getattr(self, "_insurance_obj", None)
+        if insurance_obj is None:
+            insurance_obj = InsurancePolicy.objects.get(insurance_policy=insurance_policy)
+
+        user = User.objects.create_user(
+            username=validated_data["username"],
+            password=validated_data["password"],
+            email=validated_data.get("email"),
+            first_name=validated_data.get("first_name", ""),
+            last_name=validated_data.get("last_name", ""),
+            role=User.Roles.PATIENT,
+        )
+
+        PatientProfile.objects.create(
+            user=user,
+            insurance_policy=insurance_obj,
+        )
+
         return user
 
-class RegisterPatientSerializer(RegisterUserSerializer):
 
-    def create(self, validated_data):
-        validated_data['role'] = User.Roles.PATIENT
-        user = super().create(validated_data)
-        PatientProfile.objects.create(user=user)
-        return user
+class DoctorRegisterSerializer(serializers.ModelSerializer):
+    """
+    Серіалізатор для реєстрації докторів.
+    Перевіряє номер ліцензії по LicenseRegistry.
+    """
 
-class RegisterDoctorSerializer(RegisterUserSerializer):
+    license_number = serializers.CharField(write_only=True)
     specialization = serializers.CharField(write_only=True)
+    experience_years = serializers.IntegerField(write_only=True, required=False, default=0)
 
-    class Meta(RegisterUserSerializer.Meta):
-        fields = RegisterUserSerializer.Meta.fields + ['specialization']
+    class Meta:
+        model = User
+        fields = (
+            "username",
+            "password",
+            "email",
+            "first_name",
+            "last_name",
+            "license_number",
+            "specialization",
+            "experience_years",
+        )
+        extra_kwargs = {
+            "password": {"write_only": True},
+            "email": {"required": True},
+        }
+
+    def validate_license_number(self, value: str):
+        """
+        1) Перевіряємо, що такий номер є в офіційному реєстрі.
+        2) Перевіряємо, що він ще не прив’язаний до іншого доктора.
+        """
+        try:
+            license_obj = DoctorLicense.objects.get(license_number=value)
+        except DoctorLicense.DoesNotExist:
+            raise serializers.ValidationError("Невірний номер ліцензії!")
+
+
+        if hasattr(license_obj, "doctor"):
+            raise serializers.ValidationError("Ця ліцензія вже використовується іншим лікарем.")
+
+
+        self._license_obj = license_obj
+        return value
 
     def create(self, validated_data):
-        specialization = validated_data.pop('specialization')
-        validated_data['role'] = User.Roles.DOCTOR
-        user = super().create(validated_data)
-        DoctorProfile.objects.create(user=user, specialization=specialization)
+        license_number = validated_data.pop("license_number")
+        specialization = validated_data.pop("specialization")
+        experience_years = validated_data.pop("experience_years", 0)
+
+
+        license_obj = getattr(self, "_license_obj", None)
+        if license_obj is None:
+            license_obj = DoctorLicense.objects.get(license_number=license_number)
+
+        user = User.objects.create_user(
+            username=validated_data["username"],
+            password=validated_data["password"],
+            email=validated_data.get("email"),
+            first_name=validated_data.get("first_name", ""),
+            last_name=validated_data.get("last_name", ""),
+            role=User.Roles.DOCTOR,
+        )
+
+        DoctorProfile.objects.create(
+            user=user,
+            license=license_obj,
+            specialization=specialization,
+            experience_years=experience_years,
+        )
+
         return user
+
 
 class PatientProfileSerializer(serializers.ModelSerializer):
     user = UserSerializer(read_only=True)
 
     class Meta:
         model = PatientProfile
-        fields = ['id', 'user', 'date_of_birth', 'address', 'insurance_number']
+        fields = (
+            "id",
+            "user",
+            "date_of_birth",
+            "address",
+            "photo",
+            "insurance_number",
+        )
+
 
 class DoctorProfileSerializer(serializers.ModelSerializer):
     user = UserSerializer(read_only=True)
+    license_number = serializers.CharField(source="license.license_number", read_only=True)
 
     class Meta:
         model = DoctorProfile
-        fields = ['id', 'user', 'specialization', 'bio', 'experience_years']
+        fields = (
+            "id",
+            "user",
+            "license_number",
+            "bio",
+            "specialization",
+            "experience_years",
+            "photo",
+        )
+
+
+
+class CurrentUserSerializer(serializers.ModelSerializer):
+    """
+    Серіалізатор для /users/me/:
+    повертає юзера + вбудовані профілі, якщо вони є.
+    """
+    patient_profile = PatientProfileSerializer(read_only=True)
+    doctor_profile = DoctorProfileSerializer(read_only=True)
+
+    class Meta:
+        model = User
+        fields = (
+            "id",
+            "username",
+            "email",
+            "first_name",
+            "last_name",
+            "role",
+            "patient_profile",
+            "doctor_profile",
+        )

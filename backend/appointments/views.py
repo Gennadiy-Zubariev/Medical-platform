@@ -62,3 +62,6 @@ class AppointmentViewSet(viewsets.ModelViewSet):
             status=status.HTTP_200_OK
         )
 
+    @action(detail=False, methods=['get'], url_path="my")
+    def my(self, request):
+        return self.list(request)

@@ -1,6 +1,7 @@
 from django.conf import settings
 from django.contrib.auth.models import AbstractUser
 from django.db import models
+from registry.models import DoctorLicense, InsurancePolicy
 
 
 
@@ -19,6 +20,7 @@ class User(AbstractUser):
     phone_number = models.CharField(max_length=11, blank=True, null=True)
 
 
+
     def is_doctor(self):
         """Повертає True, якщо у користувача створено DoctorProfile"""
         return self.role == self.Roles.DOCTOR
@@ -32,6 +34,7 @@ class User(AbstractUser):
         return f'{self.username} ({self.role})'
 
 
+
 class DoctorProfile(models.Model):
     """
     Doctor detail
@@ -42,10 +45,17 @@ class DoctorProfile(models.Model):
         on_delete=models.CASCADE,
         related_name='doctor_profile'
     )
+    license_number = models.OneToOneField(
+        DoctorLicense,
+        on_delete=models.PROTECT,
+        related_name='doctor',
+        help_text="Посилання на офіційний номер ліцензії",
+    )
     bio = models.TextField(blank=True)
     specialization = models.CharField(max_length=255)
-    experience_years = models.PositiveIntegerField(default=0)
+    experience_years = models.PositiveIntegerField(null=True, blank=True)
     photo = models.ImageField(upload_to='doctor_photos/', blank=True, null=True)
+
 
     def __str__(self):
         return f'Dr. {self.user.username} ({self.specialization})'
@@ -62,10 +72,17 @@ class PatientProfile(models.Model):
         related_name='patient_profile'
     )
     date_of_birth = models.DateField(blank=True, null=True)
-    adress = models.CharField(max_length=255, blank=True)
-    insurance_number = models.CharField(max_length=255, blank=True)
+    address = models.CharField(max_length=255, blank=True)
     photo = models.ImageField(upload_to='patient_photos/', blank=True, null=True)
+    insurance_policy= models.OneToOneField(
+        InsurancePolicy,
+        on_delete=models.PROTECT,
+        related_name='patient',
+    )
 
 
     def __str__(self):
         return f'Patient {self.user.username}'
+
+
+

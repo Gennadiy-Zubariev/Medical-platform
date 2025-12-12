@@ -23,7 +23,7 @@ class MedicalCardSerializer(serializers.ModelSerializer):
     patient = PatientProfileSerializer(read_only=True)
     records = MedicalRecordSerializer(many=True, read_only=True)
 
-    class Mets:
+    class Meta:
         model = MedicalCard
         fields = [
             'id',

@@ -29,6 +29,6 @@ class Message(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        return f'Повідомленні від {self.sender.username} in room {self.room.id}'
+        return f'Повідомлення від {self.sender.username} у чаті {self.room.id}'
 
 
