@@ -14,7 +14,8 @@ urlpatterns = [
     #API
     path('api/accounts/', include('accounts.urls')),
     path('api/medical/', include('medical.urls')),
-    path('api/appointments/', include('appointments.urls')),
+
+    path('api/', include('appointments.urls')),
     path('api/chat/', include('chat.urls')),
     path('api/registry/', include('registry.urls')),
 

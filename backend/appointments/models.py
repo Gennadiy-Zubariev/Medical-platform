@@ -1,9 +1,7 @@
 from django.db import models
-from django.utils import timezone
 from datetime import timedelta
 from accounts.models import PatientProfile, DoctorProfile
-
-
+from django.db.models import Q
 
 
 class Appointment(models.Model):
@@ -31,11 +29,15 @@ class Appointment(models.Model):
     status = models.CharField(choices=Status.choices, max_length=20, default=Status.PENDING, help_text='Поточний статус запису.')
     reason = models.TextField(blank=True, help_text='Причина звернення, короткий опис симптомів тощо.')
     created_at = models.DateTimeField(auto_now_add=True, help_text='Дата й час створення запису.')
-    updated_at = models.DateTimeField(auto_now_add=True, help_text='Дата й час останнього оновлення запису.')
+    updated_at = models.DateTimeField(auto_now=True, help_text='Дата й час останнього оновлення запису.')
 
     class Meta:
-        ordering = ['-start_datetime']
-        unique_together = ('patient', 'doctor', 'start_datetime')
+        constraints = [
+            models.UniqueConstraint(
+                fields=['doctor', 'start_datetime'],
+                condition=~Q(status="canceled"),
+                name='unique_appointment'),
+        ]
 
 
     def __str__(self):
@@ -45,7 +47,7 @@ class Appointment(models.Model):
         )
 
     @property
-    def end_datatime(self):
+    def end_datetime(self):
         return self.start_datetime + timedelta(minutes=self.duration_minutes)
 
 

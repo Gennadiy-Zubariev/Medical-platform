@@ -56,6 +56,21 @@ class DoctorProfile(models.Model):
     experience_years = models.PositiveIntegerField(null=True, blank=True)
     photo = models.ImageField(upload_to='doctor_photos/', blank=True, null=True)
 
+    work_start = models.TimeField(blank=True, null=True)
+    work_end = models.TimeField(blank=True, null=True)
+    slot_duration = models.PositiveIntegerField(blank=True, null=True)
+
+    is_booking_open = models.BooleanField(default=False)
+
+    def has_valid_schedule(self):
+        if not self.work_start or not self.work_end or not self.slot_duration:
+            return False
+
+        return (
+                self.work_start < self.work_end
+                and self.slot_duration > 0
+        )
+
 
     def __str__(self):
         return f'Dr. {self.user.username} ({self.specialization})'

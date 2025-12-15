@@ -145,7 +145,7 @@ class DoctorRegisterSerializer(serializers.ModelSerializer):
 
         DoctorProfile.objects.create(
             user=user,
-            license=license_obj,
+            license_number=license_obj,
             specialization=specialization,
             experience_years=experience_years,
         )
@@ -164,13 +164,15 @@ class PatientProfileSerializer(serializers.ModelSerializer):
             "date_of_birth",
             "address",
             "photo",
-            "insurance_number",
+            "insurance_policy",
         )
 
 
 class DoctorProfileSerializer(serializers.ModelSerializer):
     user = UserSerializer(read_only=True)
     license_number = serializers.CharField(source="license.license_number", read_only=True)
+    is_schedule_ready = serializers.SerializerMethodField()
+
 
     class Meta:
         model = DoctorProfile
@@ -182,8 +184,15 @@ class DoctorProfileSerializer(serializers.ModelSerializer):
             "specialization",
             "experience_years",
             "photo",
+            "work_start",
+            "work_end",
+            "slot_duration",
+            "is_booking_open",
+            "is_schedule_ready",
         )
 
+    def get_is_schedule_ready(self, obj):
+        return obj.has_valid_schedule()
 
 
 class CurrentUserSerializer(serializers.ModelSerializer):

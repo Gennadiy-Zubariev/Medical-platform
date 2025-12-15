@@ -1,6 +1,7 @@
 from django.contrib.auth import get_user_model
 from rest_framework import viewsets, permissions, status, generics
 from rest_framework.decorators import action
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
 from .models import PatientProfile, DoctorProfile
@@ -12,7 +13,7 @@ from .serializers import (
     DoctorProfileSerializer,
 )
 
-from .permissions import IsOwnerOrReadOnly
+from .permissions import IsOwnerOrReadOnly, IsDoctor
 
 User = get_user_model()
 
@@ -105,9 +106,9 @@ class DoctorProfileViewSet(viewsets.ModelViewSet):
 
     def get_queryset(self):
         user = self.request.user
-        if user.is_staff:
-            return self.queryset
-        return self.queryset.filter(user=user)
+        if user.is_doctor():
+            return self.queryset.filter(user=user)
+        return self.queryset
 
     @action(detail=False, methods=["get", "patch"], url_path="me")
     def me(self, request):
@@ -126,3 +127,18 @@ class DoctorProfileViewSet(viewsets.ModelViewSet):
         serializer.save()
         return Response(serializer.data)
 
+    @action(
+        detail=False,
+        methods=["post"],
+        permission_classes=[IsAuthenticated, IsDoctor],
+        url_path="toggle-booking"
+    )
+    def toggle_booking(self, request):
+        doctor = request.user.doctor_profile
+        doctor.is_booking_open = not doctor.is_booking_open
+        doctor.save(update_fields=["is_booking_open"])
+
+        return Response(
+            {"is_booking_open": doctor.is_booking_open},
+            status=status.HTTP_200_OK
+        )

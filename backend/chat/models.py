@@ -1,12 +1,11 @@
 from django.db import models
 from django.conf import settings
+from appointments.models import Appointment
 
 
 class ChatRoom(models.Model):
-    participants = models.ManyToManyField(
-        settings.AUTH_USER_MODEL,
-        related_name="chat_rooms"
-    )
+    appointment = models.OneToOneField(Appointment, on_delete=models.CASCADE, related_name="chat_room")
+
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
