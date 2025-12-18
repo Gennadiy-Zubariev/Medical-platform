@@ -4,6 +4,7 @@ from .models import MedicalCard, MedicalRecord
 
 class MedicalRecordSerializer(serializers.ModelSerializer):
     doctor = DoctorProfileSerializer(read_only=True)
+    card = serializers.PrimaryKeyRelatedField(read_only=True)
 
     class Meta:
         model = MedicalRecord
@@ -17,7 +18,7 @@ class MedicalRecordSerializer(serializers.ModelSerializer):
             'recommendations',
             'created_at',
         ]
-        read_only_fields = ['doctor', 'created_at']
+        read_only_fields = ['doctor', 'created_at', 'card']
 
 class MedicalCardSerializer(serializers.ModelSerializer):
     patient = PatientProfileSerializer(read_only=True)
@@ -28,6 +29,9 @@ class MedicalCardSerializer(serializers.ModelSerializer):
         fields = [
             'id',
             'patient',
+            'blood_type',
+            'allergies',
+            'chronic_diseases',
             'records',
             'created_at',
             'updated_at',

@@ -10,7 +10,6 @@ class Appointment(models.Model):
         PENDING = "pending", "Очікує підтвердження"
         CONFIRMED = "confirmed", "Підтверджено"
         COMPLETED = "completed", "Завершено"
-        CANCELED = "canceled", "Скасовано"
 
     patient = models.ForeignKey(
         PatientProfile,

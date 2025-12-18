@@ -70,7 +70,7 @@ class AppointmentsWriteSerializer(serializers.ModelSerializer):
             exists = Appointment.objects.filter(
                 doctor=doctor,
                 start_datetime=start,
-            ).exclude(status=Appointment.Status.CANCELED).exists()
+            ).exists()
 
             if exists:
                 raise serializers.ValidationError(

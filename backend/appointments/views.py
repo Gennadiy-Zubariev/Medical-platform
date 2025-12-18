@@ -68,7 +68,7 @@ class AppointmentViewSet(viewsets.ModelViewSet):
 
     @action(
         detail=True,
-        methods=["post"],
+        methods=["delete"],
         permission_classes=[permissions.IsAuthenticated, IsPatient],
         url_path="cancel"
     )
@@ -88,13 +88,10 @@ class AppointmentViewSet(viewsets.ModelViewSet):
                 status=status.HTTP_400_BAD_REQUEST
             )
 
-        appointment.status = Appointment.Status.CANCELED
-        appointment.save(update_fields=["status"])
 
-        return Response(
-            AppointmentReadSerializer(appointment).data,
-            status=status.HTTP_200_OK
-        )
+        appointment.delete()
+
+        return Response(status=status.HTTP_204_NO_CONTENT)
 
     @action(detail=False, methods=['get'], url_path="my")
     def my(self, request):
@@ -126,7 +123,7 @@ class AppointmentViewSet(viewsets.ModelViewSet):
         busy = Appointment.objects.filter(
             doctor=doctor,
             start_datetime__date=date,
-        ).exclude(status=Appointment.Status.CANCELED)
+        )
 
         available = [s for s in slots if s not in busy.values_list("start_datetime", flat=True)]
 
