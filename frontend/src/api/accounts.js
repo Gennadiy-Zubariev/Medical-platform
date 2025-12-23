@@ -43,4 +43,15 @@ export async function updateMyDoctorProfile(data) {
     return response.data;
 }
 
+export async function getDoctors() {
+    const res = await axiosClient.get('accounts/doctor-profiles/');
+    return res.data;
+}
+
+
+export async function toggleDoctorBooking() {
+  const res = await axiosClient.post("accounts/doctor-profiles/toggle-booking/");
+  return res.data;
+}
+
 

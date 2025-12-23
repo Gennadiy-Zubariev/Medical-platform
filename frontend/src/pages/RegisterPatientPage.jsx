@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { registerPatient } from "../api/accounts";
+import { useNavigate } from "react-router-dom";
 
 export default function RegisterPatientPage() {
   const [form, setForm] = useState({
@@ -8,10 +9,12 @@ export default function RegisterPatientPage() {
     email: "",
     first_name: "",
     last_name: "",
-    insurance_number: "",
+    insurance_policy: "",
   });
 
   const [loading, setLoading] = useState(false);
+
+  const navigate = useNavigate();
 
   const handleChange = (e) => {
     setForm({
@@ -28,18 +31,27 @@ export default function RegisterPatientPage() {
       const data = await registerPatient(form);
       console.log("Registered patient:", data);
       alert("Пацієнта успішно зареєстровано!");
-      // тут буде редірект після створення
+      navigate("/login", {
+          state: { message: "Реєстрація успішна. Увійдіть у систему."}
+      });
     } catch (error) {
-      console.error(error);
-      const msg =
-        error.response?.data?.detail ||
-        JSON.stringify(error.response?.data || {}) ||
-        "Помилка реєстрації";
-      alert(msg);
+        let msg = "Помилка реєстрації";
+        const data = error.response?.data;
+
+        if (data && typeof data === "object") {
+            const key = Object.keys(data)[0];
+            if (key && Array.isArray(data[key])) {
+                msg = data[key][0];
+            }
+        }
+
+        alert(msg);
     } finally {
       setLoading(false);
     }
   };
+
+
 
   return (
     <div style={{ padding: 20 }}>
@@ -90,9 +102,9 @@ export default function RegisterPatientPage() {
           onChange={handleChange}
         />
         <input
-          name="insurance_number"
+          name="insurance_policy"
           placeholder="Номер медичного страхування"
-          value={form.insurance_number}
+          value={form.insurance_policy}
           onChange={handleChange}
           required
         />

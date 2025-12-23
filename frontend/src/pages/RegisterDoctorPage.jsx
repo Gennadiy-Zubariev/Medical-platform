@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { registerDoctor } from "../api/accounts";
+import { useNavigate } from "react-router-dom";
 
 export default function RegisterDoctorPage() {
   const [form, setForm] = useState({
@@ -14,6 +15,8 @@ export default function RegisterDoctorPage() {
   });
 
   const [loading, setLoading] = useState(false);
+
+  const navigate = useNavigate();
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -41,14 +44,21 @@ export default function RegisterDoctorPage() {
       const data = await registerDoctor(payload);
       console.log("Registered doctor:", data);
       alert("Лікаря успішно зареєстровано!");
-      // TODO: redirect на логін або профіль
+      navigate("/login", {
+          state: {message: "Реєстрація успішна. Увійдіть у систему."}
+      });
     } catch (error) {
-      console.error(error);
-      const msg =
-        error.response?.data?.detail ||
-        JSON.stringify(error.response?.data || {}) ||
-        "Помилка реєстрації";
-      alert(msg);
+        let msg = "Помилка реєстрації";
+        const data = error.response?.data;
+
+        if (data && typeof data === "object") {
+            const key = Object.keys(data)[0];
+            if (key && Array.isArray(data[key])) {
+                msg = data[key][0];
+            }
+        }
+
+        alert(msg);
     } finally {
       setLoading(false);
     }

@@ -109,6 +109,7 @@ class MedicalRecordViewSet(viewsets.ModelViewSet):
 
         if record.doctor != self.request.user.doctor_profile:
             raise PermissionDenied("Ви можете редагувати тільки свої записи.")
+        serializer.save()
 
 
 

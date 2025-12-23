@@ -14,7 +14,7 @@ export function AuthProvider({ children }) {
 // -------------------------------------------------------
 
     useEffect(() => {
-        const accessToken = localStorage.getItem("accessToken");
+        const accessToken = localStorage.getItem("access");
         if (!accessToken) {
             setLoading(false);
             return;
@@ -26,8 +26,8 @@ export function AuthProvider({ children }) {
                 setUser(res);
             } catch (err) {
               console.error("Помилка отримання профілю", err);
-              localStorage.removeItem("accessToken");
-              localStorage.removeItem("refreshToken");
+              localStorage.removeItem("access");
+              localStorage.removeItem("refresh");
             } finally {
               setLoading(false);
             }
@@ -49,8 +49,8 @@ export function AuthProvider({ children }) {
             const access = res.access;
             const refresh = res.refresh;
 
-            localStorage.setItem("accessToken", access);
-            localStorage.setItem("refreshToken", refresh);
+            localStorage.setItem("access", access);
+            localStorage.setItem("refresh", refresh);
 
             const profile = await getMyProfile();
             setUser(profile);
@@ -69,8 +69,8 @@ export function AuthProvider({ children }) {
 // -------------------------------------------------------
 
     const logout = () => {
-        localStorage.removeItem("accessToken");
-        localStorage.removeItem("refreshToken");
+        localStorage.removeItem("access");
+        localStorage.removeItem("refresh");
         setUser(null);
     };
 

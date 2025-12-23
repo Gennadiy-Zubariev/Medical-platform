@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useAuth } from '../context/AuthContext';
-import { useNavigate } from "react-router-dom";
+import {Link, useNavigate} from "react-router-dom";
 
 
 export default function LoginPage() {
@@ -42,7 +42,15 @@ export default function LoginPage() {
                 {error && <p style={{ color: 'red' }}>{error}</p>}
 
                 <button type="submit">Увійти</button>
-                <button type="button">Скасувати</button>
+                <button
+                    type="button"
+                    onClick={() => {
+                        setUsername('');
+                        setPassword('');
+                    }}
+                >
+                    Скасувати
+                </button>
 
             </form>
         </div>

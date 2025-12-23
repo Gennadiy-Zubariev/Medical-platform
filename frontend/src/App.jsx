@@ -9,6 +9,8 @@ import DoctorDashboardPage from "./pages/DoctorDashboardPage";
 import PatientDashboardPage from "./pages/PatientDashboardPage";
 import ProtectedRoute from "./components/ProtectedRoute";
 import { AuthProvider } from "./context/AuthContext.jsx";
+import PatientMedicalCardPage from "./pages/PatientMedicalCardPage.jsx";
+import DoctorMedicalCardPage from "./pages/DoctorMedicalCardPage.jsx";
 
 
 
@@ -29,6 +31,8 @@ export default function App() {
 
                     <Route path="/doctor/dashboard" element={<ProtectedRoute role="doctor"><DoctorDashboardPage /></ProtectedRoute>} />
                     <Route path="/patient/dashboard" element={<ProtectedRoute role="patient"><PatientDashboardPage /></ProtectedRoute>} />
+                    <Route path="/patient/medical-card" element={<ProtectedRoute role="patient"><PatientMedicalCardPage /></ProtectedRoute>} />
+                    <Route path="/doctor/medical-card/:patientId" element={<ProtectedRoute role="doctor"><DoctorMedicalCardPage /></ProtectedRoute>} />
                 </Routes>
             </Router>
         </AuthProvider>
