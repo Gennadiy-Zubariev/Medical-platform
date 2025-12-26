@@ -87,7 +87,7 @@ class DoctorRegisterSerializer(serializers.ModelSerializer):
 
     license_number = serializers.CharField(write_only=True)
     specialization = serializers.CharField(write_only=True)
-    experience_years = serializers.IntegerField(write_only=True, required=False, default=0)
+    experience_years = serializers.IntegerField(write_only=True, required=False, allow_null=True)
 
     class Meta:
         model = User
@@ -127,7 +127,7 @@ class DoctorRegisterSerializer(serializers.ModelSerializer):
     def create(self, validated_data):
         license_number = validated_data.pop("license_number")
         specialization = validated_data.pop("specialization")
-        experience_years = validated_data.pop("experience_years", 0)
+        experience_years = validated_data.pop("experience_years")
 
 
         license_obj = getattr(self, "_license_obj", None)
@@ -215,3 +215,24 @@ class CurrentUserSerializer(serializers.ModelSerializer):
             "patient_profile",
             "doctor_profile",
         )
+
+
+class PatientProfileUpdateSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = PatientProfile
+        fields = [
+            "insurance_number",
+            "photo",
+            "address",
+        ]
+
+class DoctorProfileUpdateSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = DoctorProfile
+        fields = [
+            "bio",
+            "specialization",
+            "experience_years",
+            "license_number",
+            "photo",
+        ]

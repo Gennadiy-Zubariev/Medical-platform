@@ -29,7 +29,7 @@ class ChatMessage(models.Model):
     is_read = models.BooleanField(default=False)
 
     class Meta:
-        ordering = ['-created_at']
+        ordering = ['created_at']
 
     def __str__(self):
         return f'Повідомлення від {self.sender.username} у чаті {self.room.id}'

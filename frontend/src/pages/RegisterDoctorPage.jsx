@@ -11,7 +11,7 @@ export default function RegisterDoctorPage() {
     last_name: "",
     license_number: "",
     specialization: "",
-    experience_years: 0,
+    experience_years: "",
   });
 
   const [loading, setLoading] = useState(false);
@@ -38,7 +38,7 @@ export default function RegisterDoctorPage() {
       // приводимо experience_years до числа
       const payload = {
         ...form,
-        experience_years: Number(form.experience_years || 0),
+        experience_years: form.experience_years === "" ? null : Number(form.experience_years)
       };
 
       const data = await registerDoctor(payload);

@@ -1,37 +1,65 @@
-from rest_framework import viewsets, permissions
-from rest_framework.response import Response
+from rest_framework import viewsets, status, permissions
 from rest_framework.decorators import action
+from rest_framework.permissions import IsAuthenticated
+from rest_framework.response import Response
+from yaml import serialize
 
-from .models import ChatRoom, Message
-from .serializers import ChatRoomSerializer, MessageSerializer
+from .models import ChatRoom, ChatMessage
+from .serializers import ChatRoomSerializer, ChatMassageSerializer
+from .permissions import IsChatParticipant
+from appointments.models import Appointment
 
+class ChatRoomViewSet(viewsets.ViewSet):
 
-class ChatRoomViewSet(viewsets.ModelViewSet):
-    queryset = ChatRoom.objects.all()
-    serializer_class = ChatRoomSerializer
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [permissions.IsAuthenticated, IsChatParticipant]
 
-    def perform_create(self, serializer):
-        room = serializer.save()
-        room.participants.add(self.request.user)
+    def retrieve(self, request, pk=None):
+        """
+        GET /api/chat/rooms/{appointment_id}/
+        """
+        try:
+            appointment = Appointment.objects.get(pk=pk)
+        except Appointment.DoesNotExist:
+            return Response({'detail': 'Appointment not found'}, status=status.HTTP_404_NOT_FOUND)
+        room, _ = ChatRoom.objects.get_or_create(appointment=appointment)
 
-    @action(detail=True, methods=["post"])
-    def join(self, request, pk=None):
-        room = self.get_object()
-        room.participants.add(request.user)
-        return Response({"detail": "Joined room"})
+        self.check_object_permissions(request, room)
 
-    @action(detail=True, methods=["get"])
+        serializer = ChatRoomSerializer(room)
+        return Response(serializer.data)
+
+    @action(detail=True, methods=['post'])
     def messages(self, request, pk=None):
-        room = self.get_object()
-        messages = room.messages.order_by("created_at")
-        return Response(MessageSerializer(messages, many=True).data)
+        """
+        POST /api/chat/rooms/{appointment_id}/messages/
+        """
+        appointment = Appointment.objects.get(pk=pk)
+        room, _ = ChatRoom.objects.get_or_create(appointment=appointment)
 
+        self.check_object_permissions(request, room)
 
-class MessageViewSet(viewsets.ModelViewSet):
-    queryset = Message.objects.all()
-    serializer_class = MessageSerializer
-    permission_classes = [permissions.IsAuthenticated]
+        serializer = ChatMassageSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
 
-    def perform_create(self, serializer):
-        serializer.save(sender=self.request.user)
+        ChatMessage.objects.create(
+            room=room,
+            sender=request.user,
+            text=serializer.validated_data['text']
+        )
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+    @action(detail=True, methods=['post'])
+    def mark_as_read(self, request, pk=None):
+        appointment = Appointment.objects.get(pk=pk)
+        room = ChatRoom.objects.get(appointment=appointment)
+
+        self.check_object_permissions(request, room)
+
+        ChatMessage.objects.filter(
+            room=room,
+            is_read=False
+        ).exclude(sender=request.user).update(
+            is_read=True
+        )
+
+        return Response({'status': 'ok'})

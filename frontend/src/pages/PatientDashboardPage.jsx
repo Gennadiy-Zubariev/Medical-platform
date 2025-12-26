@@ -1,3 +1,4 @@
+import { useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import {
   getMyAppointments,
@@ -8,6 +9,7 @@ import CreateAppointmentForm from "../components/CreateAppointmentForm";
 import {Link} from "react-router-dom";
 
 export default function PatientDashboardPage() {
+  const navigate = useNavigate();
   const [appointments, setAppointments] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -125,6 +127,12 @@ export default function PatientDashboardPage() {
               Скасувати запис
             </button>
           )}
+      <button
+        className="btn-chat"
+        onClick={() => navigate(`/chat/${a.id}`)}
+      >
+        💬 Чат
+      </button>
 
         </div>
       ))}

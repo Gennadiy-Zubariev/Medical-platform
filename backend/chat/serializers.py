@@ -1,22 +1,30 @@
 from rest_framework import serializers
-from .models import ChatRoom, Message
+from .models import ChatRoom, ChatMessage
+from accounts.serializers import UserSerializer
 
-
-class MessageSerializer(serializers.ModelSerializer):
-    sender_username = serializers.ReadOnlyField(source="sender.username")
+class ChatMassageSerializer(serializers.ModelSerializer):
+    sender = UserSerializer(read_only=True)
+    room = serializers.PrimaryKeyRelatedField(read_only=True)
 
     class Meta:
-        model = Message
-        fields = ["id", "room", "sender", "sender_username", "text", "created_at"]
-        read_only_fields = ["sender"]
-
+        model = ChatMessage
+        fields = [
+            "id",
+            "room",
+            "sender",
+            "text",
+            "created_at",
+            "is_read",
+        ]
 
 class ChatRoomSerializer(serializers.ModelSerializer):
-    participants_usernames = serializers.SerializerMethodField()
+     messages = ChatMassageSerializer(many=True, read_only=True)
 
-    class Meta:
-        model = ChatRoom
-        fields = ["id", "participants", "participants_usernames", "created_at"]
-
-    def get_participants_usernames(self, obj):
-        return [u.username for u in obj.participants.all()]
+     class Meta:
+         model = ChatRoom
+         fields = [
+             'id',
+             'appointment',
+             'messages',
+             'created_at',
+         ]

@@ -1,10 +1,9 @@
-from django.urls import path, include
 from rest_framework.routers import DefaultRouter
 
-from .views import ChatRoomViewSet, MessageViewSet
+from .views import ChatRoomViewSet
 
 router = DefaultRouter()
-router.register(r'rooms', ChatRoomViewSet)
-router.register(r'messages', MessageViewSet)
+router.register(r'rooms', ChatRoomViewSet, basename='chat-rooms')
+
 
 urlpatterns = router.urls

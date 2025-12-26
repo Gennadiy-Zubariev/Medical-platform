@@ -1,4 +1,4 @@
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import {useEffect, useState} from "react";
 import {
     getMyAppointments,
@@ -12,6 +12,7 @@ import {
 import axiosClient from "../api/axiosClient";
 
 export default function DoctorDashboardPage() {
+    const navigate = useNavigate();
     const [appointments, setAppointments] = useState([]);
     const [doctor, setDoctor] = useState(null);
     const [schedule, setSchedule] = useState({
@@ -194,7 +195,6 @@ export default function DoctorDashboardPage() {
                     </p>
 
 
-
                     {a.status === "pending" && (
                         <>
                             <button onClick={() => changeStatus(a.id, "confirmed")}>
@@ -203,11 +203,19 @@ export default function DoctorDashboardPage() {
                         </>
                     )}
 
+
+
                     {a.status === "confirmed" && (
                         <button onClick={() => changeStatus(a.id, "completed")}>
                             Завершити прийом
                         </button>
                     )}
+                    <button
+                        className="btn-chat"
+                        onClick={() => navigate(`/chat/${a.id}`)}
+                    >
+                        💬 Чат
+                    </button>
                 </div>
             ))}
         </div>
