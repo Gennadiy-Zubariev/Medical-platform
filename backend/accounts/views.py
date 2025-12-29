@@ -3,6 +3,8 @@ from rest_framework import viewsets, permissions, status, generics
 from rest_framework.decorators import action
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
+# from rest_framework_simplejwt.authentication import JWTAuthentication
+# from rest_framework.parsers import MultiPartParser, FormParser
 
 from .models import PatientProfile, DoctorProfile
 from .serializers import (
@@ -11,6 +13,8 @@ from .serializers import (
     DoctorRegisterSerializer,
     PatientProfileSerializer,
     DoctorProfileSerializer,
+    PatientProfileUpdateSerializer,
+    DoctorProfileUpdateSerializer,
 )
 
 from .permissions import IsOwnerOrReadOnly, IsDoctor
@@ -74,7 +78,9 @@ class RegisterDoctorView(generics.CreateAPIView):
 class PatientProfileViewSet(viewsets.ModelViewSet):
     queryset = PatientProfile.objects.select_related('user')
     serializer_class = PatientProfileSerializer
+
     permission_classes = [permissions.IsAuthenticated, IsOwnerOrReadOnly]
+
 
     def get_queryset(self):
         user = self.request.user
@@ -88,21 +94,26 @@ class PatientProfileViewSet(viewsets.ModelViewSet):
         GET /api/accounts/patient-profiles/me/  -> поточний профіль
         PATCH /api/accounts/patient-profiles/me/ -> оновити поточний профіль
         """
-        profile, created = PatientProfile.objects.get_or_create(user=request.user)
+        profile = request.user.patient_profile
 
         if request.method == "GET":
-            serializer = self.get_serializer(profile)
+            serializer = PatientProfileSerializer(profile)
             return Response(serializer.data)
 
-        serializer = self.get_serializer(profile, data=request.data, partial=True)
-        serializer.is_valid(raise_exception=True)
-        serializer.save()
-        return Response(serializer.data)
+        if request.method == "PATCH":
+            serializer = PatientProfileUpdateSerializer(profile, data=request.data, partial=True)
+            serializer.is_valid(raise_exception=True)
+            serializer.save()
+            profile.refresh_from_db()
+            return Response(PatientProfileSerializer(profile).data)
+
 
 class DoctorProfileViewSet(viewsets.ModelViewSet):
     queryset = DoctorProfile.objects.select_related('user')
     serializer_class = DoctorProfileSerializer
+
     permission_classes = [permissions.IsAuthenticated, IsOwnerOrReadOnly]
+
 
     def get_queryset(self):
         user = self.request.user
@@ -116,16 +127,19 @@ class DoctorProfileViewSet(viewsets.ModelViewSet):
         GET /api/accounts/doctor-profiles/me/
         PATCH /api/accounts/doctor-profiles/me/
         """
-        profile, created = DoctorProfile.objects.get_or_create(user=request.user)
+        profile = request.user.doctor_profile
 
         if request.method == "GET":
-            serializer = self.get_serializer(profile)
+            serializer = DoctorProfileSerializer(profile)
             return Response(serializer.data)
 
-        serializer = self.get_serializer(profile, data=request.data, partial=True)
-        serializer.is_valid(raise_exception=True)
-        serializer.save()
-        return Response(serializer.data)
+        if request.method == "PATCH":
+            serializer = DoctorProfileUpdateSerializer(profile, data=request.data, partial=True)
+            serializer.is_valid(raise_exception=True)
+            serializer.save()
+            profile.refresh_from_db()
+            return Response(DoctorProfileSerializer(profile).data)
+
 
     @action(
         detail=False,

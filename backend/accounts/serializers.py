@@ -14,6 +14,11 @@ class UserSerializer(serializers.ModelSerializer):
         model = User
         fields = ("id", "username", "email", "first_name", "last_name", "role")
 
+class UserUpdateSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ['email']
+
 
 class PatientRegisterSerializer(serializers.ModelSerializer):
     """
@@ -155,6 +160,7 @@ class DoctorRegisterSerializer(serializers.ModelSerializer):
 
 class PatientProfileSerializer(serializers.ModelSerializer):
     user = UserSerializer(read_only=True)
+    insurance_policy = serializers.CharField(source="insurance_policy.insurance_policy", read_only=True)
 
     class Meta:
         model = PatientProfile
@@ -170,7 +176,7 @@ class PatientProfileSerializer(serializers.ModelSerializer):
 
 class DoctorProfileSerializer(serializers.ModelSerializer):
     user = UserSerializer(read_only=True)
-    license_number = serializers.CharField(source="license.license_number", read_only=True)
+    license_number = serializers.CharField(source="license_number.license_number", read_only=True)
     is_schedule_ready = serializers.SerializerMethodField()
 
 
@@ -218,21 +224,67 @@ class CurrentUserSerializer(serializers.ModelSerializer):
 
 
 class PatientProfileUpdateSerializer(serializers.ModelSerializer):
+    insurance_policy = serializers.CharField(write_only=True, required=False)
+
     class Meta:
         model = PatientProfile
         fields = [
-            "insurance_number",
+            "insurance_policy",
             "photo",
             "address",
         ]
 
+    def validate_insurance_policy(self, value):
+        try:
+            policy = InsurancePolicy.objects.get(insurance_policy=value)
+        except InsurancePolicy.DoesNotExist:
+            raise serializers.ValidationError('Страховий поліс не знайдено')
+
+        if (hasattr(policy, 'patient') and policy.patient != self.instance):
+            raise serializers.ValidationError('Цей страховий поліс вже використовується')
+
+        self._insurance_policy = policy
+        return value
+
+    def update(self, instance, validated_data):
+        insurance_policy = validated_data.pop('insurance_policy', None)
+        if insurance_policy:
+            instance.insurance_policy = self._insurance_policy
+
+        return super().update(instance, validated_data)
+
 class DoctorProfileUpdateSerializer(serializers.ModelSerializer):
+    license_number = serializers.CharField(
+        write_only=True,
+        required=False
+    )
+
     class Meta:
         model = DoctorProfile
         fields = [
             "bio",
             "specialization",
             "experience_years",
-            "license_number",
             "photo",
+            "license_number",
         ]
+
+    def validate_license_number(self, value):
+        try:
+            license_obj = DoctorLicense.objects.get(license_number=value)
+        except DoctorLicense.DoesNotExist:
+            raise serializers.ValidationError("Ліцензію не знайдено у реєстрі")
+
+        if (hasattr(license_obj, "doctor") and license_obj.doctor != self.instance):
+            raise serializers.ValidationError("Ця ліцензія вже використовується іншим лікарем")
+
+        self._license_obj = license_obj
+        return value
+
+    def update(self, instance, validated_data):
+        license_number = validated_data.pop("license_number", None)
+
+        if license_number:
+            instance.license_number = self._license_obj
+
+        return super().update(instance, validated_data)
