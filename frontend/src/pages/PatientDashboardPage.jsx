@@ -1,141 +1,152 @@
-import { useNavigate } from "react-router-dom";
-import { useEffect, useState } from "react";
+import {useNavigate} from "react-router-dom";
+import {useEffect, useState} from "react";
 import {
-  getMyAppointments,
-  cancelAppointment,
+    getMyAppointments,
+    cancelAppointment,
 } from "../api/appointments";
-import { getMyPatientProfile } from "../api/accounts";
+import {getMyPatientProfile} from "../api/accounts";
 import CreateAppointmentForm from "../components/CreateAppointmentForm";
 import {Link} from "react-router-dom";
+import PatientProfileCard from "../components/profile/PatientProfileCard";
+import EditPatientProfileForm from "../components/profile/EditPatientProfileForm";
 
 export default function PatientDashboardPage() {
-  const navigate = useNavigate();
-  const [appointments, setAppointments] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-  const [profile, setProfile] = useState(null);
+    const navigate = useNavigate();
+    const [appointments, setAppointments] = useState([]);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
+    const [profile, setProfile] = useState(null);
+    const [editing, setEditing] = useState(false);
 
-  // 🔑 ключ для примусового оновлення слотів у формі
-  const [refreshSlotsKey, setRefreshSlotsKey] = useState(0);
+    // 🔑 ключ для примусового оновлення слотів у формі
+    const [refreshSlotsKey, setRefreshSlotsKey] = useState(0);
 
-  const loadAppointments = async () => {
-    try {
-      const data = await getMyAppointments();
-      setAppointments(
-        Array.isArray(data)
-          ? data
-          : Array.isArray(data?.results)
-          ? data.results
-          : []
-      );
-    } catch {
-      setError("Не вдалося завантажити записи");
-    } finally {
-      setLoading(false);
-    }
-  };
+    const loadAppointments = async () => {
+        try {
+            const data = await getMyAppointments();
+            setAppointments(
+                Array.isArray(data)
+                    ? data
+                    : Array.isArray(data?.results)
+                        ? data.results
+                        : []
+            );
+        } catch {
+            setError("Не вдалося завантажити записи");
+        } finally {
+            setLoading(false);
+        }
+    };
 
-  useEffect(() => {
-    loadAppointments();
-  }, []);
+    const loadProfile = async () => {
+        try {
+            const data = await getMyPatientProfile();
+            setProfile(data);
+        } catch (e) {
+            console.error('Не вдалося завантажити профіль пацієнта')
+        }
+    };
 
-  useEffect(() => {
-    (async () => {
-      try {
-        const data = await getMyPatientProfile();
-        setProfile(data);
-      } catch {
-        console.error("Не вдалося завантажити профіль пацієнта");
-      }
-    })();
-  }, []);
+    useEffect(() => {
+        loadAppointments();
+    }, []);
 
-  const handleCancel = async (appointmentId) => {
-    try {
-      await cancelAppointment(appointmentId);
+    useEffect(() => {
+        loadProfile();
+    }, []);
 
-      // оновлюємо список записів
-      await loadAppointments();
+    const handleCancel = async (appointmentId) => {
+        try {
+            await cancelAppointment(appointmentId);
 
-      // 🔥 сигнал формі: слоти треба перезавантажити
-      setRefreshSlotsKey((k) => k + 1);
-    } catch (err) {
-      alert(
-        err.response?.data?.detail ||
-        "Не вдалося скасувати запис"
-      );
-    }
-  };
+            // оновлюємо список записів
+            await loadAppointments();
 
-  return (
-    <div>
-      <h2>Кабінет пацієнта</h2>
+            // 🔥 сигнал формі: слоти треба перезавантажити
+            setRefreshSlotsKey((k) => k + 1);
+        } catch (err) {
+            alert(
+                err.response?.data?.detail ||
+                "Не вдалося скасувати запис"
+            );
+        }
+    };
 
-    {profile && (
-      <div style={{ border: "1px solid #ccc", padding: 15, marginBottom: 20 }}>
-        {profile.photo && (
-          <img
-            src={profile.photo}
-            alt="Фото пацієнта"
-            style={{ width: 100, borderRadius: "50%" }}
-          />
-        )}
-        <p><b>{profile.user.first_name} {profile.user.last_name}</b></p>
-        <p>{profile.user.email}</p>
+    return (
+        <div>
+            <h2>Кабінет пацієнта</h2>
 
-        <Link to="/patient/medical-card">📄 Моя медична картка</Link>
-      </div>
-    )}
+            {profile && !editing && (
+                <PatientProfileCard profile={profile} onEdit={() => setEditing(true)}/>
+            )}
 
-      {/* 🔹 форма запису */}
-      <CreateAppointmentForm
-        onCreated={loadAppointments}
-        refreshKey={refreshSlotsKey}
-      />
+            {editing && (
+                <EditPatientProfileForm
+                    profile={profile}
+                    onCancel={() => setEditing(false)}
+                    onSaved={() => {
+                        setEditing(false);
+                        loadProfile();
+                    }}
+                />
+            )}
 
-      {loading && <p>Завантаження...</p>}
-      {error && <p style={{ color: "red" }}>{error}</p>}
+            {profile && (
+                <div style={{border: "1px solid #ccc", padding: 15, marginBottom: 20}}>
 
-      {!loading && appointments.length === 0 && (
-        <p>У вас ще немає записів</p>
-      )}
+                    <Link to="/patient/medical-card">📄 Моя медична картка</Link>
+                </div>
+            )}
 
-      {appointments.map((a) => (
-        <div
-          key={a.id}
-          style={{
-            border: "1px solid #ccc",
-            padding: 10,
-            marginBottom: 10,
-          }}
-        >
-          <p>
-            <b>Лікар:</b> {a.doctor.user.first_name}{" "}
-            {a.doctor.user.last_name}
-          </p>
-          <p>
-            <b>Дата:</b>{" "}
-            {new Date(a.start_datetime).toLocaleString()}
-          </p>
-          <p>
-            <b>Статус:</b> {a.status}
-          </p>
+            {/* 🔹 форма запису */}
+            <CreateAppointmentForm
+                onCreated={loadAppointments}
+                refreshKey={refreshSlotsKey}
+            />
 
-          {/* ❗ тепер скасування тільки для pending */}
-          {a.status === "pending" && (
-            <button onClick={() => handleCancel(a.id)}>
-              Скасувати запис
-            </button>
-          )}
-      <button
-        className="btn-chat"
-        onClick={() => navigate(`/chat/${a.id}`)}
-      >
-        💬 Чат
-      </button>
+            {loading && <p>Завантаження...</p>}
+            {error && <p style={{color: "red"}}>{error}</p>}
 
+            {!loading && appointments.length === 0 && (
+                <p>У вас ще немає записів</p>
+            )}
+
+            {appointments.map((a) => (
+                <div
+                    key={a.id}
+                    style={{
+                        border: "1px solid #ccc",
+                        padding: 10,
+                        marginBottom: 10,
+                    }}
+                >
+                    <p>
+                        <b>Лікар:</b> {a.doctor.user.first_name}{" "}
+                        {a.doctor.user.last_name}
+                    </p>
+                    <p>
+                        <b>Дата:</b>{" "}
+                        {new Date(a.start_datetime).toLocaleString()}
+                    </p>
+                    <p>
+                        <b>Статус:</b> {a.status}
+                    </p>
+
+                    {/* ❗ тепер скасування тільки для pending */}
+                    {a.status === "pending" && (
+                        <button onClick={() => handleCancel(a.id)}>
+                            Скасувати запис
+                        </button>
+                    )}
+                    <button
+                        className="btn-chat"
+                        onClick={() => navigate(`/chat/${a.id}`)}
+                    >
+                        💬 Чат
+                    </button>
+
+                </div>
+            ))}
         </div>
-      ))}
-    </div>
-  );
+    );
 }

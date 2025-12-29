@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { getMedicalCardByPatient } from "../api/medical";
-import MedicalRecordForm from "../components/MedicalRecordForm";
-import MedicalRecordItem from "../components/MedicalRecordItem";
+import MedicalRecordForm from "../components/medical/MedicalRecordForm.jsx";
+import MedicalRecordItem from "../components/medical/MedicalRecordItem.jsx";
 import { getMyDoctorProfile } from "../api/accounts";
 import { deleteMedicalRecord } from "../api/medical";
 

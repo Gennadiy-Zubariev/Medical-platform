@@ -8,10 +8,14 @@ import {
 import {
     toggleDoctorBooking,
     getMyDoctorProfile,
+
 } from "../api/accounts";
 import axiosClient from "../api/axiosClient";
+import DoctorProfileCard from "../components/profile/DoctorProfileCard";
+import EditDoctorProfileForm from "../components/profile/EditDoctorProfileForm";
 
 export default function DoctorDashboardPage() {
+    const [editing, setEditing] = useState(false);
     const navigate = useNavigate();
     const [appointments, setAppointments] = useState([]);
     const [doctor, setDoctor] = useState(null);
@@ -59,6 +63,7 @@ export default function DoctorDashboardPage() {
         loadDoctorProfile();
     }, []);
 
+
     const saveSchedule = async () => {
         try {
             const res = await axiosClient.patch(
@@ -93,8 +98,22 @@ export default function DoctorDashboardPage() {
     return (
         <div>
             <h2>Кабінет лікаря</h2>
+            {doctor && !editing && (
+                <DoctorProfileCard profile={doctor} onEdit={() => setEditing(true)}/>
+            )}
 
-            {/* ===== ГРАФІК РОБОТИ ===== */}
+            {editing && (
+                <EditDoctorProfileForm
+                    profile={doctor}
+                    onCancel={() => setEditing(false)}
+                    onSaved={() => {
+                        setEditing(false);
+                        loadDoctorProfile();
+                    }}
+                />
+            )}
+
+
             {doctor && (
                 <div style={{border: "1px solid #aaa", padding: 15, marginBottom: 20}}>
                     <h3>Графік роботи</h3>

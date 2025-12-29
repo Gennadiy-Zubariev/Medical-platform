@@ -18,6 +18,10 @@ export async function loginUser({username, password}) {
     return response.data;
 }
 
+export async function updateMyUser(data) {
+    const response = await axiosClient.patch("accounts/users/me/", data);
+}
+
 export async function getMyProfile() {
     const response = await axiosClient.get("accounts/users/me/");
     return response.data;
@@ -29,7 +33,7 @@ export async function getMyPatientProfile() {
 }
 
 export async function updateMyPatientProfile(data) {
-    const response = await axiosClient.put("accounts/patient-profiles/me/", data);
+    const response = await axiosClient.patch("accounts/patient-profiles/me/", data);
     return response.data;
 }
 
@@ -39,7 +43,7 @@ export async function getMyDoctorProfile() {
 }
 
 export async function updateMyDoctorProfile(data) {
-    const response = await axiosClient.put("accounts/doctor-profiles/me/", data);
+    const response = await axiosClient.patch("accounts/doctor-profiles/me/", data);
     return response.data;
 }
 

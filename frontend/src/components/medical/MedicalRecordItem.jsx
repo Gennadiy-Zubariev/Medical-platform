@@ -1,6 +1,6 @@
 import { useState } from "react";
-import formatDate from "../utils/formatDate";
-import { updateMyMedicalRecord } from "../api/medical";
+import formatDate from "../../utils/formatDate.js";
+import { updateMyMedicalRecord } from "../../api/medical.js";
 
 export default function MedicalRecordItem({
   record,

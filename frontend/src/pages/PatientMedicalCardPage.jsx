@@ -1,9 +1,9 @@
 import {useEffect, useState, useCallback} from "react";
 import {getMyMedicalCard, updateMyMedicalCard} from "../api/medical";
-import MedicalCardEditForm from "../components/MedicalCardEditForm";
-import MedicalCardHeader from "../components/MedicalCardHeader";
-import MedicalCardView from "../components/MedicalCardView";
-import MedicalRecordItem from "../components/MedicalRecordItem";
+import MedicalCardEditForm from "../components/medical/MedicalCardEditForm.jsx";
+import MedicalCardHeader from "../components/medical/MedicalCardHeader.jsx";
+import MedicalCardView from "../components/medical/MedicalCardView.jsx";
+import MedicalRecordItem from "../components/medical/MedicalRecordItem.jsx";
 
 
 export default function PatientMedicalCardPage() {

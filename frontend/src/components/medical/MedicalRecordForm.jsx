@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { createMedicalRecord } from "../api/medical";
+import { createMedicalRecord } from "../../api/medical.js";
 
 export default function MedicalRecordForm({ cardId, onCreated, onCancel }) {
   const [form, setForm] = useState({
