@@ -2,8 +2,8 @@ import { useEffect, useState } from "react";
 import {
   createAppointment,
   getAvailableSlots,
-} from "../api/appointments";
-import { getDoctors } from "../api/accounts";
+} from "../../api/appointments.js";
+import { getDoctors } from "../../api/accounts.js";
 
 export default function CreateAppointmentForm({ onCreated, refreshKey }) {
   const [doctors, setDoctors] = useState([]);

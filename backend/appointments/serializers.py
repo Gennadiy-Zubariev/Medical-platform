@@ -9,7 +9,7 @@ class AppointmentReadSerializer(serializers.ModelSerializer):
     patient = PatientProfileSerializer(read_only=True)
     doctor = DoctorProfileSerializer(read_only=True)
     end_datetime = serializers.SerializerMethodField()
-    has_unread_message = serializers.SerializerMethodField()
+    has_unread_messages = serializers.SerializerMethodField()
 
     class Meta:
         model = Appointment
@@ -24,13 +24,13 @@ class AppointmentReadSerializer(serializers.ModelSerializer):
             "reason",
             "created_at",
             "updated_at",
-            "has_unread_message",
+            "has_unread_messages",
         ]
 
     def get_end_datetime(self, obj):
         return obj.end_datetime
 
-    def get_has_unread_message(self, obj):
+    def get_has_unread_messages(self, obj):
         request = self.context.get('request')
         if not request or not request.user.is_authenticated:
             return False

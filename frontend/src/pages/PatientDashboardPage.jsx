@@ -5,10 +5,12 @@ import {
     cancelAppointment,
 } from "../api/appointments";
 import {getMyPatientProfile} from "../api/accounts";
-import CreateAppointmentForm from "../components/CreateAppointmentForm";
+import CreateAppointmentForm from "../components/appointments/CreateAppointmentForm.jsx";
 import {Link} from "react-router-dom";
 import PatientProfileCard from "../components/profile/PatientProfileCard";
 import EditPatientProfileForm from "../components/profile/EditPatientProfileForm";
+import AppointmentsList from "../components/appointments/AppointmentsList";
+
 
 export default function PatientDashboardPage() {
     const navigate = useNavigate();
@@ -111,45 +113,14 @@ export default function PatientDashboardPage() {
                 <p>У вас ще немає записів</p>
             )}
 
-            {appointments.map((a) => (
-                <div
-                    key={a.id}
-                    style={{
-                        border: "1px solid #ccc",
-                        padding: 10,
-                        marginBottom: 10,
-                    }}
-                >
-                    <p>
-                        <b>Лікар:</b> {a.doctor.user.first_name}{" "}
-                        {a.doctor.user.last_name}
-                    </p>
-                    <p>
-                        <b>Дата:</b>{" "}
-                        {new Date(a.start_datetime).toLocaleString()}
-                    </p>
-                    <p>
-                        <b>Статус:</b> {a.status}
-                    </p>
 
-                    {/* ❗ тепер скасування тільки для pending */}
-                    {a.status === "pending" && (
-                        <button onClick={() => handleCancel(a.id)}>
-                            Скасувати запис
-                        </button>
-                    )}
-                    <button
-                        className="btn-chat"
-                        onClick={() => navigate(`/chat/${a.id}`)}
-                    >
-                        💬 Чат
-                        {a.has_unread_message &&(
-                            <span style={{color: "red", marginLeft: 6}}>●</span>
-                        )}
-                    </button>
+            <AppointmentsList
+              appointments={appointments}
+              role="patient"
+              onCancel={handleCancel}
+              onOpenChat={(id) => navigate(`/chat/${id}`)}
+            />
 
-                </div>
-            ))}
         </div>
     );
 }

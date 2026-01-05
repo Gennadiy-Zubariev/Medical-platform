@@ -3,8 +3,7 @@ from rest_framework import viewsets, permissions, status, generics
 from rest_framework.decorators import action
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
-# from rest_framework_simplejwt.authentication import JWTAuthentication
-# from rest_framework.parsers import MultiPartParser, FormParser
+
 
 from .models import PatientProfile, DoctorProfile
 from .serializers import (
@@ -15,6 +14,7 @@ from .serializers import (
     DoctorProfileSerializer,
     PatientProfileUpdateSerializer,
     DoctorProfileUpdateSerializer,
+    DoctorScheduleUpdateSerializer,
 )
 
 from .permissions import IsOwnerOrReadOnly, IsDoctor
@@ -156,3 +156,11 @@ class DoctorProfileViewSet(viewsets.ModelViewSet):
             {"is_booking_open": doctor.is_booking_open},
             status=status.HTTP_200_OK
         )
+
+    @action(detail=False, methods=["patch"], url_path="me/schedule", permission_classes=[permissions.IsAuthenticated])
+    def update_schedule(self, request):
+        profile = request.user.doctor_profile
+        serializer = DoctorScheduleUpdateSerializer(profile, data=request.data, partial=True)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        return Response(DoctorProfileSerializer(profile).data, status=status.HTTP_200_OK)

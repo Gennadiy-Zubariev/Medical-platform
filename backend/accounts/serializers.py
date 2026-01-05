@@ -288,3 +288,13 @@ class DoctorProfileUpdateSerializer(serializers.ModelSerializer):
             instance.license_number = self._license_obj
 
         return super().update(instance, validated_data)
+
+class DoctorScheduleUpdateSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = DoctorProfile
+        fields = ["work_start", "work_end", "slot_duration"]
+
+    def validate_slot_duration(self, value):
+        if value is None or value <= 0:
+            raise serializers.ValidationError("Тривалість слота має бути > 0")
+        return value
