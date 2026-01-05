@@ -162,7 +162,7 @@ export default function ChatPage() {
                 </div>
                 <div>{m.text}</div>
 
-                {m.sender?.id === me.id && (
+                {m.sender?.id === me?.id && (
                     <span className="read-status">
                         {m.is_read ? "✔✔" : "✔"}
                     </span>

@@ -22,20 +22,26 @@ class AppointmentViewSet(viewsets.ModelViewSet):
             return AppointmentReadSerializer
         return AppointmentsWriteSerializer
 
+
+    def get_serializer_context(self):
+        context = super().get_serializer_context()
+        context['request'] = self.request
+        return context
+
     def get_queryset(self):
         user = self.request.user
-        qs = super().get_queryset().order_by('-start_datetime')
+        queryset = super().get_queryset().order_by('-start_datetime')
 
         if user.is_superuser:
-            return qs
+            return queryset
 
         if hasattr(user, 'patient_profile') and user.is_patient():
-            return qs.filter(patient__user=user)
+            return queryset.filter(patient__user=user)
 
         if hasattr(user, 'doctor_profile') and user.is_doctor():
-            return qs.filter(doctor__user=user)
+            return queryset.filter(doctor__user=user)
 
-        return qs.none()
+        return queryset.none()
 
 
     def perform_create(self, serializer):
@@ -62,8 +68,7 @@ class AppointmentViewSet(viewsets.ModelViewSet):
         appointment.status = new_status
         appointment.save()
         return Response(
-            AppointmentReadSerializer(appointment).data,
-            status=status.HTTP_200_OK
+            self.get_serializer(appointment).data, status=status.HTTP_200_OK
         )
 
     @action(

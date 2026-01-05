@@ -234,6 +234,9 @@ export default function DoctorDashboardPage() {
                         onClick={() => navigate(`/chat/${a.id}`)}
                     >
                         💬 Чат
+                        {a.has_unread_message &&(
+                            <span style={{color: "red", marginLeft: 6}}>●</span>
+                        )}
                     </button>
                 </div>
             ))}

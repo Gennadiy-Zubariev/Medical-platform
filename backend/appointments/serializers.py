@@ -3,11 +3,13 @@ from rest_framework import serializers
 from accounts.models import PatientProfile, DoctorProfile
 from accounts.serializers import PatientProfileSerializer, DoctorProfileSerializer
 from .models import Appointment
+from chat.models import ChatMessage
 
 class AppointmentReadSerializer(serializers.ModelSerializer):
     patient = PatientProfileSerializer(read_only=True)
     doctor = DoctorProfileSerializer(read_only=True)
     end_datetime = serializers.SerializerMethodField()
+    has_unread_message = serializers.SerializerMethodField()
 
     class Meta:
         model = Appointment
@@ -22,10 +24,20 @@ class AppointmentReadSerializer(serializers.ModelSerializer):
             "reason",
             "created_at",
             "updated_at",
+            "has_unread_message",
         ]
 
     def get_end_datetime(self, obj):
         return obj.end_datetime
+
+    def get_has_unread_message(self, obj):
+        request = self.context.get('request')
+        if not request or not request.user.is_authenticated:
+            return False
+
+        user = request.user
+
+        return ChatMessage.objects.filter(room__appointment=obj, is_read=False).exclude(sender=user).exists()
 
 class AppointmentsWriteSerializer(serializers.ModelSerializer):
 
