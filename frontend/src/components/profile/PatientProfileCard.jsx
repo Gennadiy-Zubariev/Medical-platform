@@ -4,7 +4,7 @@ export default function PatientProfileCard({ profile, onEdit }) {
     if (!profile) return null;
 
     const photoURL = profile.photo
-        ? `${API_URL}${profile.photo}?t=${Date.now()}`
+        ? `${profile.photo}?t=${Date.now()}`
         : "/avatar-placeholder.png";
     return (
         <div className='profile-card'>

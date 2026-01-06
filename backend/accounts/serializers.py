@@ -1,4 +1,5 @@
 from django.contrib.auth import get_user_model
+from django.utils.timezone import now
 from rest_framework import serializers
 
 from .models import DoctorProfile, PatientProfile
@@ -53,19 +54,23 @@ class PatientRegisterSerializer(serializers.ModelSerializer):
         except InsurancePolicy.DoesNotExist:
             raise serializers.ValidationError("Невірний номер страховки!")
 
+        if PatientProfile.objects.filter(insurance_policy=insurance_obj).exists():
+            raise serializers.ValidationError(
+                "Ця страховка вже використовується іншою особою."
+            )
 
-        if hasattr(insurance_obj, "patient"):
-            raise serializers.ValidationError("Ця страховка вже використовується іншою особою.")
+        if insurance_obj.valid_until < now().date():
+            raise serializers.ValidationError("Страховий поліс прострочений")
 
 
-        self._insurance_obj = insurance_obj
+        #self._insurance_obj = insurance_obj
         return value
 
     def create(self, validated_data):
         insurance_policy = validated_data.pop("insurance_policy")
-        insurance_obj = getattr(self, "_insurance_obj", None)
-        if insurance_obj is None:
-            insurance_obj = InsurancePolicy.objects.get(insurance_policy=insurance_policy)
+        insurance_obj = InsurancePolicy.objects.get(insurance_policy=insurance_policy)
+        # if insurance_obj is None:
+        #     insurance_obj = InsurancePolicy.objects.get(insurance_policy=insurance_policy)
 
         user = User.objects.create_user(
             username=validated_data["username"],
@@ -121,12 +126,15 @@ class DoctorRegisterSerializer(serializers.ModelSerializer):
         except DoctorLicense.DoesNotExist:
             raise serializers.ValidationError("Невірний номер ліцензії!")
 
+        if DoctorProfile.objects.filter(license=license_obj).exists():
+            raise serializers.ValidationError(
+                "Ця ліцензія вже використовується іншим лікарем."
+            )
 
-        if hasattr(license_obj, "doctor"):
-            raise serializers.ValidationError("Ця ліцензія вже використовується іншим лікарем.")
+        if license_obj.valid_until < now().date():
+            raise serializers.ValidationError("Ліцензія прострочена")
 
-
-        self._license_obj = license_obj
+        # self._license_obj = license_obj
         return value
 
     def create(self, validated_data):
@@ -134,10 +142,10 @@ class DoctorRegisterSerializer(serializers.ModelSerializer):
         specialization = validated_data.pop("specialization")
         experience_years = validated_data.pop("experience_years")
 
-
-        license_obj = getattr(self, "_license_obj", None)
-        if license_obj is None:
-            license_obj = DoctorLicense.objects.get(license_number=license_number)
+        license_obj = DoctorLicense.objects.get(license_number=license_number)
+        # license_obj = getattr(self, "_license_obj", None)
+        # if license_obj is None:
+        #     license_obj = DoctorLicense.objects.get(license_number=license_number)
 
         user = User.objects.create_user(
             username=validated_data["username"],

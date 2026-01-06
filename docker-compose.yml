@@ -3,23 +3,12 @@ version: "3.9"
 services:
   web:
     build:
-      context: .
+      context: ./backend
       dockerfile: Dockerfile
-    command: >
-      sh -c "
-        echo '⏳ Очікуємо PostgreSQL...';
-        until nc -z $POSTGRES_HOST $POSTGRES_PORT; do
-          echo 'Postgres ще не готовий...';
-          sleep 1;
-        done;
-        echo '✅ PostgreSQL доступний!';
-        python manage.py runserver 0.0.0.0:8000
-      "
     volumes:
-      - .:/app
+      - ./backend:/app
       - media_data:/app/media
-    ports:
-      - "8000:8000"
+      - static_data:/app/staticfiles
     depends_on:
       - project_db
       - redis
@@ -37,17 +26,27 @@ services:
       POSTGRES_DB: ${POSTGRES_DB}
       POSTGRES_USER: ${POSTGRES_USER}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
-#    ports:
-#      - "5432:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
 
   redis:
     image: redis:7
     restart: always
+
+
+  nginx:
+    build:
+      context: .
+      dockerfile: nginx/Dockerfile
+    volumes:
+      - static_data:/app/staticfiles:ro
     ports:
-      - "6379:6379"
+      - "80:80"
+    depends_on:
+      - web
+
 
 volumes:
   postgres_data:
   media_data:
+  static_data:

@@ -11,4 +11,4 @@ class LicenseCheckAPIView(generics.RetrieveAPIView):
 class InsuranceCheckAPIView(generics.RetrieveAPIView):
     queryset = InsurancePolicy.objects.all()
     serializer_class = InsuranceSerializer
-    lookup_field = "insurance_number"
+    lookup_field = "insurance_policy"
