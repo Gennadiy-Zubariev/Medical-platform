@@ -1,3 +1,4 @@
+import Layout from "../components/Layout";
 import {useNavigate} from "react-router-dom";
 import {useEffect, useState} from "react";
 import {
@@ -75,7 +76,7 @@ export default function PatientDashboardPage() {
     };
 
     return (
-        <div>
+        <Layout>
             <h2>Кабінет пацієнта</h2>
 
             {profile && !editing && (
@@ -121,6 +122,6 @@ export default function PatientDashboardPage() {
               onOpenChat={(id) => navigate(`/chat/${id}`)}
             />
 
-        </div>
+        </Layout>
     );
 }

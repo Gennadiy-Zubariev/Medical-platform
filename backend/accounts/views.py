@@ -1,7 +1,9 @@
 from django.contrib.auth import get_user_model
+from django.db.models import Q
 from rest_framework import viewsets, permissions, status, generics
 from rest_framework.decorators import action
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import IsAuthenticated, AllowAny
+from rest_framework.views import APIView
 from rest_framework.response import Response
 
 
@@ -15,6 +17,7 @@ from .serializers import (
     PatientProfileUpdateSerializer,
     DoctorProfileUpdateSerializer,
     DoctorScheduleUpdateSerializer,
+    DoctorPublicSerializer,
 )
 
 from .permissions import IsOwnerOrReadOnly, IsDoctor
@@ -164,3 +167,47 @@ class DoctorProfileViewSet(viewsets.ModelViewSet):
         serializer.is_valid(raise_exception=True)
         serializer.save()
         return Response(DoctorProfileSerializer(profile).data, status=status.HTTP_200_OK)
+
+
+class DoctorSpecializationsAPIView(APIView):
+    permission_classes = [AllowAny]
+
+    def get(self,request):
+        specs = (
+            DoctorProfile.objects
+            .exclude(specialization__isnull=True)
+            .exclude(specialization__exact="")
+            .values_list("specialization", flat=True)
+            .distinct()
+            .order_by("specialization")
+        )
+        return Response(list(specs))
+
+
+class DoctorPublicListAPIView(generics.ListAPIView):
+    permission_classes = [AllowAny]
+    serializer_class = DoctorPublicSerializer
+
+    def get_queryset(self):
+        queryset = DoctorProfile.objects.select_related("user")
+
+
+        spec = self.request.query_params.get("specialization")
+        if spec:
+            queryset = queryset.filter(specialization__iexact=spec)
+
+
+        search = self.request.query_params.get("search")
+        if search:
+            queryset = queryset.filter(
+                Q(user__first_name__icontains=search) |
+                Q(user__last_name__icontains=search)
+            )
+
+        return queryset.order_by("user__last_name", "user__first_name")
+
+
+class DoctorPublicDetailAPIView(generics.RetrieveAPIView):
+    permission_classes = [AllowAny]
+    serializer_class = DoctorPublicSerializer
+    queryset = DoctorProfile.objects.select_related("user")

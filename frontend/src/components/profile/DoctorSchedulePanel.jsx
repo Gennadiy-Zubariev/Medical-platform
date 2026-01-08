@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import "./Profile.css"
 
 export default function DoctorSchedulePanel({ doctor, onToggleBooking, onUpdateSchedule }) {
   const [form, setForm] = useState({
@@ -40,20 +41,25 @@ export default function DoctorSchedulePanel({ doctor, onToggleBooking, onUpdateS
   if (!doctor) return null;
 
   return (
-    <div style={{ border: "1px solid #ccc", padding: 15, marginBottom: 20 }}>
+    <div className="schedule-card">
       <h3>Графік прийому</h3>
 
-      <p>
-        <b>Статус запису:</b> {doctor.is_booking_open ? "відкритий" : "закритий"}
+      <p className={`booking-status ${doctor.is_booking_open ? "open" : "closed"}`}>
+        <b>Статус запису:</b>{" "}
+        {doctor.is_booking_open ? "відкритий" : "закритий"}
+
         {onToggleBooking && (
-          <button style={{ marginLeft: 10 }} onClick={onToggleBooking}>
+          <button
+              className={doctor.is_booking_open ? "btn-danger" : "btn-success"}
+              onClick={onToggleBooking}
+          >
             {doctor.is_booking_open ? "Закрити запис" : "Відкрити запис"}
           </button>
         )}
       </p>
 
-      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr auto", gap: 12, alignItems: "end" }}>
-        <label style={{ display: "grid" }}>
+      <div className="shedule-grid">
+        <label>
           <span>Початок роботи</span>
           <input
             type="time"
@@ -63,7 +69,7 @@ export default function DoctorSchedulePanel({ doctor, onToggleBooking, onUpdateS
           />
         </label>
 
-        <label style={{ display: "grid" }}>
+        <label>
           <span>Кінець роботи</span>
           <input
             type="time"
@@ -73,7 +79,7 @@ export default function DoctorSchedulePanel({ doctor, onToggleBooking, onUpdateS
           />
         </label>
 
-        <label style={{ display: "grid" }}>
+        <label>
           <span>Тривалість слота (хв)</span>
           <input
             type="number"
@@ -85,14 +91,11 @@ export default function DoctorSchedulePanel({ doctor, onToggleBooking, onUpdateS
           />
         </label>
 
-        <button onClick={handleSave} disabled={saving || !onUpdateSchedule}>
+        <button className="btn-save" onClick={handleSave} disabled={saving || !onUpdateSchedule}>
           {saving ? "Збереження..." : "Зберегти"}
         </button>
       </div>
 
-      <p style={{ marginTop: 10, color: "#666" }}>
-        Після зміни параметрів графіка оновіть доступні слоти для нових записів.
-      </p>
     </div>
   );
 }

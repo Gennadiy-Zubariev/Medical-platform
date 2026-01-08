@@ -66,3 +66,130 @@ button:focus-visible {
     background-color: #f9f9f9;
   }
 }
+/* ===== ADD NEW CSS ===== */
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+  background: #f5f6f8;
+  color: #222;
+}
+
+/* ===== Layout ===== */
+.container {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 24px;
+}
+
+.page-title {
+  margin-top: 8px;
+  margin-bottom: 16px;
+}
+
+.app-header {
+  background: #fff;
+  border-bottom: 1px solid #ddd;
+}
+
+.header-inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.logo {
+  margin: 0;
+  font-size: 20px;
+}
+
+.nav a {
+  margin-left: 16px;
+  text-decoration: none;
+  color: #333;
+  font-weight: 500;
+}
+
+.nav a:hover {
+  text-decoration: underline;
+}
+
+.app-main {
+  padding-top: 24px;
+}
+
+/* ===== Card ===== */
+.card {
+  background: #fff;
+  border-radius: 12px;
+  padding: 16px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.06);
+  margin-bottom: 16px;
+}
+
+/* ===== Buttons ===== */
+button {
+  padding: 8px 14px;
+  border-radius: 6px;
+  border: none;
+  cursor: pointer;
+  background: #1976d2;
+  color: white;
+}
+
+button:hover {
+  opacity: 0.9;
+}
+
+.btn-save {
+  background: #2e7d32;
+  color: white;
+  border-radius: 8px;
+  padding: 8px 16px;
+}
+
+.btn-cancel {
+  background: #c62828;
+  color: white;
+  border-radius: 8px;
+  padding: 8px 16px;
+}
+
+.btn-save {
+  background: #2e7d32;
+  color: white;
+  border-radius: 8px;
+  padding: 8px 16px;
+}
+
+.btn-success {
+  background: #2e7d32;
+  color: white;
+  border-radius: 8px;
+  padding: 6px 14px;
+}
+
+.btn-danger {
+  background: #c62828;
+  color: white;
+  border-radius: 8px;
+  padding: 6px 14px;
+}
+
+/* Кнопка-лінк */
+.btn-outline {
+  display: inline-block;
+  padding: 6px 12px;
+  border: 1px solid #1976d2;
+  border-radius: 8px;
+  color: #0f0f0f;
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.btn-outline:hover {
+  color: #d21935;
+}

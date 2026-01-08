@@ -1,3 +1,4 @@
+import Layout from "../components/Layout";
 import { Link, useNavigate } from "react-router-dom";
 import {useEffect, useState} from "react";
 import {
@@ -90,8 +91,8 @@ export default function DoctorDashboardPage() {
     };
 
     return (
-        <div>
-            <h2>Кабінет лікаря</h2>
+        <Layout>
+            <h2 className="page-title">Кабінет лікаря</h2>
             {doctor && !editing && (
                 <DoctorProfileCard profile={doctor} onEdit={() => setEditing(true)}/>
             )}
@@ -128,6 +129,6 @@ export default function DoctorDashboardPage() {
                 onComplete={(id) => changeStatus(id, "completed")}
                 onOpenChat={(id) => navigate(`/chat/${id}`)}
             />
-        </div>
+        </Layout>
     );
 }

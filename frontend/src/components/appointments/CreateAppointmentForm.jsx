@@ -3,7 +3,8 @@ import {
   createAppointment,
   getAvailableSlots,
 } from "../../api/appointments.js";
-import { getDoctors } from "../../api/accounts.js";
+import { getDoctorsPublic } from "../../api/doctors";
+import "./Appointment.css"
 
 export default function CreateAppointmentForm({ onCreated, refreshKey }) {
   const [doctors, setDoctors] = useState([]);
@@ -13,23 +14,14 @@ export default function CreateAppointmentForm({ onCreated, refreshKey }) {
   const [selectedSlot, setSelectedSlot] = useState("");
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(false);
+  const [search, setSearch] = useState("");
 
-  // 🔹 завантажуємо лікарів
-  useEffect(() => {
-      ( async () => {
-          try {
-              const data = await getDoctors();
-              setDoctors(Array.isArray(data) ? data : data.results || []);
-          } catch {
-              setError("Не вдалося завантажити лікарів");
-          }
-      })();
-  }, []);
 
   // 🔹 завантажуємо слоти
   useEffect(() => {
     if (!doctorId || !date) return;
 
+    setError(null);
     setSlots([]);
     setSelectedSlot("");
 
@@ -82,17 +74,29 @@ export default function CreateAppointmentForm({ onCreated, refreshKey }) {
       <h3>Запис до лікаря</h3>
 
       {/* Вибір лікаря */}
-      <select
-        value={doctorId}
-        onChange={(e) => setDoctorId(e.target.value)}
-      >
-        <option value="">Оберіть лікаря</option>
-        {doctors.map((d) => (
-          <option key={d.id} value={d.id}>
+      <input
+        type="text"
+        placeholder="Пошук лікаря (імʼя або прізвище)"
+        value={search}
+        onChange={(e) => {
+          setSearch(e.target.value);
+          getDoctorsPublic({ search: e.target.value }).then(setDoctors);
+        }}
+      />
+
+      {doctors.map((d) => (
+        <div
+            key={d.id}
+            className="doctor-option"
+            onClick={() => {
+                setDoctorId(d.id);
+                setDoctors([]);
+                setSearch(`${d.user.first_name} ${d.user.last_name}`);
+            }}
+        >
             {d.user.first_name} {d.user.last_name}
-          </option>
-        ))}
-      </select>
+        </div>
+      ))}
 
       <br />
 
@@ -110,17 +114,17 @@ export default function CreateAppointmentForm({ onCreated, refreshKey }) {
 
       {/* Вільні слоти */}
       {slots.length > 0 && (
-        <div style={{ marginTop: 10 }}>
+        <div className="slots">
           <p>Оберіть час:</p>
           {slots.map((slot) => (
             <button
               key={slot}
               type="button"
-              style={{
-                margin: 5,
-                background:
-                  selectedSlot === slot ? "#8ecae6" : "#eee",
-              }}
+              className={
+                  selectedSlot === slot
+                      ? "slot selected"
+                      : "slot"
+              }
               onClick={() => setSelectedSlot(slot)}
             >
               {new Date(slot).toLocaleTimeString([], {

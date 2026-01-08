@@ -1,0 +1,92 @@
+.profile-card {
+  display: flex;
+  gap: 24px;
+  align-items: flex-start;
+}
+
+.profile-photo {
+  width: 96px;
+  height: 96px;
+  border-radius: 50%;
+  object-fit: cover;
+  background: #eee;
+}
+
+.profile-fields {
+  flex: 1;
+  display: grid;
+  grid-template-columns: 160px 1fr;
+  column-gap: 16px;
+  row-gap: 12px;
+}
+
+.profile-fields label {
+  font-weight: 500;
+  align-self: center;
+}
+
+.profile-fields input,
+.profile-fields textarea {
+  border-radius: 8px;
+  border: 1px solid #1e347b;
+  padding: 8px 10px;
+  font-size: 14px;
+}
+
+.profile-actions {
+  grid-column: 1 / -1;
+  margin-top: 24px;
+  display: flex;
+  gap: 12px;
+}
+
+/* Контейнер графіка */
+.schedule-card {
+  border: 1px solid #ccc;
+  padding: 16px;
+  margin-bottom: 20px;
+  border-radius: 10px;
+}
+
+/* Статус */
+.booking-status {
+  font-size: 18px;
+  font-weight: bold;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.booking-status.open {
+  color: #2e7d32;
+}
+
+.booking-status.closed {
+  color: #c62828;
+}
+
+/* Grid полів */
+.schedule-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr auto;
+  gap: 12px;
+  align-items: end;
+}
+
+/* Label + input */
+.schedule-grid label {
+  display: grid;
+  gap: 4px;
+  font-size: 14px;
+}
+
+/* Поля часу та числа */
+.schedule-grid input[type="time"],
+.schedule-grid input[type="number"] {
+  padding: 8px 10px;
+  font-size: 15px;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+}
+

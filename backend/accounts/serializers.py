@@ -126,7 +126,7 @@ class DoctorRegisterSerializer(serializers.ModelSerializer):
         except DoctorLicense.DoesNotExist:
             raise serializers.ValidationError("Невірний номер ліцензії!")
 
-        if DoctorProfile.objects.filter(license=license_obj).exists():
+        if DoctorProfile.objects.filter(license_number=license_obj).exists():
             raise serializers.ValidationError(
                 "Ця ліцензія вже використовується іншим лікарем."
             )
@@ -306,3 +306,21 @@ class DoctorScheduleUpdateSerializer(serializers.ModelSerializer):
         if value is None or value <= 0:
             raise serializers.ValidationError("Тривалість слота має бути > 0")
         return value
+
+
+class DoctorPublicSerializer(serializers.ModelSerializer):
+    user = UserSerializer(read_only=True)
+    class Meta:
+        model = DoctorProfile
+        fields = [
+            "id",
+            "user",
+            "specialization",
+            "experience_years",
+            "bio",
+            "photo",
+            "work_start",
+            "work_end",
+            "slot_duration",
+            "is_booking_open",
+        ]

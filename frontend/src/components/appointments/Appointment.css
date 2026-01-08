@@ -1,0 +1,97 @@
+/* Картка запису */
+.appointment-card {
+  border: 1px solid #ccc;
+  border-radius: 10px;
+  padding: 16px;
+  margin-bottom: 16px;
+  background: #fff;
+}
+
+/* Імʼя */
+.appointment-person {
+  font-size: 16px;
+  font-weight: 600;
+  margin-bottom: 8px;
+}
+
+/* Статус */
+.appointment-status {
+  margin: 6px 0;
+  font-weight: 500;
+}
+
+.appointment-status.pending {
+  color: #f57c00;
+}
+
+.appointment-status.confirmed {
+  color: #2e7d32;
+}
+
+.appointment-status.completed {
+  color: #555;
+}
+
+/* Кнопки */
+.appointment-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+
+/* Чат */
+.btn-chat {
+  background: #1976d2;
+  color: white;
+  border-radius: 8px;
+  padding: 6px 14px;
+}
+
+.chat-dot {
+  color: red;
+  margin-left: 6px;
+}
+
+.doctor-option {
+  padding: 6px 10px;
+  cursor: pointer;
+}
+
+/* Підсвітка доктора у пошуку */
+.doctor-option:hover {
+  background: #97aafb;
+}
+
+/* Контейнер */
+.slots {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+/* Базовий слот */
+.slot {
+  min-width: 64px;
+  padding: 6px 10px;
+  border-radius: 6px;
+  border: 1px solid #cfd8dc;
+  background: #ffffff;
+  color: #222;                 /* 🔴 ВАЖЛИВО */
+  cursor: pointer;
+  font-size: 14px;
+}
+
+/* Hover */
+.slot:hover {
+  background: #e3f2fd;
+  border-color: #1976d2;
+}
+
+/* Обраний */
+.slot.selected {
+  background: #1976d2;
+  color: #ffffff;
+  border-color: #1976d2;
+}

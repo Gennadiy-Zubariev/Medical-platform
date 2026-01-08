@@ -1,4 +1,5 @@
 const API_URL = import.meta.env.VITE_API_URL;
+import "./Profile.css"
 
 export default function DoctorProfileCard({ profile, onEdit }) {
     if (!profile) return null;
@@ -15,11 +16,12 @@ export default function DoctorProfileCard({ profile, onEdit }) {
             />
 
             <div>
-                <p><b>Ім'я</b> {profile.user.first_name}</p>
-                <p><b>Email</b> {profile.user.email}</p>
-                <p><b>Спеціалізація</b> {profile.specialization ?? "--"}</p>
-                <p><b>Досвід роботи</b> {profile.experience_years ?? "--"}</p>
-                <p><b>Номер ліцензії</b> {profile.license_number ?? "--"}</p>
+                <p><b>Ім'я:</b> {profile.user.first_name}</p>
+                <p><b>Email:</b> {profile.user.email}</p>
+                <p><b>Спеціалізація:</b> {profile.specialization ?? "--"}</p>
+                <p><b>Досвід роботи:</b> {profile.experience_years ?? "--"}</p>
+                <p><b>Номер ліцензії:</b> {profile.license_number ?? "--"}</p>
+                <p><b>Про себе:</b> {profile.bio ?? "--"}</p>
 
                 <button onClick={onEdit}>Редагувати</button>
             </div>
