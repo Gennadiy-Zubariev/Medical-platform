@@ -1,7 +1,7 @@
 export default function Layout({ children }) {
   return (
     <main className="app-main">
-      <div className="container">
+      <div className="dashboard-layout">
         {children}
       </div>
     </main>

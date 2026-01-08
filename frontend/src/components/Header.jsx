@@ -35,7 +35,6 @@ export default function Header() {
                         </button>
                     </>
                 )}
-                <br/>
                 <Link to="/doctors" className="btn-primary">
                     Переглянути лікарів
                 </Link>

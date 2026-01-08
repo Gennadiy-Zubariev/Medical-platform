@@ -1,0 +1,58 @@
+/* Doctors page */
+.doctors-page {
+  max-width: 900px;
+}
+
+/* Filters */
+.doctors-filters {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-bottom: 20px;
+}
+
+/* List */
+.doctors-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+/* Card */
+.doctor-card {
+  display: flex;
+  gap: 16px;
+  padding: 16px;
+  background: #fff;
+  border-radius: 12px;
+  border: 1px solid #e0e0e0;
+}
+
+/* Avatar */
+.doctor-avatar {
+  width: 72px;
+  height: 72px;
+  border-radius: 50%;
+  object-fit: cover;
+  background: #f0f0f0;
+}
+
+/* Info */
+.doctor-info {
+  display: flex;
+  flex-direction: column;
+}
+
+.doctor-name {
+  font-weight: 600;
+  margin: 0 0 4px;
+}
+
+.doctor-spec {
+  margin: 0 0 10px;
+  color: #555;
+}
+
+.doctors-page h2 {
+  margin-top: 0;
+}

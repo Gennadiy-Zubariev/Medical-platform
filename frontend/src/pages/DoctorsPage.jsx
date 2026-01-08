@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { getDoctorSpecializations, getDoctorsPublic } from "../api/doctors";
 import { Link } from "react-router-dom";
-
+import "./DoctorsPage.css"
 
 export default function DoctorsPage() {
   const [specializations, setSpecializations] = useState([]);
@@ -9,43 +9,34 @@ export default function DoctorsPage() {
   const [doctors, setDoctors] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  // 🔹 початкове завантаження
   useEffect(() => {
-      async function loadInitial() {
-        try {
-          const specs = await getDoctorSpecializations();
-          const docs = await getDoctorsPublic();
-
-          setSpecializations(specs);
-          setDoctors(docs);
-        } catch (err) {
-          console.error("Помилка завантаження лікарів:", err);
-        } finally {
-          setLoading(false);
-        }
+    (async () => {
+      try {
+        const specs = await getDoctorSpecializations();
+        const docs = await getDoctorsPublic();
+        setSpecializations(specs);
+        setDoctors(docs);
+      } catch (err) {
+        console.error("Помилка завантаження лікарів:", err);
+      } finally {
+        setLoading(false);
       }
-
-      loadInitial();
+    })();
   }, []);
 
-  // 🔹 фільтр по спеціалізації
   useEffect(() => {
-    const params = {};
-    if (selectedSpec) {
-      params.specialization = selectedSpec;
-    }
-
+    const params = selectedSpec ? { specialization: selectedSpec } : {};
     getDoctorsPublic(params).then(setDoctors);
   }, [selectedSpec]);
 
   if (loading) return <p>Завантаження...</p>;
 
   return (
-    <div>
+    <div className="doctors-page">
       <h2>Наші лікарі</h2>
 
-      {/* ФІЛЬТР ПО КАТЕГОРІЯХ */}
-      <div style={{ display: "flex", gap: 10, flexWrap: "wrap", marginBottom: 20 }}>
+      {/* Фільтри */}
+      <div className="doctors-filters">
         <button
           onClick={() => setSelectedSpec(null)}
           className={selectedSpec === null ? "btn-success" : "btn-outline"}
@@ -64,25 +55,24 @@ export default function DoctorsPage() {
         ))}
       </div>
 
-      {/* СПИСОК ЛІКАРІВ */}
       {doctors.length === 0 && <p>Лікарів не знайдено</p>}
 
-      <div style={{ marginTop: 20 }}>
+      {/* Список лікарів */}
+      <div className="doctors-list">
         {doctors.map((doc) => (
-          <div key={doc.id} className="profile-card">
+          <div key={doc.id} className="doctor-card">
             <img
               src={doc.photo || "/avatar-placeholder.png"}
-              className="profile-avatar"
               alt="Фото лікаря"
+              className="doctor-avatar"
             />
 
-            <div>
-              <p>
-                <b>
-                  {doc.user.first_name} {doc.user.last_name}
-                </b>
+            <div className="doctor-info">
+              <p className="doctor-name">
+                {doc.user.first_name} {doc.user.last_name}
               </p>
-              <p>{doc.specialization}</p>
+
+              <p className="doctor-spec">{doc.specialization}</p>
 
               <Link to={`/doctors/${doc.id}`} className="btn-outline">
                 Переглянути
