@@ -26,8 +26,12 @@ export function AuthProvider({ children }) {
                 setUser(res);
             } catch (err) {
               console.error("Помилка отримання профілю", err);
-              localStorage.removeItem("access");
-              localStorage.removeItem("refresh");
+              // Якщо ми на сторінці логіну, не треба нічого видаляти або ресетати,
+              // бо це може бути застарілий токен, який ми якраз збираємось замінити
+              if (window.location.pathname !== "/login") {
+                localStorage.removeItem("access");
+                localStorage.removeItem("refresh");
+              }
             } finally {
               setLoading(false);
             }
@@ -55,12 +59,12 @@ export function AuthProvider({ children }) {
             const profile = await getMyProfile();
             setUser(profile);
 
-            return { success: true, role: profile.role };
+            return { success:true, role: profile.role };
 
         }   catch (err) {
             console.error('Login Error:', err);
             setError('Невірний логін або пароль!');
-            return { success: false, error: err };
+            return { success:false, error:err };
         }
     };
 

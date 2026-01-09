@@ -251,6 +251,10 @@ class PatientProfileUpdateSerializer(serializers.ModelSerializer):
         if (hasattr(policy, 'patient') and policy.patient != self.instance):
             raise serializers.ValidationError('Цей страховий поліс вже використовується')
 
+        if policy.valid_until < now().date():
+            raise serializers.ValidationError("Страховий поліс не дійсний")
+
+
         self._insurance_policy = policy
         return value
 
@@ -285,6 +289,9 @@ class DoctorProfileUpdateSerializer(serializers.ModelSerializer):
 
         if (hasattr(license_obj, "doctor") and license_obj.doctor != self.instance):
             raise serializers.ValidationError("Ця ліцензія вже використовується іншим лікарем")
+
+        if license_obj.valid_until < now().date():
+            raise serializers.ValidationError("Ліцензія не дійсна")
 
         self._license_obj = license_obj
         return value

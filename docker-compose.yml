@@ -7,8 +7,8 @@ services:
       dockerfile: Dockerfile
     volumes:
       - ./backend:/app
-      - media_data:/app/media
-      - static_data:/app/staticfiles
+      - medical_platform_media_data:/app/media
+      - medical_platform_static_data:/app/staticfiles
     depends_on:
       - project_db
       - redis
@@ -27,7 +27,8 @@ services:
       POSTGRES_USER: ${POSTGRES_USER}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
     volumes:
-      - postgres_data:/var/lib/postgresql/data
+      - medical_platform_postgres_data:/var/lib/postgresql/data
+
 
   redis:
     image: redis:7
@@ -39,7 +40,8 @@ services:
       context: .
       dockerfile: nginx/Dockerfile
     volumes:
-      - static_data:/app/staticfiles:ro
+      - medical_platform_static_data:/app/staticfiles:ro
+      - ./nginx/.htpasswd:/etc/nginx/.htpasswd:ro
     ports:
       - "80:80"
     depends_on:
@@ -47,6 +49,9 @@ services:
 
 
 volumes:
-  postgres_data:
-  media_data:
-  static_data:
+  medical_platform_postgres_data:
+    external: true
+  medical_platform_media_data:
+    external: true
+  medical_platform_static_data:
+    external: true

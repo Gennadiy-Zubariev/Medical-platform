@@ -36,10 +36,21 @@ export default function EditDoctorProfileForm({profile, onCancel, onSaved}) {
             if (photo) formData.append("photo", photo);
 
             await updateMyDoctorProfile(formData);
+
             onSaved();
         } catch (err) {
             console.error(err);
-            alert("Не вдалося зберегти профіль лікаря");
+            const data = err.response?.data;
+
+            if (data) {
+                const messages = Object.values(data)
+                    .flat()
+                    .join("\n");
+
+                alert(messages);
+            } else {
+                alert("Не вдалося зберегти профіль доктора");
+            }
         } finally {
             setSaving(false);
         }
