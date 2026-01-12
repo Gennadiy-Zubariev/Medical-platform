@@ -109,6 +109,9 @@ class AppointmentViewSet(viewsets.ModelViewSet):
 
         doctor = DoctorProfile.objects.get(pk=doctor_id)
 
+        if not doctor.has_valid_schedule():
+            return Response([])
+
         date = datetime.fromisoformat(date_str).date()
 
         start_dt = timezone.make_aware(
@@ -117,6 +120,10 @@ class AppointmentViewSet(viewsets.ModelViewSet):
         end_dt = timezone.make_aware(
             datetime.combine(date, doctor.work_end)
         )
+
+        weekday = date.weekday()
+        if weekday not in doctor.work_days:
+            return Response([])
 
         slots = []
         current = start_dt

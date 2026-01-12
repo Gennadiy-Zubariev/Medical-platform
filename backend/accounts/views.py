@@ -2,6 +2,7 @@ from django.contrib.auth import get_user_model
 from django.db.models import Q
 from rest_framework import viewsets, permissions, status, generics
 from rest_framework.decorators import action
+from rest_framework.generics import RetrieveUpdateAPIView
 from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework.views import APIView
 from rest_framework.response import Response
@@ -160,13 +161,21 @@ class DoctorProfileViewSet(viewsets.ModelViewSet):
             status=status.HTTP_200_OK
         )
 
-    @action(detail=False, methods=["patch"], url_path="me/schedule", permission_classes=[permissions.IsAuthenticated])
-    def update_schedule(self, request):
-        profile = request.user.doctor_profile
-        serializer = DoctorScheduleUpdateSerializer(profile, data=request.data, partial=True)
-        serializer.is_valid(raise_exception=True)
-        serializer.save()
-        return Response(DoctorProfileSerializer(profile).data, status=status.HTTP_200_OK)
+    # @action(detail=False, methods=["patch"], url_path="me/schedule", permission_classes=[permissions.IsAuthenticated])
+    # def update_schedule(self, request):
+    #     profile = request.user.doctor_profile
+    #     serializer = DoctorScheduleUpdateSerializer(profile, data=request.data, partial=True)
+    #     serializer.is_valid(raise_exception=True)
+    #     serializer.save()
+    #     return Response(DoctorProfileSerializer(profile).data, status=status.HTTP_200_OK)
+
+
+class DoctorScheduleView(RetrieveUpdateAPIView):
+    serializer_class = DoctorScheduleUpdateSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_object(self):
+        return self.request.user.doctor_profile
 
 
 class DoctorSpecializationsAPIView(APIView):

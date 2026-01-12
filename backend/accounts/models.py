@@ -60,10 +60,18 @@ class DoctorProfile(models.Model):
     work_end = models.TimeField(blank=True, null=True)
     slot_duration = models.PositiveIntegerField(blank=True, null=True)
 
+    work_days = models.JSONField(blank=True, null=True, help_text="Робочі дні тижня: 0=Пн … 6=Нд")
+
     is_booking_open = models.BooleanField(default=False)
 
     def has_valid_schedule(self):
-        if not self.work_start or not self.work_end or not self.slot_duration:
+        if not self.work_start or not self.work_end or not self.slot_duration or not self.work_days:
+            return False
+
+        if not isinstance(self.work_days, list) or len(self.work_days) == 0:
+            return False
+
+        if any(day not in range(7) for day in self.work_days):
             return False
 
         return (

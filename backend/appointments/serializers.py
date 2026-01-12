@@ -1,3 +1,4 @@
+from celery.utils.time import weekday
 from django.utils import timezone
 from rest_framework import serializers
 from accounts.models import PatientProfile, DoctorProfile
@@ -79,6 +80,15 @@ class AppointmentsWriteSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError("Тривалість повинна бути більшою за 0.")
 
         if doctor and start:
+            if not doctor.has_valid_schedule():
+                raise serializers.ValidationError("У лікаря не налаштований робочий графік.")
+
+            weekday = start.weekday()
+
+            if weekday not in doctor.work_days:
+                raise serializers.ValidationError("Лікар не працює в цей день.")
+
+        if doctor and start:
             exists = Appointment.objects.filter(
                 doctor=doctor,
                 start_datetime=start,
@@ -88,6 +98,5 @@ class AppointmentsWriteSerializer(serializers.ModelSerializer):
                 raise serializers.ValidationError(
                     "Цей час уже зайнятий."
                 )
-
 
         return attrs

@@ -307,12 +307,39 @@ class DoctorProfileUpdateSerializer(serializers.ModelSerializer):
 class DoctorScheduleUpdateSerializer(serializers.ModelSerializer):
     class Meta:
         model = DoctorProfile
-        fields = ["work_start", "work_end", "slot_duration"]
+        fields = ["work_days", "work_start", "work_end", "slot_duration"]
 
-    def validate_slot_duration(self, value):
-        if value is None or value <= 0:
-            raise serializers.ValidationError("Тривалість слота має бути > 0")
-        return value
+    def validate_work_days(self, value):
+        if not isinstance(value, list) or not value:
+            raise serializers.ValidationError(
+                "Потрібно обрати хоча б один робочий день."
+            )
+
+        if any(day not in range(7) for day in value):
+            raise serializers.ValidationError(
+                "Некоректні значення днів тижня (0–6)."
+            )
+
+        return sorted(set(value))
+
+    def validate(self, attrs):
+        work_start = attrs.get("work_start", self.instance.work_start)
+        work_end = attrs.get("work_end", self.instance.work_end)
+        slot_duration = attrs.get(
+            "slot_duration", self.instance.slot_duration
+        )
+
+        if work_start and work_end and work_start >= work_end:
+            raise serializers.ValidationError(
+                "Час початку повинен бути меншим за час завершення."
+            )
+
+        if slot_duration is not None and slot_duration <= 0:
+            raise serializers.ValidationError(
+                "Тривалість слота повинна бути більшою за 0."
+            )
+
+        return attrs
 
 
 class DoctorPublicSerializer(serializers.ModelSerializer):
@@ -328,6 +355,6 @@ class DoctorPublicSerializer(serializers.ModelSerializer):
             "photo",
             "work_start",
             "work_end",
-            "slot_duration",
+            "work_days",
             "is_booking_open",
         ]

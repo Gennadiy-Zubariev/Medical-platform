@@ -9,6 +9,7 @@ from .views import (
     DoctorSpecializationsAPIView,
     DoctorPublicListAPIView,
     DoctorPublicDetailAPIView,
+    DoctorScheduleView,
 )
 
 router = DefaultRouter()
@@ -24,5 +25,6 @@ urlpatterns = [
     path("doctors/specializations/", DoctorSpecializationsAPIView.as_view(), name="doctor-specializations"),
     path("doctors/", DoctorPublicListAPIView.as_view(), name="doctor-public-list"),
     path("doctors/<int:pk>/", DoctorPublicDetailAPIView.as_view(), name="doctor-public-detail"),
+    path("doctor/schedule/", DoctorScheduleView.as_view(), name="doctor-schedule"),
     path('', include(router.urls)),
 ]
