@@ -9,6 +9,8 @@ import {
 import {
     toggleDoctorBooking,
     getMyDoctorProfile,
+    getMyDoctorSchedule,
+    updateMyDoctorSchedule,
 
 } from "../api/accounts";
 import axiosClient from "../api/axiosClient";
@@ -57,20 +59,23 @@ export default function DoctorDashboardPage() {
     }, []);
 
 
-    const updateDoctorSchedule = async ({ work_start, work_end, slot_duration }) => {
-        try {
-          await axiosClient.patch("accounts/doctor-profiles/me/schedule/", {
-            work_start,
-            work_end,
-            slot_duration,
-          });
-          await loadDoctorProfile();
-          alert("Графік збережено");
-        } catch (e) {
-          console.error(e);
+    const updateDoctorSchedule = async (data) => {
+      try {
+        await updateMyDoctorSchedule(data);
+        await loadDoctorProfile();
+        alert("Графік збережено");
+      } catch (e) {
+        console.error(e);
+
+        const errors = e.response?.data;
+        if (errors) {
+          const msg = Object.values(errors).flat().join("\n");
+          alert(msg);
+        } else {
           alert("Помилка збереження графіка");
         }
-      };
+      }
+    };
 
     const toggleBooking = async () => {
         if (!doctor.is_schedule_ready) {

@@ -2,10 +2,20 @@ import { useState, useEffect } from "react";
 import "./Profile.css"
 
 export default function DoctorSchedulePanel({ doctor, onToggleBooking, onUpdateSchedule }) {
+  const WEEK_DAYS = [
+    { value: 0, label: "Пн" },
+    { value: 1, label: "Вт" },
+    { value: 2, label: "Ср" },
+    { value: 3, label: "Чт" },
+    { value: 4, label: "Пт" },
+    { value: 5, label: "Сб" },
+    { value: 6, label: "Нд" },
+  ]
   const [form, setForm] = useState({
     work_start: "",
     work_end: "",
     slot_duration: 30,
+    work_days: [],
   });
   const [saving, setSaving] = useState(false);
 
@@ -15,9 +25,19 @@ export default function DoctorSchedulePanel({ doctor, onToggleBooking, onUpdateS
         work_start: doctor.work_start || "",
         work_end: doctor.work_end || "",
         slot_duration: doctor.slot_duration ?? 30,
+        work_days: doctor.work_days || [],
       });
     }
   }, [doctor]);
+
+  const toggleDay = (day) => {
+    setForm(prev => ({
+      ...prev,
+      work_days: prev.work_days.includes(day)
+        ? prev.work_days.filter(d => d !== day)
+        : [...prev.work_days, day],
+    }));
+  };
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -32,6 +52,7 @@ export default function DoctorSchedulePanel({ doctor, onToggleBooking, onUpdateS
         work_start: form.work_start,
         work_end: form.work_end,
         slot_duration: form.slot_duration,
+        work_days: form.work_days,
       });
     } finally {
       setSaving(false);
@@ -57,6 +78,23 @@ export default function DoctorSchedulePanel({ doctor, onToggleBooking, onUpdateS
           </button>
         )}
       </p>
+
+      <div className="week-days">
+        <span>Робочі дні</span>
+        <div className="days-row">
+          {WEEK_DAYS.map(day => (
+            <label key={day.value} className="day-checkbox">
+              <input
+                type="checkbox"
+                checked={form.work_days.includes(day.value)}
+                onChange={() => toggleDay(day.value)}
+              />
+              {day.label}
+            </label>
+          ))}
+        </div>
+      </div>
+
 
       <div className="shedule-grid">
         <label>

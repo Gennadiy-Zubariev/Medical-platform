@@ -47,15 +47,24 @@ export async function updateMyDoctorProfile(data) {
     return response.data;
 }
 
-export async function getDoctors() {
-    const res = await axiosClient.get('accounts/doctor-profiles/');
-    return res.data;
-}
+// export async function getDoctors() {
+//     const res = await axiosClient.get('accounts/doctor-profiles/');
+//     return res.data;
+// }
 
 
 export async function toggleDoctorBooking() {
-  const res = await axiosClient.post("accounts/doctor-profiles/toggle-booking/");
-  return res.data;
+  const response = await axiosClient.post("accounts/doctor-profiles/toggle-booking/");
+  return response.data;
 }
 
 
+export async function getMyDoctorSchedule() {
+    const response = await axiosClient.get("accounts/doctor/schedule/");
+    return response.data
+}
+
+export async function updateMyDoctorSchedule(data) {
+    const response = await axiosClient.patch("accounts/doctor/schedule/", data);
+    return response.data;
+}

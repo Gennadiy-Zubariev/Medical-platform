@@ -10,6 +10,12 @@ export default function DoctorDetailPage() {
   if (!value) return "--";
   return value.slice(0, 5); // "09:00"
 };
+  const WEEK_DAYS = ["Пн", "Вт", "Ср", "Чт", "Пт", "Сб", "Нд"];
+
+  const formatDays = (days) => {
+    if (!Array.isArray(days) || days.length === 0) return "--";
+    return days.map(d => WEEK_DAYS[d]).join(", ");
+  };
 
   useEffect(() => {
     getDoctorPublicById(id).then(setDoctor);
@@ -34,6 +40,7 @@ export default function DoctorDetailPage() {
         <p><b>Спеціалізація:</b> {doctor.specialization}</p>
         <p><b>Досвід:</b> {doctor.experience_years} років</p>
         <p><b>Про себе:</b> {doctor.bio || "--"}</p>
+        <p><b>Робочі дні:</b>{" "}{formatDays(doctor.work_days)}</p>
         <p><b>Початок робочого дня:</b> {formatTime(doctor.work_start || "--")}</p>
         <p><b>Кінець робочого дня:</b> {formatTime(doctor.work_end || "--")}</p>
 
