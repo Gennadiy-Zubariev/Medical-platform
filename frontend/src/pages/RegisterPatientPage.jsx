@@ -1,6 +1,7 @@
 import { useState } from "react";
-import { registerPatient } from "../api/accounts";
 import { useNavigate } from "react-router-dom";
+import { Alert, Box, Button, Container, Paper, Stack, TextField, Typography } from "@mui/material";
+import { registerPatient } from "../api/accounts";
 
 export default function RegisterPatientPage() {
   const [form, setForm] = useState({
@@ -13,6 +14,7 @@ export default function RegisterPatientPage() {
   });
 
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
 
   const navigate = useNavigate();
 
@@ -26,6 +28,7 @@ export default function RegisterPatientPage() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
+    setError("");
 
     try {
       const data = await registerPatient(form);
@@ -45,7 +48,7 @@ export default function RegisterPatientPage() {
             }
         }
 
-        alert(msg);
+        setError(msg);
     } finally {
       setLoading(false);
     }
@@ -54,65 +57,78 @@ export default function RegisterPatientPage() {
 
 
   return (
-    <div style={{ padding: 20 }}>
-      <h1>Реєстрація пацієнта</h1>
+    <Container maxWidth="sm">
+      <Paper elevation={2} sx={{ p: { xs: 3, md: 4 } }}>
+        <Stack spacing={3}>
+          <Box>
+            <Typography variant="h4" gutterBottom>
+              Реєстрація пацієнта
+            </Typography>
+            <Typography color="text.secondary">
+              Заповніть форму, щоб створити акаунт пацієнта.
+            </Typography>
+          </Box>
 
-      <form
-        onSubmit={handleSubmit}
-        style={{
-          display: "flex",
-          flexDirection: "column",
-          gap: 10,
-          maxWidth: 400,
-        }}
-      >
-        <input
-          name="username"
-          placeholder="Логін"
-          value={form.username}
-          onChange={handleChange}
-          required
-        />
-        <input
-          name="password"
-          placeholder="Пароль"
-          type="password"
-          value={form.password}
-          onChange={handleChange}
-          required
-        />
-        <input
-          name="email"
-          placeholder="Email"
-          type="email"
-          value={form.email}
-          onChange={handleChange}
-          required
-        />
-        <input
-          name="first_name"
-          placeholder="Ім'я"
-          value={form.first_name}
-          onChange={handleChange}
-        />
-        <input
-          name="last_name"
-          placeholder="Прізвище"
-          value={form.last_name}
-          onChange={handleChange}
-        />
-        <input
-          name="insurance_policy"
-          placeholder="Номер медичного страхування"
-          value={form.insurance_policy}
-          onChange={handleChange}
-          required
-        />
+          <Box component="form" onSubmit={handleSubmit}>
+            <Stack spacing={2}>
+              <TextField
+                name="username"
+                label="Логін"
+                value={form.username}
+                onChange={handleChange}
+                required
+                fullWidth
+              />
+              <TextField
+                name="password"
+                label="Пароль"
+                type="password"
+                value={form.password}
+                onChange={handleChange}
+                required
+                fullWidth
+              />
+              <TextField
+                name="email"
+                label="Email"
+                type="email"
+                value={form.email}
+                onChange={handleChange}
+                required
+                fullWidth
+              />
+              <TextField
+                name="first_name"
+                label="Ім'я"
+                value={form.first_name}
+                onChange={handleChange}
+                fullWidth
+              />
+              <TextField
+                name="last_name"
+                label="Прізвище"
+                value={form.last_name}
+                onChange={handleChange}
+                fullWidth
+              />
+              <TextField
+                name="insurance_policy"
+                label="Номер медичного страхування"
+                value={form.insurance_policy}
+                onChange={handleChange}
+                required
+                fullWidth
+              />
 
-        <button type="submit" disabled={loading}>
-          {loading ? "Реєстрація..." : "Зареєструватись як пацієнт"}
-        </button>
-      </form>
-    </div>
+              {error && <Alert severity="error">{error}</Alert>}
+
+              <Button type="submit" variant="contained" disabled={loading}>
+                {loading ? "Реєстрація..." : "Зареєструватись як пацієнт"}
+              </Button>
+            </Stack>
+          </Box>
+        </Stack>
+      </Paper>
+    </Container>
   );
 }

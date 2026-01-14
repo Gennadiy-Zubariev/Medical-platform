@@ -1,13 +1,13 @@
+import { useNavigate, Link as RouterLink } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { Alert, Button, Card, CardContent, Stack, Typography } from "@mui/material";
 import Layout from "../components/Layout";
-import {useNavigate} from "react-router-dom";
-import {useEffect, useState} from "react";
 import {
     getMyAppointments,
     cancelAppointment,
 } from "../api/appointments";
 import {getMyPatientProfile} from "../api/accounts";
 import CreateAppointmentForm from "../components/appointments/CreateAppointmentForm.jsx";
-import {Link} from "react-router-dom";
 import PatientProfileCard from "../components/profile/PatientProfileCard";
 import EditPatientProfileForm from "../components/profile/EditPatientProfileForm";
 import AppointmentsList from "../components/appointments/AppointmentsList";
@@ -77,50 +77,53 @@ export default function PatientDashboardPage() {
 
     return (
         <Layout>
-            <h2>Кабінет пацієнта</h2>
+            <Stack spacing={3}>
+                <Typography variant="h4">Кабінет пацієнта</Typography>
 
-            {profile && !editing && (
-                <PatientProfileCard profile={profile} onEdit={() => setEditing(true)}/>
-            )}
+                {profile && !editing && (
+                    <PatientProfileCard profile={profile} onEdit={() => setEditing(true)} />
+                )}
 
-            {editing && (
-                <EditPatientProfileForm
-                    profile={profile}
-                    onCancel={() => setEditing(false)}
-                    onSaved={() => {
-                        setEditing(false);
-                        loadProfile();
-                    }}
+                {editing && (
+                    <EditPatientProfileForm
+                        profile={profile}
+                        onCancel={() => setEditing(false)}
+                        onSaved={() => {
+                            setEditing(false);
+                            loadProfile();
+                        }}
+                    />
+                )}
+
+                {profile && (
+                    <Card elevation={1}>
+                        <CardContent>
+                            <Button component={RouterLink} to="/patient/medical-card" variant="outlined">
+                                📄 Моя медична картка
+                            </Button>
+                        </CardContent>
+                    </Card>
+                )}
+
+                <CreateAppointmentForm
+                    onCreated={loadAppointments}
+                    refreshKey={refreshSlotsKey}
                 />
-            )}
 
-            {profile && (
-                <div style={{border: "1px solid #ccc", padding: 15, marginBottom: 20}}>
+                {loading && <Typography>Завантаження...</Typography>}
+                {error && <Alert severity="error">{error}</Alert>}
 
-                    <Link to="/patient/medical-card">📄 Моя медична картка</Link>
-                </div>
-            )}
+                {!loading && appointments.length === 0 && (
+                    <Typography color="text.secondary">У вас ще немає записів</Typography>
+                )}
 
-            {/* 🔹 форма запису */}
-            <CreateAppointmentForm
-                onCreated={loadAppointments}
-                refreshKey={refreshSlotsKey}
-            />
-
-            {loading && <p>Завантаження...</p>}
-            {error && <p style={{color: "red"}}>{error}</p>}
-
-            {!loading && appointments.length === 0 && (
-                <p>У вас ще немає записів</p>
-            )}
-
-
-            <AppointmentsList
-              appointments={appointments}
-              role="patient"
-              onCancel={handleCancel}
-              onOpenChat={(id) => navigate(`/chat/${id}`)}
-            />
+                <AppointmentsList
+                    appointments={appointments}
+                    role="patient"
+                    onCancel={handleCancel}
+                    onOpenChat={(id) => navigate(`/chat/${id}`)}
+                />
+            </Stack>
 
         </Layout>
     );

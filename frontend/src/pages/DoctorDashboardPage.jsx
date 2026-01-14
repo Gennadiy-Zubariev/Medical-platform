@@ -1,6 +1,7 @@
+import { useNavigate } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { Alert, Stack, Typography } from "@mui/material";
 import Layout from "../components/Layout";
-import { Link, useNavigate } from "react-router-dom";
-import {useEffect, useState} from "react";
 import {
     getMyAppointments,
     setAppointmentStatus,
@@ -9,11 +10,9 @@ import {
 import {
     toggleDoctorBooking,
     getMyDoctorProfile,
-    getMyDoctorSchedule,
     updateMyDoctorSchedule,
 
 } from "../api/accounts";
-import axiosClient from "../api/axiosClient";
 import DoctorProfileCard from "../components/profile/DoctorProfileCard";
 import EditDoctorProfileForm from "../components/profile/EditDoctorProfileForm";
 import AppointmentsList from "../components/appointments/AppointmentsList";
@@ -97,43 +96,43 @@ export default function DoctorDashboardPage() {
 
     return (
         <Layout>
-            <h2 className="page-title">Кабінет лікаря</h2>
-            {doctor && !editing && (
-                <DoctorProfileCard profile={doctor} onEdit={() => setEditing(true)}/>
-            )}
+            <Stack spacing={3}>
+                <Typography variant="h4">Кабінет лікаря</Typography>
 
-            {editing && (
-                <EditDoctorProfileForm
-                    profile={doctor}
-                    onCancel={() => setEditing(false)}
-                    onSaved={() => {
-                        setEditing(false);
-                        loadDoctorProfile();
-                    }}
+                {doctor && !editing && (
+                    <DoctorProfileCard profile={doctor} onEdit={() => setEditing(true)} />
+                )}
+
+                {editing && (
+                    <EditDoctorProfileForm
+                        profile={doctor}
+                        onCancel={() => setEditing(false)}
+                        onSaved={() => {
+                            setEditing(false);
+                            loadDoctorProfile();
+                        }}
+                    />
+                )}
+
+                {doctor && (
+                    <DoctorSchedulePanel
+                        doctor={doctor}
+                        onToggleBooking={toggleBooking}
+                        onUpdateSchedule={updateDoctorSchedule}
+                    />
+                )}
+
+                {loading && <Typography>Завантаження...</Typography>}
+                {error && <Alert severity="error">{error}</Alert>}
+
+                <AppointmentsList
+                    appointments={appointments}
+                    role="doctor"
+                    onConfirm={(id) => changeStatus(id, "confirmed")}
+                    onComplete={(id) => changeStatus(id, "completed")}
+                    onOpenChat={(id) => navigate(`/chat/${id}`)}
                 />
-            )}
-
-
-            {doctor && (
-                <DoctorSchedulePanel
-                  doctor={doctor}
-                  onToggleBooking={toggleBooking}
-                  onUpdateSchedule={updateDoctorSchedule}
-                />
-            )}
-
-
-            {/* ===== ЗАПИСИ ===== */}
-            {loading && <p>Завантаження...</p>}
-            {error && <p style={{color: "red"}}>{error}</p>}
-
-            <AppointmentsList
-                appointments={appointments}
-                role="doctor"
-                onConfirm={(id) => changeStatus(id, "confirmed")}
-                onComplete={(id) => changeStatus(id, "completed")}
-                onOpenChat={(id) => navigate(`/chat/${id}`)}
-            />
+            </Stack>
         </Layout>
     );
 }

@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { Alert, Button, Card, CardContent, Stack, TextField, Typography } from "@mui/material";
 import { createMedicalRecord } from "../../api/medical.js";
 
 export default function MedicalRecordForm({ cardId, onCreated, onCancel }) {
@@ -41,52 +42,55 @@ export default function MedicalRecordForm({ cardId, onCreated, onCancel }) {
   };
 
   return (
-    <form
-      onSubmit={handleSubmit}
-      style={{ border: "1px solid #aaa", padding: 15, marginTop: 20 }}
-    >
-      <h3>Додати медичний запис</h3>
+    <Card elevation={1} component="form" onSubmit={handleSubmit}>
+      <CardContent>
+        <Stack spacing={2}>
+          <Typography variant="h6">Додати медичний запис</Typography>
 
-      <div>
-        <label>Діагноз *</label><br />
-        <input
-          required
-          value={form.diagnosis}
-          onChange={(e) =>
-            setForm({ ...form, diagnosis: e.target.value })
-          }
-        />
-      </div>
+          <TextField
+            label="Діагноз *"
+            required
+            value={form.diagnosis}
+            onChange={(e) =>
+              setForm({ ...form, diagnosis: e.target.value })
+            }
+            fullWidth
+          />
 
-      <div>
-        <label>Рекомендації</label><br />
-        <textarea
-          value={form.recommendations}
-          onChange={(e) =>
-            setForm({ ...form, recommendations: e.target.value })
-          }
-        />
-      </div>
+          <TextField
+            label="Рекомендації"
+            value={form.recommendations}
+            onChange={(e) =>
+              setForm({ ...form, recommendations: e.target.value })
+            }
+            multiline
+            rows={2}
+            fullWidth
+          />
 
-      <div>
-        <label>Рецепт</label><br />
-        <textarea
-          value={form.recipe}
-          onChange={(e) =>
-            setForm({ ...form, recipe: e.target.value })
-          }
-        />
-      </div>
+          <TextField
+            label="Рецепт"
+            value={form.recipe}
+            onChange={(e) =>
+              setForm({ ...form, recipe: e.target.value })
+            }
+            multiline
+            rows={2}
+            fullWidth
+          />
 
-      {error && <p style={{ color: "red" }}>{error}</p>}
+          {error && <Alert severity="error">{error}</Alert>}
 
-      <button type="submit" disabled={loading}>
-        {loading ? "Збереження..." : "Зберегти запис"}
-      </button>
-
-      <button type='button' onClick={onCancel} style={{ marginLeft: 8 }}>
-        Скасувати
-      </button>
-    </form>
+          <Stack direction={{ xs: "column", sm: "row" }} spacing={2}>
+            <Button type="submit" variant="contained" disabled={loading}>
+              {loading ? "Збереження..." : "Зберегти запис"}
+            </Button>
+            <Button type="button" onClick={onCancel} variant="outlined">
+              Скасувати
+            </Button>
+          </Stack>
+        </Stack>
+      </CardContent>
+    </Card>
   );
 }

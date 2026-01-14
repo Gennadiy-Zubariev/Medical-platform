@@ -1,5 +1,5 @@
-import { Link } from "react-router-dom";
-import "./Appointment.css";
+import { Link as RouterLink } from "react-router-dom";
+import { Box, Button, Card, CardContent, Chip, Stack, Typography } from "@mui/material";
 
 export default function AppointmentsList({
   appointments = [],
@@ -11,52 +11,81 @@ export default function AppointmentsList({
 }) {
   if (!appointments?.length) return null;
 
+  const statusColor = {
+    pending: "warning",
+    confirmed: "success",
+    completed: "default",
+  };
+
   return (
-    <div>
+    <Stack spacing={2}>
       {appointments.map((a) => (
-        <div key={a.id} className="appointment-card">
-          <p className="appointment-person">
-            <b>{role === "doctor" ? "Пацієнт:" : "Лікар:"}</b> {" "}
-            {role === "doctor"
-                ? `${a.patient.user.first_name} ${a.patient.user.last_name}`
-                : `${a.doctor.user.first_name} ${a.doctor.user.last_name}`}
-          </p>
+        <Card key={a.id} elevation={2}>
+          <CardContent>
+            <Stack spacing={1.5}>
+              <Typography variant="subtitle1" fontWeight={600}>
+                {role === "doctor" ? "Пацієнт:" : "Лікар:"}{" "}
+                {role === "doctor"
+                  ? `${a.patient.user.first_name} ${a.patient.user.last_name}`
+                  : `${a.doctor.user.first_name} ${a.doctor.user.last_name}`}
+              </Typography>
 
-          {role === "doctor" && (
-            <Link
-              to={`/doctor/medical-card/${a.patient.id}`}
-              className="btn-outline"
-            >
-              📄 Медична картка
-            </Link>
-          )}
+              {role === "doctor" && (
+                <Button
+                  component={RouterLink}
+                  to={`/doctor/medical-card/${a.patient.id}`}
+                  variant="outlined"
+                  size="small"
+                  sx={{ alignSelf: "flex-start" }}
+                >
+                  📄 Медична картка
+                </Button>
+              )}
 
-          <p>
-            <b>Дата:</b> {new Date(a.start_datetime).toLocaleString()}
-          </p>
-          <p className={`appointments-status ${a.status}`}>
-            <b>Статус:</b> {a.status}
-          </p>
-          <div className="appointment-actions">
-            {role === "patient" && a.status === "pending" && onCancel && (
-              <button className="btn-danger" onClick={() => onCancel(a.id)}>Скасувати запис</button>
-            )}
+              <Typography>
+                <b>Дата:</b> {new Date(a.start_datetime).toLocaleString()}
+              </Typography>
 
-            {role === "doctor" && a.status === "pending" && onConfirm && (
-              <button  className="btn-success" onClick={() => onConfirm(a.id)}>Підтвердити</button>
-            )}
+              <Box>
+                <Chip
+                  label={`Статус: ${a.status}`}
+                  color={statusColor[a.status] || "default"}
+                  variant="outlined"
+                />
+              </Box>
 
-            {role === "doctor" && a.status === "confirmed" && onComplete && (
-              <button className="btn-success" onClick={() => onComplete(a.id)}>Завершити прийом</button>
-            )}
+              <Stack direction="row" spacing={1} flexWrap="wrap">
+                {role === "patient" && a.status === "pending" && onCancel && (
+                  <Button color="error" variant="contained" onClick={() => onCancel(a.id)}>
+                    Скасувати запис
+                  </Button>
+                )}
 
-            <button className="btn-chat" onClick={() => onOpenChat?.(a.id)}>
-              💬 Чат
-              {a.has_unread_messages && <span className="chat-dot">●</span>}
-            </button>
-          </div>
-        </div>
+                {role === "doctor" && a.status === "pending" && onConfirm && (
+                  <Button color="success" variant="contained" onClick={() => onConfirm(a.id)}>
+                    Підтвердити
+                  </Button>
+                )}
+
+                {role === "doctor" && a.status === "confirmed" && onComplete && (
+                  <Button color="success" variant="contained" onClick={() => onComplete(a.id)}>
+                    Завершити прийом
+                  </Button>
+                )}
+
+                <Button variant="outlined" onClick={() => onOpenChat?.(a.id)}>
+                  💬 Чат
+                  {a.has_unread_messages && (
+                    <Box component="span" sx={{ ml: 1, color: "error.main", fontWeight: 700 }}>
+                      ●
+                    </Box>
+                  )}
+                </Button>
+              </Stack>
+            </Stack>
+          </CardContent>
+        </Card>
       ))}
-    </div>
+    </Stack>
   )
 }

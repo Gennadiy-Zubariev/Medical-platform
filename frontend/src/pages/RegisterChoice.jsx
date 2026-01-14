@@ -1,19 +1,30 @@
-import { Link } from 'react-router-dom'
+import { Link as RouterLink } from "react-router-dom";
+import { Button, Container, Paper, Stack, Typography } from "@mui/material";
 
 export default function RegisterChoice() {
   return (
-    <div style={{ padding: 20 }}>
-        <h1>Реєстрація</h1>
-        <p>Оберіть, Ви "Лікар" чи "Пацієнт"</p>
+    <Container maxWidth="sm">
+        <Paper elevation={2} sx={{ p: { xs: 3, md: 4 } }}>
+            <Stack spacing={3}>
+                <div>
+                    <Typography variant="h4" gutterBottom>
+                        Реєстрація
+                    </Typography>
+                    <Typography color="text.secondary">
+                        Оберіть вашу роль, щоб продовжити.
+                    </Typography>
+                </div>
 
-        <div style={{ marginTop: 20, display: 'flex', gap: 20 }}>
-            <Link to="/register/patient">
-                <button>Я пацієнт</button>
-            </Link>
-            <Link to="/register/doctor">
-                <button>Я лікар</button>
-            </Link>
-        </div>
-    </div>
+                <Stack direction={{ xs: "column", sm: "row" }} spacing={2}>
+                    <Button component={RouterLink} to="/register/patient" variant="contained" fullWidth>
+                        Я пацієнт
+                    </Button>
+                    <Button component={RouterLink} to="/register/doctor" variant="outlined" fullWidth>
+                        Я лікар
+                    </Button>
+                </Stack>
+            </Stack>
+        </Paper>
+    </Container>
   );
 }

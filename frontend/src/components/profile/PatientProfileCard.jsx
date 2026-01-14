@@ -1,5 +1,4 @@
-const API_URL = import.meta.env.VITE_API_URL;
-import "./Profile.css"
+import { Avatar, Button, Card, CardContent, Stack, Typography } from "@mui/material";
 
 export default function PatientProfileCard({ profile, onEdit }) {
     if (!profile) return null;
@@ -8,22 +7,28 @@ export default function PatientProfileCard({ profile, onEdit }) {
         ? `${profile.photo}?t=${Date.now()}`
         : "/avatar-placeholder.png";
     return (
-        <div className='profile-card'>
-            <img
-                src={photoURL}
-                className='profile-photo'
-                alt={'Фото профілю'}
-            />
+        <Card elevation={2}>
+            <CardContent>
+                <Stack direction={{ xs: "column", sm: "row" }} spacing={3} alignItems="center">
+                    <Avatar
+                        src={photoURL}
+                        alt="Фото профілю"
+                        sx={{ width: 96, height: 96 }}
+                    />
 
-            <div>
-                <p><b>Ім'я:</b> {profile.user.first_name}</p>
-                <p><b>Email:</b> {profile.user.email}</p>
-                <p><b>Номер страховки:</b> {profile.insurance_policy ?? "--"}</p>
-                <p><b>Дата народження:</b> {profile.date_of_birth ?? "--"}</p>
-                <p><b>Адреса:</b> {profile.address ?? "--"}</p>
+                    <Stack spacing={1} sx={{ flexGrow: 1 }}>
+                        <Typography><b>Ім'я:</b> {profile.user.first_name}</Typography>
+                        <Typography><b>Email:</b> {profile.user.email}</Typography>
+                        <Typography><b>Номер страховки:</b> {profile.insurance_policy ?? "--"}</Typography>
+                        <Typography><b>Дата народження:</b> {profile.date_of_birth ?? "--"}</Typography>
+                        <Typography><b>Адреса:</b> {profile.address ?? "--"}</Typography>
+                    </Stack>
 
-                <button onClick={onEdit}>Редагувати</button>
-            </div>
-        </div>
+                    <Button variant="outlined" onClick={onEdit}>
+                        Редагувати
+                    </Button>
+                </Stack>
+            </CardContent>
+        </Card>
     );
 }

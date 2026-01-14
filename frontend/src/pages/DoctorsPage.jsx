@@ -1,7 +1,17 @@
 import { useEffect, useState } from "react";
+import { Link as RouterLink } from "react-router-dom";
+import {
+  Avatar,
+  Box,
+  Button,
+  Card,
+  CardContent,
+  Container,
+  Grid,
+  Stack,
+  Typography,
+} from "@mui/material";
 import { getDoctorSpecializations, getDoctorsPublic } from "../api/doctors";
-import { Link } from "react-router-dom";
-import "./DoctorsPage.css"
 
 export default function DoctorsPage() {
   const [specializations, setSpecializations] = useState([]);
@@ -29,58 +39,78 @@ export default function DoctorsPage() {
     getDoctorsPublic(params).then(setDoctors);
   }, [selectedSpec]);
 
-  if (loading) return <p>Завантаження...</p>;
+  if (loading) {
+    return (
+      <Container maxWidth="lg">
+        <Typography>Завантаження...</Typography>
+      </Container>
+    );
+  }
 
   return (
-    <div className="doctors-page">
-      <h2>Наші лікарі</h2>
+    <Container maxWidth="lg">
+      <Stack spacing={3}>
+        <Box>
+          <Typography variant="h4" gutterBottom>
+            Наші лікарі
+          </Typography>
+          <Typography color="text.secondary">
+            Оберіть спеціалізацію та знайдіть фахівця для консультації.
+          </Typography>
+        </Box>
 
-      {/* Фільтри */}
-      <div className="doctors-filters">
-        <button
-          onClick={() => setSelectedSpec(null)}
-          className={selectedSpec === null ? "btn-success" : "btn-outline"}
-        >
-          Всі
-        </button>
-
-        {specializations.map((spec) => (
-          <button
-            key={spec}
-            onClick={() => setSelectedSpec(spec)}
-            className={selectedSpec === spec ? "btn-success" : "btn-outline"}
+        <Stack direction="row" spacing={1} flexWrap="wrap">
+          <Button
+            onClick={() => setSelectedSpec(null)}
+            variant={selectedSpec === null ? "contained" : "outlined"}
           >
-            {spec}
-          </button>
-        ))}
-      </div>
+            Всі
+          </Button>
 
-      {doctors.length === 0 && <p>Лікарів не знайдено</p>}
+          {specializations.map((spec) => (
+            <Button
+              key={spec}
+              onClick={() => setSelectedSpec(spec)}
+              variant={selectedSpec === spec ? "contained" : "outlined"}
+            >
+              {spec}
+            </Button>
+          ))}
+        </Stack>
 
-      {/* Список лікарів */}
-      <div className="doctors-list">
-        {doctors.map((doc) => (
-          <div key={doc.id} className="doctor-card">
-            <img
-              src={doc.photo || "/avatar-placeholder.png"}
-              alt="Фото лікаря"
-              className="doctor-avatar"
-            />
+        {doctors.length === 0 && (
+          <Typography color="text.secondary">Лікарів не знайдено</Typography>
+        )}
 
-            <div className="doctor-info">
-              <p className="doctor-name">
-                {doc.user.first_name} {doc.user.last_name}
-              </p>
-
-              <p className="doctor-spec">{doc.specialization}</p>
-
-              <Link to={`/doctors/${doc.id}`} className="btn-outline">
-                Переглянути
-              </Link>
-            </div>
-          </div>
-        ))}
-      </div>
-    </div>
+        <Grid container spacing={3}>
+          {doctors.map((doc) => (
+            <Grid item xs={12} md={6} key={doc.id}>
+              <Card elevation={2}>
+                <CardContent>
+                  <Stack direction="row" spacing={2} alignItems="center">
+                    <Avatar
+                      src={doc.photo || "/avatar-placeholder.png"}
+                      alt="Фото лікаря"
+                      sx={{ width: 72, height: 72 }}
+                    />
+                    <Box sx={{ flexGrow: 1 }}>
+                      <Typography variant="h6">
+                        {doc.user.first_name} {doc.user.last_name}
+                      </Typography>
+                      <Typography color="text.secondary">
+                        {doc.specialization}
+                      </Typography>
+                    </Box>
+                    <Button component={RouterLink} to={`/doctors/${doc.id}`} variant="outlined">
+                      Переглянути
+                    </Button>
+                  </Stack>
+                </CardContent>
+              </Card>
+            </Grid>
+          ))}
+        </Grid>
+      </Stack>
+    </Container>
   );
 }

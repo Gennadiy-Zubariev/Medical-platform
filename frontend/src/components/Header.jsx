@@ -1,44 +1,65 @@
-import { Link } from "react-router-dom";
+import { Link as RouterLink } from "react-router-dom";
+import { AppBar, Box, Button, Stack, Toolbar, Typography } from "@mui/material";
 import { useAuth } from "../context/AuthContext";
-import "./Header.css";
 
 export default function Header() {
     const { user, isAuthenticated, logout } = useAuth();
 
     return (
-        <header className="main-header">
-            <nav className="header-nav">
-                <Link to="/">Головна</Link>
+        <AppBar position="sticky" color="inherit" elevation={0} sx={{ borderBottom: "1px solid", borderColor: "divider" }}>
+            <Toolbar sx={{ gap: 2, flexWrap: "wrap" }}>
+                <Typography
+                    variant="h6"
+                    component={RouterLink}
+                    to="/"
+                    sx={{ fontWeight: 700, color: "primary.main" }}
+                >
+                    Медична платформа
+                </Typography>
 
-                {!isAuthenticated && (
-                    <>
-                        <Link to="/login">Вхід</Link>
-                        <Link to="/register">Реєстрація</Link>
-                    </>
-                )}
+                <Box sx={{ flexGrow: 1 }} />
 
-                {/* Гість */}
-                {isAuthenticated && user && (
-                    <>
-                        {/* Особистий кабінет */}
-                        {user.role === "patient" && (
-                            <Link to="/patient/dashboard">Мій кабінет</Link>
-                        )}
+                <Stack direction="row" spacing={1} alignItems="center" flexWrap="wrap">
+                    <Button component={RouterLink} to="/" color="inherit">
+                        Головна
+                    </Button>
 
-                        {user.role === "doctor" && (
-                            <Link to="/doctor/dashboard">Мій кабінет</Link>
-                        )}
+                    {!isAuthenticated && (
+                        <>
+                            <Button component={RouterLink} to="/login" color="inherit">
+                                Вхід
+                            </Button>
+                            <Button component={RouterLink} to="/register" color="inherit">
+                                Реєстрація
+                            </Button>
+                        </>
+                    )}
 
-                        {/* Вихід */}
-                        <button onClick={logout} style={{ cursor: "pointer" }}>
-                            Вийти ({user?.username})
-                        </button>
-                    </>
-                )}
-                <Link to="/doctors" className="btn-primary">
-                    Переглянути лікарів
-                </Link>
-            </nav>
-        </header>
+                    {isAuthenticated && user && (
+                        <>
+                            {user.role === "patient" && (
+                                <Button component={RouterLink} to="/patient/dashboard" color="inherit">
+                                    Мій кабінет
+                                </Button>
+                            )}
+
+                            {user.role === "doctor" && (
+                                <Button component={RouterLink} to="/doctor/dashboard" color="inherit">
+                                    Мій кабінет
+                                </Button>
+                            )}
+
+                            <Button onClick={logout} color="inherit">
+                                Вийти ({user?.username})
+                            </Button>
+                        </>
+                    )}
+
+                    <Button component={RouterLink} to="/doctors" variant="contained">
+                        Переглянути лікарів
+                    </Button>
+                </Stack>
+            </Toolbar>
+        </AppBar>
     );
 }

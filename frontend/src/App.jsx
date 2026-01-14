@@ -1,4 +1,5 @@
-import { BrowserRouter as Router, Routes, Route, Link } from "react-router-dom";
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import { Box } from "@mui/material";
 import Header from "./components/Header";
 import RegisterChoice from "./pages/RegisterChoice";
 import RegisterPatientPage from "./pages/RegisterPatientPage";
@@ -8,7 +9,6 @@ import HomePage from "./pages/HomePage";
 import DoctorDashboardPage from "./pages/DoctorDashboardPage";
 import PatientDashboardPage from "./pages/PatientDashboardPage";
 import ProtectedRoute from "./components/ProtectedRoute";
-import { AuthProvider } from "./context/AuthContext.jsx";
 import PatientMedicalCardPage from "./pages/PatientMedicalCardPage.jsx";
 import DoctorMedicalCardPage from "./pages/DoctorMedicalCardPage.jsx";
 import ChatPage from "./pages/ChatPage";
@@ -19,10 +19,9 @@ import DoctorDetailPage from "./pages/DoctorDetailPage";
 
 export default function App() {
     return (
-        <AuthProvider>
-            <Router>
-                <Header />
-
+        <Router>
+            <Header />
+            <Box component="main" sx={{ minHeight: "100vh", py: { xs: 3, md: 4 } }}>
                 <Routes>
                     <Route path="/" element={<HomePage />} />
 
@@ -32,16 +31,50 @@ export default function App() {
                     <Route path="/register/patient" element={<RegisterPatientPage />} />
                     <Route path="/register/doctor" element={<RegisterDoctorPage />} />
 
-                    <Route path="/doctor/dashboard" element={<ProtectedRoute role="doctor"><DoctorDashboardPage /></ProtectedRoute>} />
-                    <Route path="/patient/dashboard" element={<ProtectedRoute role="patient"><PatientDashboardPage /></ProtectedRoute>} />
-                    <Route path="/patient/medical-card" element={<ProtectedRoute role="patient"><PatientMedicalCardPage /></ProtectedRoute>} />
-                    <Route path="/doctor/medical-card/:patientId" element={<ProtectedRoute role="doctor"><DoctorMedicalCardPage /></ProtectedRoute>} />
-                    <Route path="/chat/:appointmentId" element={<ProtectedRoute><ChatPage /></ProtectedRoute>} />
+                    <Route
+                        path="/doctor/dashboard"
+                        element={(
+                            <ProtectedRoute role="doctor">
+                                <DoctorDashboardPage />
+                            </ProtectedRoute>
+                        )}
+                    />
+                    <Route
+                        path="/patient/dashboard"
+                        element={(
+                            <ProtectedRoute role="patient">
+                                <PatientDashboardPage />
+                            </ProtectedRoute>
+                        )}
+                    />
+                    <Route
+                        path="/patient/medical-card"
+                        element={(
+                            <ProtectedRoute role="patient">
+                                <PatientMedicalCardPage />
+                            </ProtectedRoute>
+                        )}
+                    />
+                    <Route
+                        path="/doctor/medical-card/:patientId"
+                        element={(
+                            <ProtectedRoute role="doctor">
+                                <DoctorMedicalCardPage />
+                            </ProtectedRoute>
+                        )}
+                    />
+                    <Route
+                        path="/chat/:appointmentId"
+                        element={(
+                            <ProtectedRoute>
+                                <ChatPage />
+                            </ProtectedRoute>
+                        )}
+                    />
                     <Route path="/doctors" element={<DoctorsPage />} />
                     <Route path="/doctors/:id" element={<DoctorDetailPage />} />
                 </Routes>
-            </Router>
-        </AuthProvider>
+            </Box>
+        </Router>
     );
 }
-

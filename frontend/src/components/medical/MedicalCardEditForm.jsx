@@ -1,43 +1,45 @@
 import { useState } from "react";
+import { Button, Stack, TextField } from "@mui/material";
 
 export default function MedicalCardEditForm({ initialValues, onSubmit, onCancel }) {
   const [form, setForm] = useState(initialValues);
 
   const handleChange = (patch) => setForm((prev) => ({ ...prev, ...patch }));
     return (
-    <>
-      <div>
-        <label>Група крові:</label><br />
-        <input
-          value={form.blood_type}
-          onChange={(e) =>
-            handleChange({ blood_type: e.target.value })
-          }
-        />
-      </div>
+    <Stack spacing={2}>
+      <TextField
+        label="Група крові"
+        value={form.blood_type}
+        onChange={(e) => handleChange({ blood_type: e.target.value })}
+        fullWidth
+      />
 
-      <div>
-        <label>Алергії:</label><br />
-        <textarea
-          value={form.allergies}
-          onChange={(e) =>
-            handleChange({ allergies: e.target.value })
-          }
-        />
-      </div>
+      <TextField
+        label="Алергії"
+        value={form.allergies}
+        onChange={(e) => handleChange({ allergies: e.target.value })}
+        multiline
+        rows={2}
+        fullWidth
+      />
 
-      <div>
-        <label>Хронічні захворювання:</label><br />
-        <textarea
-          value={form.chronic_diseases}
-          onChange={(e) =>
-            handleChange({ chronic_diseases: e.target.value })
-          }
-        />
-      </div>
+      <TextField
+        label="Хронічні захворювання"
+        value={form.chronic_diseases}
+        onChange={(e) => handleChange({ chronic_diseases: e.target.value })}
+        multiline
+        rows={2}
+        fullWidth
+      />
 
-      <button onClick={() => onSubmit(form)}>💾 Зберегти</button>
-      <button onClick={onCancel}>Скасувати</button>
-    </>
+      <Stack direction={{ xs: "column", sm: "row" }} spacing={2}>
+        <Button onClick={() => onSubmit(form)} variant="contained">
+          💾 Зберегти
+        </Button>
+        <Button onClick={onCancel} variant="outlined">
+          Скасувати
+        </Button>
+      </Stack>
+    </Stack>
   );
 }

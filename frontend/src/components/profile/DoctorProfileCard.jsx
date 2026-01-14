@@ -1,5 +1,4 @@
-const API_URL = import.meta.env.VITE_API_URL;
-import "./Profile.css"
+import { Avatar, Button, Card, CardContent, Stack, Typography } from "@mui/material";
 
 export default function DoctorProfileCard({ profile, onEdit }) {
     if (!profile) return null;
@@ -8,23 +7,29 @@ export default function DoctorProfileCard({ profile, onEdit }) {
         ? `${profile.photo}?t=${Date.now()}`
         : "/avatar-placeholder.png";
     return (
-        <div className='profile-card'>
-            <img
-                src={photoURL}
-                className='profile-photo'
-                alt={'Фото профілю'}
-            />
+        <Card elevation={2}>
+            <CardContent>
+                <Stack direction={{ xs: "column", sm: "row" }} spacing={3} alignItems="center">
+                    <Avatar
+                        src={photoURL}
+                        alt="Фото профілю"
+                        sx={{ width: 96, height: 96 }}
+                    />
 
-            <div>
-                <p><b>Ім'я:</b> {profile.user.first_name}</p>
-                <p><b>Email:</b> {profile.user.email}</p>
-                <p><b>Спеціалізація:</b> {profile.specialization ?? "--"}</p>
-                <p><b>Досвід роботи:</b> {profile.experience_years ?? "--"}</p>
-                <p><b>Номер ліцензії:</b> {profile.license_number ?? "--"}</p>
-                <p><b>Про себе:</b> {profile.bio ?? "--"}</p>
+                    <Stack spacing={1} sx={{ flexGrow: 1 }}>
+                        <Typography><b>Ім'я:</b> {profile.user.first_name}</Typography>
+                        <Typography><b>Email:</b> {profile.user.email}</Typography>
+                        <Typography><b>Спеціалізація:</b> {profile.specialization ?? "--"}</Typography>
+                        <Typography><b>Досвід роботи:</b> {profile.experience_years ?? "--"}</Typography>
+                        <Typography><b>Номер ліцензії:</b> {profile.license_number?.license_number ?? profile.license_number ?? "--"}</Typography>
+                        <Typography><b>Про себе:</b> {profile.bio ?? "--"}</Typography>
+                    </Stack>
 
-                <button onClick={onEdit}>Редагувати</button>
-            </div>
-        </div>
+                    <Button variant="outlined" onClick={onEdit}>
+                        Редагувати
+                    </Button>
+                </Stack>
+            </CardContent>
+        </Card>
     );
 }
