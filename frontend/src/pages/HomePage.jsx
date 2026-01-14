@@ -22,9 +22,6 @@ export default function HomePage() {
                             Записуйтесь до лікарів онлайн, переглядайте медичну картку та спілкуйтесь у чаті — все в одному місці.
                         </Typography>
                         <Stack direction={{ xs: "column", sm: "row" }} spacing={2}>
-                            <Button component={RouterLink} to="/register" variant="contained" color="secondary">
-                                Створити акаунт
-                            </Button>
                             <Button component={RouterLink} to="/doctors" variant="outlined" sx={{ color: "common.white", borderColor: "rgba(255,255,255,0.6)" }}>
                                 Знайти лікаря
                             </Button>
@@ -32,26 +29,6 @@ export default function HomePage() {
                     </Stack>
                 </Box>
 
-                <Grid container spacing={3}>
-                    {[
-                        { title: "Онлайн запис", text: "Зручне бронювання прийомів та відстеження статусу." },
-                        { title: "Медична картка", text: "Доступ до історії хвороб і результатів у будь-який час." },
-                        { title: "Чат з лікарем", text: "Пишіть лікарю напряму та отримуйте відповіді швидко." },
-                    ].map((item) => (
-                        <Grid item xs={12} md={4} key={item.title}>
-                            <Card elevation={2} sx={{ height: "100%" }}>
-                                <CardContent>
-                                    <Typography variant="h6" gutterBottom>
-                                        {item.title}
-                                    </Typography>
-                                    <Typography variant="body2" color="text.secondary">
-                                        {item.text}
-                                    </Typography>
-                                </CardContent>
-                            </Card>
-                        </Grid>
-                    ))}
-                </Grid>
             </Stack>
         </Container>
     );

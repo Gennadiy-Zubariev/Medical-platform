@@ -54,10 +54,6 @@ export default function Header() {
                             </Button>
                         </>
                     )}
-
-                    <Button component={RouterLink} to="/doctors" variant="contained">
-                        Переглянути лікарів
-                    </Button>
                 </Stack>
             </Toolbar>
         </AppBar>

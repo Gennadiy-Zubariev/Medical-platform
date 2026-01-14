@@ -32,6 +32,7 @@ export default function DoctorSchedulePanel({ doctor, onToggleBooking, onUpdateS
   });
   const [saving, setSaving] = useState(false);
 
+
   useEffect(() => {
     if (doctor) {
       setForm({
