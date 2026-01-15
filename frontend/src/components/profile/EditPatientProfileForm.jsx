@@ -1,11 +1,18 @@
-import {useState} from "react";
+import { useState } from "react";
 import {
-    updateMyPatientProfile,
-    updateMyUser,
-} from "../../api/accounts";
-import "./Profile.css"
+    Alert,
+    Avatar,
+    Box,
+    Button,
+    Card,
+    CardContent,
+    Stack,
+    TextField,
+    Typography,
+} from "@mui/material";
+import { updateMyPatientProfile, updateMyUser } from "../../api/accounts";
 
-export default function EditPatientProfileForm({profile, onCancel, onSaved}) {
+export default function EditPatientProfileForm({ profile, onCancel, onSaved }) {
     if (!profile) return null;
 
     const [email, setEmail] = useState(profile.user.email || "");
@@ -13,14 +20,16 @@ export default function EditPatientProfileForm({profile, onCancel, onSaved}) {
     const [address, setAddress] = useState(profile.address || "");
     const [photo, setPhoto] = useState(null);
     const [saving, setSaving] = useState(false);
+    const [error, setError] = useState("");
 
     const handleSubmit = async (e) => {
         e.preventDefault();
         setSaving(true);
+        setError("");
 
         try {
             if (email !== profile.user.email) {
-                await updateMyUser({email});
+                await updateMyUser({ email });
             }
 
             const formData = new FormData();
@@ -48,56 +57,79 @@ export default function EditPatientProfileForm({profile, onCancel, onSaved}) {
                 const messages = Object.values(data)
                     .flat()
                     .join("\n");
-
-                alert(messages);
+                setError(messages);
             } else {
-                alert("Не вдалося зберегти профіль пацієнта");
+                setError("Не вдалося зберегти профіль пацієнта");
             }
         } finally {
             setSaving(false);
         }
     };
 
-        return (
-            <form className="profile-card" onSubmit={handleSubmit}>
-                <img
-                    src={profile.photo || "/avatar-placeholder.png"}
-                    className="profile-avatar"
-                    alt="Фото пацієнта"
-                />
+    return (
+        <Card elevation={2} component="form" onSubmit={handleSubmit}>
+            <CardContent>
+                <Stack spacing={3}>
+                    <Stack direction={{ xs: "column", sm: "row" }} spacing={3} alignItems="center">
+                        <Avatar
+                            src={profile.photo || "/avatar-placeholder.png"}
+                            alt="Фото пацієнта"
+                            sx={{ width: 96, height: 96 }}
+                        />
+                        <Box>
+                            <Typography variant="h6">Редагувати профіль пацієнта</Typography>
+                            <Typography variant="body2" color="text.secondary">
+                                Заповніть дані та збережіть зміни.
+                            </Typography>
+                        </Box>
+                    </Stack>
 
-                <div className="profile-fields">
-                    <label>Номер страховки</label>
-                    <input
-                        type="text"
-                        value={insurancePolicy}
-                        onChange={(e) => setInsurancePolicy(e.target.value)}
-                    />
+                    <Stack spacing={2}>
+                        <TextField
+                            label="Email"
+                            type="email"
+                            value={email}
+                            required
+                            onChange={(e) => setEmail(e.target.value)}
+                            fullWidth
+                        />
+                        <TextField
+                            label="Номер страховки"
+                            value={insurancePolicy}
+                            onChange={(e) => setInsurancePolicy(e.target.value)}
+                            fullWidth
+                        />
+                        <TextField
+                            label="Адреса"
+                            value={address}
+                            onChange={(e) => setAddress(e.target.value)}
+                            multiline
+                            rows={3}
+                            fullWidth
+                        />
+                        <Button variant="outlined" component="label">
+                            Завантажити фото
+                            <input
+                                hidden
+                                type="file"
+                                accept="image/*"
+                                onChange={(e) => setPhoto(e.target.files[0])}
+                            />
+                        </Button>
+                    </Stack>
 
-                    <label>Адреса</label>
-                    <textarea
-                        type="text"
-                        value={address}
-                        onChange={(e) => setAddress(e.target.value)}
-                    />
+                    {error && <Alert severity="error">{error}</Alert>}
 
-                    <label>Фото</label>
-                    <input
-                        type="file"
-                        accept="image/*"
-                        onChange={(e) => setPhoto(e.target.files[0])}
-                    />
-                </div>
-
-
-                <div className="profile-actions">
-                    <button type="button" className="btn-cancel" onClick={onCancel}>
-                        Скасувати
-                    </button>
-                    <button type="submit" className="btn-save" disabled={saving}>
-                        {saving ? "Збереження…" : "Зберегти"}
-                    </button>
-                </div>
-            </form>
-        );
-    }
+                    <Stack direction={{ xs: "column", sm: "row" }} spacing={2}>
+                        <Button type="button" variant="outlined" onClick={onCancel}>
+                            Скасувати
+                        </Button>
+                        <Button type="submit" variant="contained" disabled={saving}>
+                            {saving ? "Збереження…" : "Зберегти"}
+                        </Button>
+                    </Stack>
+                </Stack>
+            </CardContent>
+        </Card>
+    );
+}

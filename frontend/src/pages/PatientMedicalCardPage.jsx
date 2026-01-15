@@ -1,5 +1,6 @@
-import {useEffect, useState, useCallback} from "react";
-import {getMyMedicalCard, updateMyMedicalCard} from "../api/medical";
+import { useEffect, useState, useCallback } from "react";
+import { Alert, Card, CardContent, Container, Stack, Typography } from "@mui/material";
+import { getMyMedicalCard, updateMyMedicalCard } from "../api/medical";
 import MedicalCardEditForm from "../components/medical/MedicalCardEditForm.jsx";
 import MedicalCardHeader from "../components/medical/MedicalCardHeader.jsx";
 import MedicalCardView from "../components/medical/MedicalCardView.jsx";
@@ -36,40 +37,47 @@ export default function PatientMedicalCardPage() {
             alert("Не вдалося зберегти медичну картку");
         }
     }, [card]);
-    if (loading) return <p>Завантаження...</p>;
-    if (error) return <p style={{color: "red"}}>{error}</p>;
+    if (loading) return <Container maxWidth="md"><Typography>Завантаження...</Typography></Container>;
+    if (error) return <Container maxWidth="md"><Alert severity="error">{error}</Alert></Container>;
     if (!card) return null;
 
     return (
-        <div className='card-wrapper'>
+        <Container maxWidth="md">
+            <Stack spacing={3}>
+                <MedicalCardHeader patient={card.patient} />
 
-            <MedicalCardHeader patient={card.patient}/>
+                <Card elevation={2}>
+                    <CardContent>
+                        {isEditing ? (
+                            <MedicalCardEditForm
+                                initialValues={{
+                                    blood_type: card.blood_type || "",
+                                    allergies: card.allergies || "",
+                                    chronic_diseases: card.chronic_diseases || "",
+                                }}
+                                onSubmit={handleSave}
+                                onCancel={() => setIsEditing(false)}
+                            />
+                        ) : (
+                            <MedicalCardView
+                                card={card}
+                                onEdit={() => setIsEditing(true)}
+                            />
+                        )}
+                    </CardContent>
+                </Card>
 
-            {isEditing ? (
-                <MedicalCardEditForm
-                    initialValues={{
-                        blood_type: card.blood_type || '',
-                        allergies: card.allergies || '',
-                        chronic_diseases: card.chronic_diseases || '',
-                    }}
-                    onSubmit={handleSave}
-                    onCancel={() => setIsEditing(false)}
-                />
-            ) : (
-                <MedicalCardView
-                    card={card}
-                    onEdit={() => setIsEditing(true)}
-                />
-            )}
-
-            <h3>Історія хвороб</h3>
-            {card.records?.length ? (
-                card.records.map((r) => (
-                    <MedicalRecordItem key={r.id} record={r} canEdit={false}/>
-                ))
-            ) : (
-                <p>Записів ще немає</p>
-            )}
-        </div>
+                <Typography variant="h5">Історія хвороб</Typography>
+                <Stack spacing={2}>
+                    {card.records?.length ? (
+                        card.records.map((r) => (
+                            <MedicalRecordItem key={r.id} record={r} canEdit={false} />
+                        ))
+                    ) : (
+                        <Typography color="text.secondary">Записів ще немає</Typography>
+                    )}
+                </Stack>
+            </Stack>
+        </Container>
     );
 }

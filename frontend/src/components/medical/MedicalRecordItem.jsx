@@ -1,4 +1,13 @@
 import { useState } from "react";
+import {
+  Alert,
+  Button,
+  Card,
+  CardContent,
+  Stack,
+  TextField,
+  Typography,
+} from "@mui/material";
 import formatDate from "../../utils/formatDate.js";
 import { updateMyMedicalRecord } from "../../api/medical.js";
 
@@ -38,90 +47,91 @@ export default function MedicalRecordItem({
 //EDIT MODE
   if (isEditing) {
     return (
-        <div style={{ border: "1px solid #ddd", padding: 10, marginBottom: 10 }}>
-          <p><b>Редагування запису</b></p>
-          <div>
-            <label>Діагноз</label><br />
-            <input
-              value={form.diagnosis}
-              onChange={(e) => setForm({ ...form, diagnosis: e.target.value })}
-            />
-          </div>
+        <Card elevation={1}>
+          <CardContent>
+            <Stack spacing={2}>
+              <Typography variant="subtitle1"><b>Редагування запису</b></Typography>
+              <TextField
+                label="Діагноз"
+                value={form.diagnosis}
+                onChange={(e) => setForm({ ...form, diagnosis: e.target.value })}
+                fullWidth
+              />
+              <TextField
+                label="Рекомендації"
+                value={form.recommendations}
+                onChange={(e) => setForm({ ...form, recommendations: e.target.value })}
+                multiline
+                rows={2}
+                fullWidth
+              />
+              <TextField
+                label="Рецепт"
+                value={form.recipe}
+                onChange={(e) => setForm({ ...form, recipe: e.target.value })}
+                multiline
+                rows={2}
+                fullWidth
+              />
 
-          <div>
-            <label>Рекомендації</label><br />
-            <textarea
-              value={form.recommendations}
-              onChange={(e) => setForm({ ...form, recommendations: e.target.value })}
-            />
-          </div>
+              {error && <Alert severity="error">{error}</Alert>}
 
-          <div>
-            <label>Рецепт</label><br />
-            <textarea
-              value={form.recipe}
-              onChange={(e) => setForm({ ...form, recipe: e.target.value })}
-            />
-          </div>
-
-          {error && <p style={{ color: "red" }}>{error}</p>}
-
-          <button onClick={handleSave} disabled={loading}>
-            {loading ? 'Збереження...' : 'Зберегти'}
-          </button>
-          <button onClick={() => setIsEditing(false)}>
-            Скасувати
-          </button>
-        </div>
+              <Stack direction={{ xs: "column", sm: "row" }} spacing={2}>
+                <Button onClick={handleSave} disabled={loading} variant="contained">
+                  {loading ? "Збереження..." : "Зберегти"}
+                </Button>
+                <Button onClick={() => setIsEditing(false)} variant="outlined">
+                  Скасувати
+                </Button>
+              </Stack>
+            </Stack>
+          </CardContent>
+        </Card>
     );
   }
 
 
   return (
-    <div
-      style={{
-        border: "1px solid #ddd",
-        padding: 10,
-        marginBottom: 10,
-      }}
-    >
-      <p>
-        <b>Дата:</b> {formatDate(record.created_at)}
-      </p>
+    <Card elevation={1}>
+      <CardContent>
+        <Stack spacing={1.5}>
+          <Typography>
+            <b>Дата:</b> {formatDate(record.created_at)}
+          </Typography>
 
-      <p>
-        <b>Лікар:</b>{" "}
-        {record.doctor.user.first_name} {record.doctor.user.last_name}
-      </p>
+          <Typography>
+            <b>Лікар:</b>{" "}
+            {record.doctor.user.first_name} {record.doctor.user.last_name}
+          </Typography>
 
-      <p>
-        <b>Діагноз:</b> {record.diagnosis}
-      </p>
+          <Typography>
+            <b>Діагноз:</b> {record.diagnosis}
+          </Typography>
 
-      {record.recommendations && (
-        <p>
-          <b>Рекомендації:</b> {record.recommendations}
-        </p>
-      )}
+          {record.recommendations && (
+            <Typography>
+              <b>Рекомендації:</b> {record.recommendations}
+            </Typography>
+          )}
 
-      {record.recipe && (
-        <p>
-          <b>Рецепт:</b> {record.recipe}
-        </p>
-      )}
+          {record.recipe && (
+            <Typography>
+              <b>Рецепт:</b> {record.recipe}
+            </Typography>
+          )}
 
-      {/*  Дії ТІЛЬКИ для лікаря */}
-      {canEdit && (
-        <div style={{ marginTop: 8 }}>
-          <button onClick={() => setIsEditing(true)}>✏ Редагувати</button>
-          <button
-            onClick={() => onDelete?.(record.id)}
-            style={{ marginLeft: 8 }}
-          >
-            🗑 Видалити
-          </button>
-        </div>
-      )}
-    </div>
+          {canEdit && (
+            <Stack direction={{ xs: "column", sm: "row" }} spacing={2}>
+              <Button onClick={() => setIsEditing(true)} variant="outlined">
+                ✏ Редагувати
+              </Button>
+              <Button onClick={() => onDelete?.(record.id)} color="error" variant="contained">
+                🗑 Видалити
+              </Button>
+            </Stack>
+          )}
+        </Stack>
+      </CardContent>
+    </Card>
   );
 }

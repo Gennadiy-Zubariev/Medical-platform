@@ -1,10 +1,10 @@
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-import { getMedicalCardByPatient } from "../api/medical";
+import { Alert, Button, Card, CardContent, Container, Stack, Typography } from "@mui/material";
+import { getMedicalCardByPatient, deleteMedicalRecord } from "../api/medical";
 import MedicalRecordForm from "../components/medical/MedicalRecordForm.jsx";
 import MedicalRecordItem from "../components/medical/MedicalRecordItem.jsx";
 import { getMyDoctorProfile } from "../api/accounts";
-import { deleteMedicalRecord } from "../api/medical";
 
 
 export default function DoctorMedicalCardPage() {
@@ -43,8 +43,8 @@ export default function DoctorMedicalCardPage() {
         }
     };
 
-    if (loading) return <p>Завантаження ...</p>;
-    if (error) return <p style={{color: "red"}}>{error}</p>;
+    if (loading) return <Container maxWidth="md"><Typography>Завантаження ...</Typography></Container>;
+    if (error) return <Container maxWidth="md"><Alert severity="error">{error}</Alert></Container>;
     if (!card) return null;
 
     const handleDeleteRecord = async (recordId) => {
@@ -63,56 +63,56 @@ export default function DoctorMedicalCardPage() {
     };
 
     return (
-        <div>
+        <Container maxWidth="md">
+            <Stack spacing={3}>
+                <Typography variant="h4">
+                    Медична картка: {card.patient.user.first_name} {card.patient.user.last_name}
+                </Typography>
 
-            <h2 style={{ marginTop: 20 }}>
-                Медична картка:{" "}
-                {card.patient.user.first_name} {card.patient.user.last_name}
-            </h2>
+                <Card elevation={2}>
+                    <CardContent>
+                        <Stack spacing={1}>
+                            <Typography><b>Група крові:</b> {card.blood_type || "-"}</Typography>
+                            <Typography><b>Алегрії:</b> {card.allergies || "-"}</Typography>
+                            <Typography><b>Хронічні захворювання:</b> {card.chronic_diseases || "-"}</Typography>
+                        </Stack>
+                    </CardContent>
+                </Card>
 
-            {/* Загальні медичні дані */}
-            <div style={{ border: "1px solid #ccc", padding: 15, marginBottom: 20 }}>
-                <p><b>Група крові</b> {card.blood_type || "-"}</p>
-                <p><b>Алегрії</b> {card.allergies || "-"}</p>
-                <p><b>Хронічні захворювання</b> {card.chronic_diseases || "-"}</p>
-            </div>
+                <Stack direction={{ xs: "column", sm: "row" }} spacing={2} alignItems="center">
+                    <Typography variant="h5">Медичні записи</Typography>
+                    <Button onClick={() => setShowCreateForm(true)} variant="contained">
+                        Додати медичний запис
+                    </Button>
+                </Stack>
 
-            {/* Історія хвороб */}
-            <h3>Медичні записи</h3>
+                {card.records.length === 0 && (
+                    <Typography color="text.secondary">Медичних записів немає</Typography>
+                )}
 
-            <button
-                onClick={() => setShowCreateForm(true)}
-                style={{ marginBottom: 10 }}
-            >
-                Додати медичний запис
-            </button>
+                {showCreateForm && (
+                    <MedicalRecordForm
+                        cardId={card.id}
+                        onCreated={() => {
+                            setShowCreateForm(false);
+                            loadCard();
+                        }}
+                        onCancel={() => setShowCreateForm(false)}
+                    />
+                )}
 
-            {card.records.length === 0 && (
-                <p>Медичних записів немає</p>
-            )}
-
-            {showCreateForm && (
-                <MedicalRecordForm
-                    cardId={card.id}
-                    onCreated={() => {
-                        setShowCreateForm(false);
-                        loadCard();
-                    }}
-                    onCancel={() => setShowCreateForm(false)}
-                />
-            )}
-
-
-            {doctor && card.records.map((r) => (
-                <MedicalRecordItem
-                    key={r.id}
-                    record={r}
-                    canEdit={r.doctor.id === doctor.id} // тільки свої
-                    onDelete={handleDeleteRecord}
-                    onUpdated={loadCard}
-
-                />
-            ))}
-        </div>
+                <Stack spacing={2}>
+                    {doctor && card.records.map((r) => (
+                        <MedicalRecordItem
+                            key={r.id}
+                            record={r}
+                            canEdit={r.doctor.id === doctor.id}
+                            onDelete={handleDeleteRecord}
+                            onUpdated={loadCard}
+                        />
+                    ))}
+                </Stack>
+            </Stack>
+        </Container>
     );
 }

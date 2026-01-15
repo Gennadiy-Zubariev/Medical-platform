@@ -1,18 +1,19 @@
 import formatDate from "../../utils/formatDate.js";
+import { Button, Stack, Typography } from "@mui/material";
 
 
 export default function MedicalCardView({ card, onEdit }) {
   return (
-    <>
-      <p><b>Група крові:</b> {card.blood_type || "—"}</p>
-      <p><b>Алергії:</b> {card.allergies || "—"}</p>
-      <p><b>Хронічні захворювання:</b> {card.chronic_diseases || "—"}</p>
-      <p><b>Створена:</b> {formatDate(card.created_at)}</p>
-      <p><b>Змінена:</b> {formatDate(card.updated_at)}</p>
+    <Stack spacing={1.5}>
+      <Typography><b>Група крові:</b> {card.blood_type || "—"}</Typography>
+      <Typography><b>Алергії:</b> {card.allergies || "—"}</Typography>
+      <Typography><b>Хронічні захворювання:</b> {card.chronic_diseases || "—"}</Typography>
+      <Typography><b>Створена:</b> {formatDate(card.created_at)}</Typography>
+      <Typography><b>Змінена:</b> {formatDate(card.updated_at)}</Typography>
 
-      <button onClick={onEdit}>
+      <Button onClick={onEdit} variant="outlined">
         Редагувати
-      </button>
-    </>
+      </Button>
+    </Stack>
   );
 }

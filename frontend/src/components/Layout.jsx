@@ -1,9 +1,9 @@
+import { Box, Container } from "@mui/material";
+
 export default function Layout({ children }) {
   return (
-    <main className="app-main">
-      <div className="dashboard-layout">
-        {children}
-      </div>
-    </main>
+    <Box component="main" sx={{ py: { xs: 3, md: 4 } }}>
+      <Container maxWidth="lg">{children}</Container>
+    </Box>
   );
 }
