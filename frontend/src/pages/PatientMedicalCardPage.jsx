@@ -46,7 +46,12 @@ export default function PatientMedicalCardPage() {
             <Stack spacing={3}>
                 <MedicalCardHeader patient={card.patient} />
 
-                <Card elevation={2}>
+                <Card
+                    elevation={2}
+                    sx={{
+                        backgroundImage: "linear-gradient(135deg, #fefce8 0%, #fef9c3 100%)",
+                    }}
+                >
                     <CardContent>
                         {isEditing ? (
                             <MedicalCardEditForm

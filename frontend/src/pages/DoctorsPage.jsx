@@ -86,13 +86,22 @@ export default function DoctorsPage() {
         <Grid container spacing={3}>
           {doctors.map((doc, index) => (
             <Grid item xs={12} sm={6} md={4} key={doc.id} sx={{ display: "flex" }}>
-              <Card elevation={2} sx={{ width: 330, height:220, display: "flex", flexDirection: "column" }}>
-                <CardContent sx={{ flexGrow: 1, display: "flex", alignItems: "center" }}>
+              <Card
+                elevation={2}
+                sx={{
+                  width: 330,
+                  height: 220,
+                  display: "flex",
+                  flexDirection: "column",
+                  backgroundImage: "linear-gradient(135deg, #f5f3ff 0%, #ede9fe 100%)",
+                }}
+              >
+                <CardContent sx={{ flexGrow: 1 }}>
                   <Stack
                     direction="row"
                     spacing={2}
                     alignItems="center"
-                    sx={{ width: "100%" }}
+                    sx={{ minHeight: 96 }}
                   >
                     <Avatar
                       src={doc.photo || "/avatar-placeholder.png"}

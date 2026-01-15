@@ -92,7 +92,12 @@ export default function CreateAppointmentForm({ onCreated, refreshKey }) {
   };
 
   return (
-    <Card elevation={2}>
+    <Card
+      elevation={2}
+      sx={{
+        backgroundImage: "linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%)",
+      }}
+    >
       <CardContent>
         <Stack spacing={3} component="form" onSubmit={handleSubmit}>
           <Box>

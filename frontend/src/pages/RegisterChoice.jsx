@@ -4,7 +4,13 @@ import { Button, Container, Paper, Stack, Typography } from "@mui/material";
 export default function RegisterChoice() {
   return (
     <Container maxWidth="sm">
-        <Paper elevation={2} sx={{ p: { xs: 3, md: 4 } }}>
+        <Paper
+            elevation={2}
+            sx={{
+                p: { xs: 3, md: 4 },
+                backgroundImage: "linear-gradient(135deg, #fff7ed 0%, #ffedd5 100%)",
+            }}
+        >
             <Stack spacing={3}>
                 <div>
                     <Typography variant="h4" gutterBottom>

@@ -42,7 +42,14 @@ export default function MedicalRecordForm({ cardId, onCreated, onCancel }) {
   };
 
   return (
-    <Card elevation={1} component="form" onSubmit={handleSubmit}>
+    <Card
+      elevation={1}
+      component="form"
+      onSubmit={handleSubmit}
+      sx={{
+        backgroundImage: "linear-gradient(135deg, #fdf2f8 0%, #fce7f3 100%)",
+      }}
+    >
       <CardContent>
         <Stack spacing={2}>
           <Typography variant="h6">Додати медичний запис</Typography>

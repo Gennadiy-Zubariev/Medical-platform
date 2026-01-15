@@ -20,7 +20,13 @@ export default function AppointmentsList({
   return (
     <Stack spacing={2}>
       {appointments.map((a) => (
-        <Card key={a.id} elevation={2}>
+        <Card
+          key={a.id}
+          elevation={2}
+          sx={{
+            backgroundImage: "linear-gradient(135deg, #fffbeb 0%, #fef3c7 100%)",
+          }}
+        >
           <CardContent>
             <Stack spacing={1.5}>
               <Typography variant="subtitle1" fontWeight={600}>

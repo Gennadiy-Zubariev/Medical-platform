@@ -58,7 +58,13 @@ export default function RegisterPatientPage() {
 
   return (
     <Container maxWidth="sm">
-      <Paper elevation={2} sx={{ p: { xs: 3, md: 4 } }}>
+      <Paper
+        elevation={2}
+        sx={{
+          p: { xs: 3, md: 4 },
+          backgroundImage: "linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%)",
+        }}
+      >
         <Stack spacing={3}>
           <Box>
             <Typography variant="h4" gutterBottom>

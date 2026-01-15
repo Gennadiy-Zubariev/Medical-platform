@@ -7,7 +7,12 @@ export default function PatientProfileCard({ profile, onEdit }) {
         ? `${profile.photo}?t=${Date.now()}`
         : "/avatar-placeholder.png";
     return (
-        <Card elevation={2}>
+        <Card
+            elevation={2}
+            sx={{
+                backgroundImage: "linear-gradient(135deg, #ecfdf3 0%, #d1fae5 100%)",
+            }}
+        >
             <CardContent>
                 <Stack direction={{ xs: "column", sm: "row" }} spacing={3} alignItems="center">
                     <Avatar
