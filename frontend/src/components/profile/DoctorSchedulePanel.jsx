@@ -100,7 +100,10 @@ export default function DoctorSchedulePanel({ doctor, onToggleBooking, onUpdateS
             <Typography variant="subtitle1">Робочі дні</Typography>
             <ToggleButtonGroup
               value={form.work_days}
-              onChange={(_, value) => setForm((prev) => ({ ...prev, work_days: value || [] }))}
+              onChange={(_, value) => {
+                const days = (value || []).map((v) => Number(v));
+                setForm((prev) => ({ ...prev, work_days: days }));
+              }}
             >
               {WEEK_DAYS.map((day) => (
                 <ToggleButton key={day.value} value={day.value}>

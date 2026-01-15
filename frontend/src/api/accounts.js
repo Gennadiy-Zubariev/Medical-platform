@@ -59,10 +59,10 @@ export async function toggleDoctorBooking() {
 }
 
 
-export async function getMyDoctorSchedule() {
-    const response = await axiosClient.get("accounts/doctor/schedule/");
-    return response.data
-}
+// export async function getMyDoctorSchedule() {
+//     const response = await axiosClient.get("accounts/doctor/schedule/");
+//     return response.data
+// }
 
 export async function updateMyDoctorSchedule(data) {
     const response = await axiosClient.patch("accounts/doctor/schedule/", data);

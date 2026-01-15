@@ -200,6 +200,7 @@ class DoctorProfileSerializer(serializers.ModelSerializer):
             "photo",
             "work_start",
             "work_end",
+            "work_days",
             "slot_duration",
             "is_booking_open",
             "is_schedule_ready",

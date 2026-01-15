@@ -13,7 +13,7 @@ import {
     updateMyDoctorSchedule,
 
 } from "../api/accounts";
-import DoctorProfileCard from "../components/profile/DoctorProfileCard";
+import {DoctorProfileCard} from "../components/profile/DoctorProfileCard";
 import EditDoctorProfileForm from "../components/profile/EditDoctorProfileForm";
 import AppointmentsList from "../components/appointments/AppointmentsList";
 import DoctorSchedulePanel from "../components/profile/DoctorSchedulePanel";
@@ -46,6 +46,7 @@ export default function DoctorDashboardPage() {
     const loadDoctorProfile = async () => {
         try {
             const data = await getMyDoctorProfile();
+            console.log("DOCTOR PROFILE FROM API:", data);
             setDoctor(data);
         } catch {
             setError("Не вдалося завантажити профіль лікаря");
