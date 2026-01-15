@@ -13,6 +13,9 @@ services:
       - project_db
       - redis
     environment:
+      SECRET_KEY: ${SECRET_KEY}
+      DEBUG: ${DEBUG}
+      ALLOWED_HOSTS: ${ALLOWED_HOSTS}
       POSTGRES_DB: ${POSTGRES_DB}
       POSTGRES_USER: ${POSTGRES_USER}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
@@ -41,6 +44,7 @@ services:
       dockerfile: nginx/Dockerfile
     volumes:
       - medical_platform_static_data:/app/staticfiles:ro
+      - medical_platform_media_data:/app/media:ro
       - ./nginx/.htpasswd:/etc/nginx/.htpasswd:ro
     ports:
       - "80:80"

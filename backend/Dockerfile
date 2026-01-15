@@ -22,8 +22,7 @@ COPY . .
 COPY entrypoint.sh /entrypoint.sh
 RUN chmod +x /entrypoint.sh
 
-# collect static (важливо для nginx пізніше)
-RUN python manage.py collectstatic --noinput
+# collectstatic буде запускатись на runtime
 
 ENTRYPOINT ["/entrypoint.sh"]
 

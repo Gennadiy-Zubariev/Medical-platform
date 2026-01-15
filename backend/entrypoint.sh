@@ -7,7 +7,12 @@ echo 'Postgres ще не готовий...';
 done;
 echo '✅ PostgreSQL доступний!';
 
+echo "Run migrations"
 python manage.py migrate --noinput
+
+echo "Collect static files"
 python manage.py collectstatic --noinput
+
+
 
 exec "$@"
