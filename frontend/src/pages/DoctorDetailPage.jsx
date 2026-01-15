@@ -19,30 +19,20 @@ export default function DoctorDetailPage() {
 
     const WEEK_DAYS = ["Пн", "Вт", "Ср", "Чт", "Пт", "Сб", "Нд"];
     const normalizeWorkDayLabel = (day) => {
-        if (day === null || day === undefined) return null;
-
-        let dayValue = day;
-        if (typeof day === "string" && day.trim() !== "" && !Number.isNaN(Number(day))) {
-            dayValue = Number(day);
-        }
-
-        if (typeof dayValue === "number") {
-            if (dayValue >= 0 && dayValue <= 6) return WEEK_DAYS[dayValue];
+        if (typeof day === "number") {
+            if (day >= 0 && day <= 6) return WEEK_DAYS[day];
             return null;
         }
-
-        if (typeof dayValue === "string") {
-            const s = dayValue.trim();
-            if (!s) return null;
-            const cap = s.charAt(0).toUpperCase() + s.slice(1).toLowerCase();
-            if (WEEK_DAYS.includes(cap)) return cap;
+        if (typeof day === "string") {
+            const numericDay = Number(day);
+            if (!Number.isNaN(numericDay)) return normalizeWorkDayLabel(numericDay);
+            if (WEEK_DAYS.includes(day)) return day;
+            return null;
         }
-
         return null;
     };
-
     const workDayLabels = Array.isArray(doctor?.work_days)
-        ? doctor.work_days.map(normalizeWorkDayLabel).filter(Boolean)
+        ? doctor.work_days.map((day) => normalizeWorkDayLabel(day)).filter(Boolean)
         : [];
 
     const formatTime = (value) => {
