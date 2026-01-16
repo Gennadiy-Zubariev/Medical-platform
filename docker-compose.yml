@@ -47,8 +47,10 @@ services:
       - medical_platform_static_data:/app/staticfiles:ro
       - medical_platform_media_data:/app/media:ro
       - ./nginx/.htpasswd:/etc/nginx/.htpasswd:ro
+      - ./nginx/ssl:/etc/nginx/ssl:ro
     ports:
       - "80:80"
+      - "443:443"
     depends_on:
       - web
 
