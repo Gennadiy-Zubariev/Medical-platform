@@ -47,8 +47,6 @@ INSTALLED_APPS = [
     "appointments",
     "medical",
     "chat",
-    "activity",
-    "common",
     "registry",
 ]
 

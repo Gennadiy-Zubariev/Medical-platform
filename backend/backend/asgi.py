@@ -22,17 +22,24 @@ import django
 from channels.routing import ProtocolTypeRouter, URLRouter
 from django.core.asgi import get_asgi_application
 
-
+# Налаштування Django
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "backend.settings")
 django.setup()
 
+# Імпортуємо після django.setup(), щоб уникнути проблем з налаштуваннями
+from channels.auth import AuthMiddlewareStack
+from chat.middleware import JwtAuthMiddleware  # ← ваш кастомний middleware
+from chat.routing import websocket_urlpatterns   # ← ваші websocket-шляхи
 
-from backend.middleware import JwtAuthMiddlewareStack  # noqa: E402
-from chat.routing import websocket_urlpatterns  # noqa: E402
+# Основний ASGI-роутер
+application = ProtocolTypeRouter({
+    # Звичайні HTTP-запити обробляє Django
+    "http": get_asgi_application(),
 
-application = ProtocolTypeRouter(
-    {
-        "http": get_asgi_application(),
-        "websocket": JwtAuthMiddlewareStack(URLRouter(websocket_urlpatterns)),
-    }
-)
+    # WebSocket-запити обробляються через наш стек middleware
+    "websocket": JwtAuthMiddleware(
+        URLRouter(
+            websocket_urlpatterns
+        )
+    ),
+})
