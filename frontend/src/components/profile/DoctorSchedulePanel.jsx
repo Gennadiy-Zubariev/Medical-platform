@@ -84,7 +84,7 @@ export default function DoctorSchedulePanel({ doctor, onToggleBooking, onUpdateS
             </Box>
             <Chip
               label={doctor.is_booking_open ? "Запис відкритий" : "Запис закритий"}
-              color={doctor.is_booking_open ? "success" : "default"}
+              color={doctor.is_booking_open ? "success" : "error"}
               variant="outlined"
             />
             {onToggleBooking && (

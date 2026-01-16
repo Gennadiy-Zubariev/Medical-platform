@@ -3,6 +3,7 @@ from channels.generic.websocket import AsyncJsonWebsocketConsumer
 from django.utils import timezone
 
 from chat.models import ChatMessage, ChatRoom
+from chat.serializers import ChatMassageSerializer
 
 
 class ChatConsumer(AsyncJsonWebsocketConsumer):
@@ -30,13 +31,11 @@ class ChatConsumer(AsyncJsonWebsocketConsumer):
         if not user or user.is_anonymous:
             return
         saved_message = await self.create_message(self.room_id, user, message)
-        payload = {
-            "id": saved_message.id,
-            "room_id": self.room_id,
-            "sender_id": user.id,
-            "text": saved_message.text,
-            "created_at": saved_message.created_at.isoformat(),
-        }
+        
+        # Використовуємо серіалізатор для формування payload
+        serializer = ChatMassageSerializer(saved_message)
+        payload = serializer.data
+
         await self.channel_layer.group_send(
             self.group_name,
             {
