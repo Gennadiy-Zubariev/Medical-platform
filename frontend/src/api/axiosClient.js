@@ -32,10 +32,7 @@ axiosClient.interceptors.response.use(
           throw new Error("No refresh token");
         }
 
-        const res = await axios.post(
-          "http://localhost:8000/api/token/refresh/",
-          { refresh }
-        );
+        const res = await axios.post("/api/token/refresh/", { refresh });
 
         const newAccess = res.data.access;
         localStorage.setItem("access", newAccess);

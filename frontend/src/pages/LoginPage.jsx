@@ -22,7 +22,13 @@ export default function LoginPage() {
 
     return (
         <Container maxWidth="sm">
-            <Paper elevation={2} sx={{ p: { xs: 3, md: 4 } }}>
+            <Paper
+                elevation={2}
+                sx={{
+                    p: { xs: 3, md: 4 },
+                    backgroundImage: "linear-gradient(135deg, #ecfeff 0%, #e0f2fe 100%)",
+                }}
+            >
                 <Stack spacing={3}>
                     <Box>
                         <Typography variant="h4" gutterBottom>

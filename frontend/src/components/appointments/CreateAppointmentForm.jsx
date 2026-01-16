@@ -92,7 +92,12 @@ export default function CreateAppointmentForm({ onCreated, refreshKey }) {
   };
 
   return (
-    <Card elevation={2}>
+    <Card
+      elevation={2}
+      sx={{
+        backgroundImage: "linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%)",
+      }}
+    >
       <CardContent>
         <Stack spacing={3} component="form" onSubmit={handleSubmit}>
           <Box>
@@ -155,21 +160,35 @@ export default function CreateAppointmentForm({ onCreated, refreshKey }) {
           {slots.length > 0 && (
             <Stack spacing={1}>
               <Typography variant="subtitle1">Оберіть час:</Typography>
-              <Stack direction="row" spacing={1} flexWrap="wrap">
-                {slots.map((slot) => (
-                  <Button
-                    key={slot}
-                    type="button"
-                    variant={selectedSlot === slot ? "contained" : "outlined"}
-                    onClick={() => setSelectedSlot(slot)}
-                  >
-                    {new Date(slot).toLocaleTimeString([], {
-                      hour: "2-digit",
-                      minute: "2-digit",
-                    })}
-                  </Button>
-                ))}
-              </Stack>
+                <Box
+                  sx={{
+                    display: "grid",
+                    gridTemplateColumns: "repeat(auto-fill, minmax(90px, 1fr))",
+                    gap: 1.5,
+                  }}
+                >
+                  {slots.map((slot) => (
+                    <Button
+                      key={slot}
+                      type="button"
+                      variant={selectedSlot === slot ? "contained" : "outlined"}
+                      onClick={() => setSelectedSlot(slot)}
+                      sx={{
+                        height: 40,
+                        borderRadius: 2,
+                        transition: "0.2s",
+                        "&:hover": {
+                          transform: "scale(1.05)",
+                        },
+                      }}
+                    >
+                      {new Date(slot).toLocaleTimeString([], {
+                        hour: "2-digit",
+                        minute: "2-digit",
+                      })}
+                    </Button>
+                  ))}
+                </Box>
             </Stack>
           )}
 

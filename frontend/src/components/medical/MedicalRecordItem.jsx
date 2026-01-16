@@ -47,7 +47,12 @@ export default function MedicalRecordItem({
 //EDIT MODE
   if (isEditing) {
     return (
-        <Card elevation={1}>
+        <Card
+          elevation={1}
+          sx={{
+            backgroundImage: "linear-gradient(135deg, #fef9c3 0%, #fef08a 100%)",
+          }}
+        >
           <CardContent>
             <Stack spacing={2}>
               <Typography variant="subtitle1"><b>Редагування запису</b></Typography>
@@ -92,7 +97,12 @@ export default function MedicalRecordItem({
 
 
   return (
-    <Card elevation={1}>
+    <Card
+      elevation={1}
+      sx={{
+        backgroundImage: "linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%)",
+      }}
+    >
       <CardContent>
         <Stack spacing={1.5}>
           <Typography>

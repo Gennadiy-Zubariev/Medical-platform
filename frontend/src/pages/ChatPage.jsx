@@ -29,8 +29,11 @@ export default function ChatPage() {
     const [error, setError] = useState(null)
 
     const bottomRef = useRef(null);
-    const pollIntervalMs = 2500
+
     const roomId = useMemo(() => room?.id, [room]);
+    const wsRef = useRef(null);
+    const reconnectTimeoutRef = useRef(null);
+    const [wsStatus, setWsStatus] = useState("disconnected");
 
     const scrollToBottom = () => {
         bottomRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -73,14 +76,76 @@ export default function ChatPage() {
         axiosClient.post(`/chat/rooms/${appointmentId}/mark_as_read/`);
     }, [appointmentId]);
 
-    useEffect(() => {
-        if (error) return;
-        const id = setInterval(() => {
-            loadRoom();
-        }, pollIntervalMs);
+    const buildWsUrl = () => {
+        const token = localStorage.getItem("access");
+        if (!token || !roomId) return null;
+        const protocol = window.location.protocol === "https:" ? "wss" : "ws";
+        return `${protocol}://${window.location.host}/ws/chat/${roomId}/?token=${token}`;
+    };
 
-        return () => clearInterval(id);
-    }, [appointmentId, error]);
+    const connectWebSocket = () => {
+        const wsUrl = buildWsUrl();
+        if (!wsUrl) return;
+
+        setWsStatus("connecting");
+        const socket = new WebSocket(wsUrl);
+        wsRef.current = socket;
+
+        socket.onopen = () => {
+            setWsStatus("connected");
+        };
+
+        socket.onmessage = (event) => {
+            try {
+                const data = JSON.parse(event.data);
+                if (!data?.id) return;
+                setMessages((prev) => {
+                    if (prev.some((message) => message.id === data.id)) {
+                        return prev;
+                    }
+                    return [...prev, data];
+                });
+            } catch (parseError) {
+                console.error("WS message parse error", parseError);
+            }
+        };
+
+        socket.onclose = (event) => {
+            setWsStatus("disconnected");
+            if (reconnectTimeoutRef.current) {
+                clearTimeout(reconnectTimeoutRef.current);
+            }
+
+            if (event.code === 4001 || event.code === 4003) {
+                setError(event.code === 4001
+                    ? "Сесія завершилась. Увійдіть знову."
+                    : "Немає доступу до цього чату."
+                );
+                return;
+            }
+
+
+            reconnectTimeoutRef.current = setTimeout(() => {
+                connectWebSocket();
+            }, 3000);
+        };
+
+        socket.onerror = () => {
+            setWsStatus("disconnected");
+            socket.close();
+        };
+    };
+
+
+    useEffect(() => {
+        connectWebSocket();
+        return () => {
+            if (reconnectTimeoutRef.current) {
+                clearTimeout(reconnectTimeoutRef.current);
+            }
+            wsRef.current?.close();
+        };
+    }, [roomId, error]);
 
     useEffect(() => {
         if (!messages.length) return;
@@ -94,15 +159,18 @@ export default function ChatPage() {
 
         setSending(true);
         try {
-            await sendChatMessage(appointmentId, trimmed);
-            setText('');
-
-            await loadRoom();
+            if (wsRef.current?.readyState === WebSocket.OPEN) {
+                wsRef.current.send(JSON.stringify({ message: trimmed }));
+            } else {
+                await sendChatMessage(appointmentId, trimmed);
+                await loadRoom();
+            }
+            setText("");
             scrollToBottom();
         } catch (e) {
             alert(
                 e?.response?.data?.detail ||
-                'Не вдалося надіслати повідомлення'
+                "Не вдалося надіслати повідомлення"
             );
         } finally {
             setSending(false);
@@ -135,7 +203,15 @@ export default function ChatPage() {
       <Stack spacing={2}>
         <Typography variant="h4">Чат (прийом #{appointmentId})</Typography>
 
-        <Paper variant="outlined" sx={{ p: 2, height: 420, overflowY: "auto" }}>
+        <Paper
+          variant="outlined"
+          sx={{
+            p: 2,
+            height: 420,
+            overflowY: "auto",
+            backgroundImage: "linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%)",
+          }}
+        >
           {messages.length === 0 && (
             <Typography color="text.secondary">
               Повідомлень ще немає. Напишіть першим 🙂
@@ -206,7 +282,7 @@ export default function ChatPage() {
           </Stack>
 
           <Typography variant="caption" color="text.secondary">
-            Оновлення: кожні {pollIntervalMs / 1000} сек (polling)
+            Статус з'єднання: {wsStatus}
             {roomId ? ` • room_id: ${roomId}` : ""}
           </Typography>
         </Stack>

@@ -96,7 +96,12 @@ export default function PatientDashboardPage() {
                 )}
 
                 {profile && (
-                    <Card elevation={1}>
+                    <Card
+                        elevation={1}
+                        sx={{
+                            backgroundImage: "linear-gradient(135deg, #faf5ff 0%, #f3e8ff 100%)",
+                        }}
+                    >
                         <CardContent>
                             <Button component={RouterLink} to="/patient/medical-card" variant="outlined">
                                 📄 Моя медична картка

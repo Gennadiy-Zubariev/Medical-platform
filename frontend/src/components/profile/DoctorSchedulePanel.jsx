@@ -67,7 +67,12 @@ export default function DoctorSchedulePanel({ doctor, onToggleBooking, onUpdateS
   if (!doctor) return null;
 
   return (
-    <Card elevation={2}>
+    <Card
+      elevation={2}
+      sx={{
+        backgroundImage: "linear-gradient(135deg, #f0fdfa 0%, #ccfbf1 100%)",
+      }}
+    >
       <CardContent>
         <Stack spacing={3}>
           <Stack direction={{ xs: "column", sm: "row" }} spacing={2} alignItems="center">

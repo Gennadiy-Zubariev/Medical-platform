@@ -68,7 +68,14 @@ export default function EditDoctorProfileForm({ profile, onCancel, onSaved }) {
     };
 
     return (
-        <Card elevation={2} component="form" onSubmit={handleSubmit}>
+        <Card
+            elevation={2}
+            component="form"
+            onSubmit={handleSubmit}
+            sx={{
+                backgroundImage: "linear-gradient(135deg, #ede9fe 0%, #e0e7ff 100%)",
+            }}
+        >
             <CardContent>
                 <Stack spacing={3}>
                     <Stack direction={{ xs: "column", sm: "row" }} spacing={3} alignItems="center">

@@ -36,6 +36,9 @@ INSTALLED_APPS = [
     "rest_framework.authtoken",
     "rest_framework_simplejwt",
 
+    # Websockets
+    "channels",
+
     # CORS (корисно для React)
     "corsheaders",
 
@@ -44,8 +47,6 @@ INSTALLED_APPS = [
     "appointments",
     "medical",
     "chat",
-    "activity",
-    "common",
     "registry",
 ]
 
@@ -78,6 +79,14 @@ ROOT_URLCONF = "backend.urls"
 WSGI_APPLICATION = "backend.wsgi.application"
 ASGI_APPLICATION = "backend.asgi.application"
 
+CHANNEL_LAYERS = {
+    "default": {
+        "BACKEND": "channels_redis.core.RedisChannelLayer",
+        "CONFIG": {
+            "hosts": [os.getenv("REDIS_URL", "redis://localhost:6379/0")],
+        },
+    },
+}
 # ---------------------------------------------------
 # DATABASE (PostgreSQL)
 # ---------------------------------------------------

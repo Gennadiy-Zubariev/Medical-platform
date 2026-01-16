@@ -69,7 +69,12 @@ export default function DoctorMedicalCardPage() {
                     Медична картка: {card.patient.user.first_name} {card.patient.user.last_name}
                 </Typography>
 
-                <Card elevation={2}>
+                <Card
+                    elevation={2}
+                    sx={{
+                        backgroundImage: "linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%)",
+                    }}
+                >
                     <CardContent>
                         <Stack spacing={1}>
                             <Typography><b>Група крові:</b> {card.blood_type || "-"}</Typography>
