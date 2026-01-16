@@ -110,11 +110,21 @@ export default function ChatPage() {
             }
         };
 
-        socket.onclose = () => {
+        socket.onclose = (event) => {
             setWsStatus("disconnected");
             if (reconnectTimeoutRef.current) {
                 clearTimeout(reconnectTimeoutRef.current);
             }
+
+            if (event.code === 4001 || event.code === 4003) {
+                setError(event.code === 4001
+                    ? "Сесія завершилась. Увійдіть знову."
+                    : "Немає доступу до цього чату."
+                );
+                return;
+            }
+
+
             reconnectTimeoutRef.current = setTimeout(() => {
                 connectWebSocket();
             }, 3000);
