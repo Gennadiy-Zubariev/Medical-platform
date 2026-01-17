@@ -116,9 +116,9 @@ export default function DoctorsPage() {
                     />
 
                     <Box sx={{ flexGrow: 1, minWidth: 0 }}>
-                      <Tooltip title={`${doc.user.first_name} ${doc.user.last_name}`}>
+                      <Tooltip title={`${doc.user.last_name} ${doc.user.first_name}`}>
                         <Typography variant="h6" sx={{ whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis", maxWidth: "100%" }}>
-                          {doc.user.first_name} {doc.user.last_name}
+                          {doc.user.last_name} {doc.user.first_name}
                         </Typography>
                       </Tooltip>
                       <Typography color="text.secondary" sx={{ whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>

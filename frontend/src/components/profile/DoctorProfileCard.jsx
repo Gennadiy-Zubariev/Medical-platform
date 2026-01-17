@@ -61,6 +61,7 @@ export function DoctorProfileCard({profile, onEdit}) {
 
                     <Stack spacing={1} sx={{flexGrow: 1}}>
                         <Typography><b>Ім'я:</b> {profile.user.first_name}</Typography>
+                        <Typography><b>Ім'я:</b> {profile.user.last_name}</Typography>
                         <Typography><b>Email:</b> {profile.user.email}</Typography>
                         <Typography><b>Спеціалізація:</b> {profile.specialization ?? "--"}</Typography>
                         <Typography><b>Досвід роботи:</b> {profile.experience_years ?? "--"}</Typography>
