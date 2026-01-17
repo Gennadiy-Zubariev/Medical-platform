@@ -7,11 +7,11 @@ services:
       dockerfile: Dockerfile
     volumes:
       - ./backend:/app
-      - medical_platform_media_data:/app/media
       - medical_platform_static_data:/app/staticfiles
     depends_on:
       - project_db
       - redis
+      - minio
     environment:
       SECRET_KEY: ${SECRET_KEY}
       DEBUG: ${DEBUG}
@@ -22,6 +22,13 @@ services:
       POSTGRES_HOST: project_db
       POSTGRES_PORT: 5432
       REDIS_URL: ${REDIS_URL:-redis://redis:6379/0}
+      MINIO_ENDPOINT: ${MINIO_ENDPOINT:-minio:9000}
+      MINIO_ACCESS_KEY: ${MINIO_ACCESS_KEY:-minio}
+      MINIO_SECRET_KEY: ${MINIO_SECRET_KEY:-minio123}
+      MINIO_BUCKET_NAME: ${MINIO_BUCKET_NAME:-medical-media}
+      MINIO_USE_HTTPS: ${MINIO_USE_HTTPS:-false}
+      MINIO_REGION: ${MINIO_REGION:-us-east-1}
+      MINIO_PUBLIC_URL: ${MINIO_PUBLIC_URL:-}
 
   project_db:
     image: postgres:16
@@ -38,6 +45,35 @@ services:
     image: redis:7
     restart: always
 
+  minio:
+    image: minio/minio:RELEASE.2025-02-28T09-55-16Z
+    command: server /data --console-address ":9001"
+    environment:
+      MINIO_ROOT_USER: ${MINIO_ROOT_USER:-minio}
+      MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD:-minio123}
+    volumes:
+      - medical_platform_minio_data:/data
+    ports:
+      - "9000:9000"
+      - "9001:9001"
+    restart: always
+
+  minio_init:
+    image: minio/mc:RELEASE.2025-02-21T20-05-54Z
+    depends_on:
+      - minio
+    entrypoint: >
+      /bin/sh -c "
+      /usr/bin/mc alias set minio http://minio:9000 $${MINIO_ROOT_USER} $${MINIO_ROOT_PASSWORD};
+      /usr/bin/mc mb -p minio/$${MINIO_BUCKET_NAME} || true;
+      /usr/bin/mc anonymous set download minio/$${MINIO_BUCKET_NAME};
+      "
+    environment:
+      MINIO_ROOT_USER: ${MINIO_ROOT_USER:-minio}
+      MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD:-minio123}
+      MINIO_BUCKET_NAME: ${MINIO_BUCKET_NAME:-medical-media}
+
+
 
   nginx:
     build:
@@ -45,7 +81,6 @@ services:
       dockerfile: nginx/Dockerfile
     volumes:
       - medical_platform_static_data:/app/staticfiles:ro
-      - medical_platform_media_data:/app/media:ro
       - ./nginx/.htpasswd:/etc/nginx/.htpasswd:ro
       - ./nginx/ssl:/etc/nginx/ssl:ro
     ports:
@@ -58,7 +93,7 @@ services:
 volumes:
   medical_platform_postgres_data:
     external: true
-  medical_platform_media_data:
-    external: true
   medical_platform_static_data:
+    external: true
+  medical_platform_minio_data:
     external: true

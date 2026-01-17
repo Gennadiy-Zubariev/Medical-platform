@@ -36,6 +36,9 @@ INSTALLED_APPS = [
     "rest_framework.authtoken",
     "rest_framework_simplejwt",
 
+    # Storages
+    "storages",
+
     # Websockets
     "channels",
 
@@ -194,8 +197,40 @@ STATIC_URL = "/static/"
 STATIC_ROOT = BASE_DIR / "staticfiles"
 
 
-MEDIA_URL = "/medical-media/"
-MEDIA_ROOT = BASE_DIR / "media"
+# MEDIA_URL = "/medical-media/"
+# MEDIA_ROOT = BASE_DIR / "media"
+
+# MinIO (S3-compatible) storage
+MINIO_ENDPOINT = os.getenv("MINIO_ENDPOINT", "minio:9000")
+MINIO_ACCESS_KEY = os.getenv("MINIO_ACCESS_KEY", "")
+MINIO_SECRET_KEY = os.getenv("MINIO_SECRET_KEY", "")
+MINIO_BUCKET_NAME = os.getenv("MINIO_BUCKET_NAME", "medical-media")
+MINIO_USE_HTTPS = os.getenv("MINIO_USE_HTTPS", "false").lower() == "true"
+MINIO_REGION = os.getenv("MINIO_REGION", "us-east-1")
+MINIO_PUBLIC_URL = os.getenv("MINIO_PUBLIC_URL")
+
+AWS_ACCESS_KEY_ID = MINIO_ACCESS_KEY
+AWS_SECRET_ACCESS_KEY = MINIO_SECRET_KEY
+AWS_STORAGE_BUCKET_NAME = MINIO_BUCKET_NAME
+AWS_S3_ENDPOINT_URL = f"http{'s' if MINIO_USE_HTTPS else ''}://{MINIO_ENDPOINT}"
+AWS_S3_REGION_NAME = MINIO_REGION
+AWS_S3_SIGNATURE_VERSION = "s3v4"
+AWS_S3_ADDRESSING_STYLE = "path"
+AWS_S3_URL_PROTOCOL = "https" if MINIO_USE_HTTPS else "http"
+AWS_DEFAULT_ACL = None
+AWS_QUERYSTRING_AUTH = False
+
+if MINIO_PUBLIC_URL:
+    AWS_S3_CUSTOM_DOMAIN = MINIO_PUBLIC_URL
+
+STORAGES = {
+    "default": {
+        "BACKEND": "storages.backends.s3boto3.S3Boto3Storage",
+    },
+    "staticfiles": {
+        "BACKEND": "django.contrib.staticfiles.storage.StaticFilesStorage",
+    },
+}
 
 # ---------------------------------------------------
 # DEFAULT PRIMARY KEY
