@@ -51,10 +51,11 @@ export function DoctorProfileCard({profile, onEdit}) {
                         src={photoURL}
                         alt="Фото профілю"
                         sx={{
-                            width: 96,
-                            height: 96,
+                            width: {xs: 120, sm: 160, md: 200},
+                            height: {xs: 120, sm: 160, md: 200},
                             boxShadow: "0 12px 24px rgba(15, 23, 42, 0.2)",
                             border: "3px solid rgba(255, 255, 255, 0.85)",
+                            flexShrink: 0,
                         }}
                     />
 
@@ -76,10 +77,10 @@ export function DoctorProfileCard({profile, onEdit}) {
                                 boxShadow: "inset 0 1px 0 rgba(255, 255, 255, 0.6)",
                             }}
                         >
-                            <Typography variant="subtitle2" sx={{ mb: 1 }}>
+                            <Typography variant="subtitle2" sx={{mb: 1}}>
                                 Розклад
                             </Typography>
-                            <Stack direction={{ xs: "column", sm: "row" }} spacing={2} alignItems="center">
+                            <Stack direction={{xs: "column", sm: "row"}} spacing={2} alignItems="center">
                                 <Stack spacing={0.5}>
                                     <Typography variant="body2">
                                         <b>Початок:</b> {formatTime(profile.work_start)}
@@ -91,10 +92,10 @@ export function DoctorProfileCard({profile, onEdit}) {
                                 <Stack direction="row" spacing={1} flexWrap="wrap">
                                     {workDayLabels.length > 0 ? (
                                         workDayLabels.map((day) => (
-                                            <Chip key={day} label={day} size="small" variant="outlined" />
+                                            <Chip key={day} label={day} size="small" variant="outlined"/>
                                         ))
                                     ) : (
-                                        <Chip label="--" size="small" variant="outlined" />
+                                        <Chip label="--" size="small" variant="outlined"/>
                                     )}
                                 </Stack>
                             </Stack>

@@ -88,6 +88,11 @@ if not DEBUG:
     SECURE_BROWSER_XSS_FILTER = True
     X_FRAME_OPTIONS = "DENY"
 
+CSRF_TRUSTED_ORIGINS = os.getenv(
+    "CSRF_TRUSTED_ORIGINS",
+    "https://localhost,https://127.0.0.1,http://localhost,http://127.0.0.1"
+).split(",")
+
 # ---------------------------------------------------
 # URLs / WSGI / ASGI
 # ---------------------------------------------------
@@ -189,7 +194,7 @@ STATIC_URL = "/static/"
 STATIC_ROOT = BASE_DIR / "staticfiles"
 
 
-MEDIA_URL = "/media/"
+MEDIA_URL = "/medical-media/"
 MEDIA_ROOT = BASE_DIR / "media"
 
 # ---------------------------------------------------
@@ -198,7 +203,7 @@ MEDIA_ROOT = BASE_DIR / "media"
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 # ---------------------------------------------------
-# CELERY (на майбутнє)
+# CELERY
 # ---------------------------------------------------
 CELERY_BROKER_URL = os.getenv("CELERY_BROKER_URL", "redis://localhost:6379/0")
 CELERY_RESULT_BACKEND = os.getenv("CELERY_RESULT_BACKEND", "redis://localhost:6379/1")
