@@ -11,6 +11,8 @@ import CreateAppointmentForm from "../components/appointments/CreateAppointmentF
 import PatientProfileCard from "../components/profile/PatientProfileCard";
 import EditPatientProfileForm from "../components/profile/EditPatientProfileForm";
 import AppointmentsList from "../components/appointments/AppointmentsList";
+import PageBackground from "../components/PageBackground";
+import bg from "../assets/patient_dashboard_page.jpg";
 
 
 export default function PatientDashboardPage() {
@@ -76,60 +78,61 @@ export default function PatientDashboardPage() {
     };
 
     return (
-        <Layout>
-            <Stack spacing={3}>
-                <Typography variant="h4">Кабінет пацієнта</Typography>
+        <PageBackground image={bg}>
+            <Layout>
+                <Stack spacing={3}>
+                    <Typography variant="h4">Кабінет пацієнта</Typography>
 
-                {profile && !editing && (
-                    <PatientProfileCard profile={profile} onEdit={() => setEditing(true)} />
-                )}
+                    {profile && !editing && (
+                        <PatientProfileCard profile={profile} onEdit={() => setEditing(true)} />
+                    )}
 
-                {editing && (
-                    <EditPatientProfileForm
-                        profile={profile}
-                        onCancel={() => setEditing(false)}
-                        onSaved={() => {
-                            setEditing(false);
-                            loadProfile();
-                        }}
+                    {editing && (
+                        <EditPatientProfileForm
+                            profile={profile}
+                            onCancel={() => setEditing(false)}
+                            onSaved={() => {
+                                setEditing(false);
+                                loadProfile();
+                            }}
+                        />
+                    )}
+
+                    {profile && (
+                        <Card
+                            elevation={1}
+                            sx={{
+                                backgroundImage: "linear-gradient(135deg, #faf5ff 0%, #f3e8ff 100%)",
+                            }}
+                        >
+                            <CardContent>
+                                <Button component={RouterLink} to="/patient/medical-card" variant="outlined">
+                                    📄 Моя медична картка
+                                </Button>
+                            </CardContent>
+                        </Card>
+                    )}
+
+                    <CreateAppointmentForm
+                        onCreated={loadAppointments}
+                        refreshKey={refreshSlotsKey}
                     />
-                )}
 
-                {profile && (
-                    <Card
-                        elevation={1}
-                        sx={{
-                            backgroundImage: "linear-gradient(135deg, #faf5ff 0%, #f3e8ff 100%)",
-                        }}
-                    >
-                        <CardContent>
-                            <Button component={RouterLink} to="/patient/medical-card" variant="outlined">
-                                📄 Моя медична картка
-                            </Button>
-                        </CardContent>
-                    </Card>
-                )}
+                    {loading && <Typography>Завантаження...</Typography>}
+                    {error && <Alert severity="error">{error}</Alert>}
 
-                <CreateAppointmentForm
-                    onCreated={loadAppointments}
-                    refreshKey={refreshSlotsKey}
-                />
+                    {!loading && appointments.length === 0 && (
+                        <Typography color="text.secondary">У вас ще немає записів</Typography>
+                    )}
 
-                {loading && <Typography>Завантаження...</Typography>}
-                {error && <Alert severity="error">{error}</Alert>}
-
-                {!loading && appointments.length === 0 && (
-                    <Typography color="text.secondary">У вас ще немає записів</Typography>
-                )}
-
-                <AppointmentsList
-                    appointments={appointments}
-                    role="patient"
-                    onCancel={handleCancel}
-                    onOpenChat={(id) => navigate(`/chat/${id}`)}
-                />
-            </Stack>
-
-        </Layout>
+                    <AppointmentsList
+                        appointments={appointments}
+                        role="patient"
+                        onCancel={handleCancel}
+                        onOpenChat={(id) => navigate(`/chat/${id}`)}
+                    />
+                </Stack>
+            </Layout>
+        </PageBackground>
     );
 }

@@ -13,6 +13,8 @@ import {
   Typography,
 } from "@mui/material";
 import { getDoctorSpecializations, getDoctorsPublic } from "../api/doctors";
+import PageBackground from "../components/PageBackground";
+import bg from "../assets/doctors_page.jpg";
 
 export default function DoctorsPage() {
   const [specializations, setSpecializations] = useState([]);
@@ -49,99 +51,101 @@ export default function DoctorsPage() {
   }
 
   return (
-    <Container maxWidth="lg">
-      <Stack spacing={3}>
-        <Box>
-          <Typography variant="h4" gutterBottom>
-            Наші лікарі
-          </Typography>
-          <Typography color="text.secondary">
-            Оберіть спеціалізацію та знайдіть фахівця для консультації.
-          </Typography>
-        </Box>
+      <PageBackground image={bg}>
+        <Container maxWidth="lg">
+          <Stack spacing={3}>
+            <Box>
+              <Typography variant="h4" gutterBottom>
+                Наші лікарі
+              </Typography>
+              <Typography color="text.secondary">
+                Оберіть спеціалізацію та знайдіть фахівця для консультації.
+              </Typography>
+            </Box>
 
-        <Stack direction="row" spacing={1} flexWrap="wrap">
-          <Button
-            onClick={() => setSelectedSpec(null)}
-            variant={selectedSpec === null ? "contained" : "outlined"}
-          >
-            Всі
-          </Button>
-
-          {specializations.map((spec) => (
-            <Button
-              key={spec}
-              onClick={() => setSelectedSpec(spec)}
-              variant={selectedSpec === spec ? "contained" : "outlined"}
-            >
-              {spec}
-            </Button>
-          ))}
-        </Stack>
-
-        {doctors.length === 0 && (
-          <Typography color="text.secondary">Лікарів не знайдено</Typography>
-        )}
-
-        <Grid container spacing={3}>
-          {doctors.map((doc, index) => (
-            <Grid item xs={12} sm={6} md={4} key={doc.id} sx={{ display: "flex" }}>
-              <Card
-                elevation={2}
-                sx={{
-                  width: 330,
-                  height: 220,
-                  display: "flex",
-                  flexDirection: "column",
-                  backgroundImage: "linear-gradient(135deg, #f5f3ff 0%, #ede9fe 100%)",
-                }}
+            <Stack direction="row" spacing={1} flexWrap="wrap">
+              <Button
+                onClick={() => setSelectedSpec(null)}
+                variant={selectedSpec === null ? "contained" : "outlined"}
               >
-                <CardContent sx={{ flexGrow: 1 }}>
-                  <Stack
-                    direction="row"
-                    spacing={2}
-                    alignItems="center"
-                    sx={{ minHeight: 96 }}
-                  >
-                    <Avatar
-                      src={doc.photo || "/avatar-placeholder.png"}
-                      alt="Фото лікаря"
-                      sx={{
-                        width: 72,
-                        height: 72,
-                        boxShadow: "0 8px 16px rgba(15, 23, 42, 0.18)",
-                        border: "2px solid rgba(255, 255, 255, 0.9)",
-                        flexShrink: 0,
-                      }}
-                    />
+                Всі
+              </Button>
 
-                    <Box sx={{ flexGrow: 1, minWidth: 0 }}>
-                      <Tooltip title={`${doc.user.last_name} ${doc.user.first_name}`}>
-                        <Typography variant="h6" sx={{ whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis", maxWidth: "100%" }}>
-                          {doc.user.last_name} {doc.user.first_name}
-                        </Typography>
-                      </Tooltip>
-                      <Typography color="text.secondary" sx={{ whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
-                        {doc.specialization}
-                      </Typography>
-                    </Box>
-                  </Stack>
-                </CardContent>
-                <Box sx={{ p: 2, pt: 0 }}>
-                  <Button 
-                    component={RouterLink} 
-                    to={`/doctors/${doc.id}`} 
-                    variant="outlined" 
-                    fullWidth
+              {specializations.map((spec) => (
+                <Button
+                  key={spec}
+                  onClick={() => setSelectedSpec(spec)}
+                  variant={selectedSpec === spec ? "contained" : "outlined"}
+                >
+                  {spec}
+                </Button>
+              ))}
+            </Stack>
+
+            {doctors.length === 0 && (
+              <Typography color="text.secondary">Лікарів не знайдено</Typography>
+            )}
+
+            <Grid container spacing={3}>
+              {doctors.map((doc, index) => (
+                <Grid item xs={12} sm={6} md={4} key={doc.id} sx={{ display: "flex" }}>
+                  <Card
+                    elevation={2}
+                    sx={{
+                      width: 330,
+                      height: 220,
+                      display: "flex",
+                      flexDirection: "column",
+                      backgroundImage: "linear-gradient(135deg, #f5f3ff 0%, #ede9fe 100%)",
+                    }}
                   >
-                    Переглянути
-                  </Button>
-                </Box>
-              </Card>
+                    <CardContent sx={{ flexGrow: 1 }}>
+                      <Stack
+                        direction="row"
+                        spacing={2}
+                        alignItems="center"
+                        sx={{ minHeight: 96 }}
+                      >
+                        <Avatar
+                          src={doc.photo || "/avatar-placeholder.png"}
+                          alt="Фото лікаря"
+                          sx={{
+                            width: 72,
+                            height: 72,
+                            boxShadow: "0 8px 16px rgba(15, 23, 42, 0.18)",
+                            border: "2px solid rgba(255, 255, 255, 0.9)",
+                            flexShrink: 0,
+                          }}
+                        />
+
+                        <Box sx={{ flexGrow: 1, minWidth: 0 }}>
+                          <Tooltip title={`${doc.user.last_name} ${doc.user.first_name}`}>
+                            <Typography variant="h6" sx={{ whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis", maxWidth: "100%" }}>
+                              {doc.user.last_name} {doc.user.first_name}
+                            </Typography>
+                          </Tooltip>
+                          <Typography color="text.secondary" sx={{ whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
+                            {doc.specialization}
+                          </Typography>
+                        </Box>
+                      </Stack>
+                    </CardContent>
+                    <Box sx={{ p: 2, pt: 0 }}>
+                      <Button
+                        component={RouterLink}
+                        to={`/doctors/${doc.id}`}
+                        variant="outlined"
+                        fullWidth
+                      >
+                        Переглянути
+                      </Button>
+                    </Box>
+                  </Card>
+                </Grid>
+              ))}
             </Grid>
-          ))}
-        </Grid>
-      </Stack>
-    </Container>
+          </Stack>
+        </Container>
+    </PageBackground>
   );
 }

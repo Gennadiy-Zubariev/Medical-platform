@@ -2,6 +2,8 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Alert, Box, Button, Container, Paper, Stack, TextField, Typography } from "@mui/material";
 import { registerDoctor } from "../api/accounts";
+import PageBackground from "../components/PageBackground";
+import bg from "../assets/doctors_page.jpg";
 
 export default function RegisterDoctorPage() {
   const [form, setForm] = useState({
@@ -68,101 +70,103 @@ export default function RegisterDoctorPage() {
   };
 
   return (
-    <Container maxWidth="sm">
-      <Paper
-        elevation={2}
-        sx={{
-          p: { xs: 3, md: 4 },
-          backgroundImage: "linear-gradient(135deg, #eef2ff 0%, #e0e7ff 100%)",
-        }}
-      >
-        <Stack spacing={3}>
-          <Box>
-            <Typography variant="h4" gutterBottom>
-              Реєстрація лікаря
-            </Typography>
-            <Typography color="text.secondary">
-              Заповніть дані, щоб створити профіль лікаря.
-            </Typography>
-          </Box>
+      <PageBackground image={bg}>
+        <Container maxWidth="sm">
+          <Paper
+            elevation={2}
+            sx={{
+              p: { xs: 3, md: 4 },
+              backgroundImage: "linear-gradient(135deg, #eef2ff 0%, #e0e7ff 100%)",
+            }}
+          >
+            <Stack spacing={3}>
+              <Box>
+                <Typography variant="h4" gutterBottom>
+                  Реєстрація лікаря
+                </Typography>
+                <Typography color="text.secondary">
+                  Заповніть дані, щоб створити профіль лікаря.
+                </Typography>
+              </Box>
 
-          <Box component="form" onSubmit={handleSubmit}>
-            <Stack spacing={2}>
-              <TextField
-                name="username"
-                label="Логін"
-                value={form.username}
-                onChange={handleChange}
-                required
-                fullWidth
-              />
-              <TextField
-                name="password"
-                label="Пароль"
-                type="password"
-                value={form.password}
-                onChange={handleChange}
-                required
-                fullWidth
-              />
-              <TextField
-                name="email"
-                label="Email"
-                type="email"
-                value={form.email}
-                onChange={handleChange}
-                required
-                fullWidth
-              />
-              <TextField
-                name="first_name"
-                label="Ім'я"
-                value={form.first_name}
-                onChange={handleChange}
-                fullWidth
-              />
-              <TextField
-                name="last_name"
-                label="Прізвище"
-                value={form.last_name}
-                onChange={handleChange}
-                fullWidth
-              />
+              <Box component="form" onSubmit={handleSubmit}>
+                <Stack spacing={2}>
+                  <TextField
+                    name="username"
+                    label="Логін"
+                    value={form.username}
+                    onChange={handleChange}
+                    required
+                    fullWidth
+                  />
+                  <TextField
+                    name="password"
+                    label="Пароль"
+                    type="password"
+                    value={form.password}
+                    onChange={handleChange}
+                    required
+                    fullWidth
+                  />
+                  <TextField
+                    name="email"
+                    label="Email"
+                    type="email"
+                    value={form.email}
+                    onChange={handleChange}
+                    required
+                    fullWidth
+                  />
+                  <TextField
+                    name="first_name"
+                    label="Ім'я"
+                    value={form.first_name}
+                    onChange={handleChange}
+                    fullWidth
+                  />
+                  <TextField
+                    name="last_name"
+                    label="Прізвище"
+                    value={form.last_name}
+                    onChange={handleChange}
+                    fullWidth
+                  />
 
-              <TextField
-                name="license_number"
-                label="Номер ліцензії"
-                value={form.license_number}
-                onChange={handleChange}
-                required
-                fullWidth
-              />
-              <TextField
-                name="specialization"
-                label="Спеціалізація (наприклад, терапевт)"
-                value={form.specialization}
-                onChange={handleChange}
-                required
-                fullWidth
-              />
-              <TextField
-                name="experience_years"
-                label="Стаж (років)"
-                value={form.experience_years}
-                onChange={handleChange}
-                required
-                fullWidth
-              />
+                  <TextField
+                    name="license_number"
+                    label="Номер ліцензії"
+                    value={form.license_number}
+                    onChange={handleChange}
+                    required
+                    fullWidth
+                  />
+                  <TextField
+                    name="specialization"
+                    label="Спеціалізація (наприклад, терапевт)"
+                    value={form.specialization}
+                    onChange={handleChange}
+                    required
+                    fullWidth
+                  />
+                  <TextField
+                    name="experience_years"
+                    label="Стаж (років)"
+                    value={form.experience_years}
+                    onChange={handleChange}
+                    required
+                    fullWidth
+                  />
 
-              {error && <Alert severity="error">{error}</Alert>}
+                  {error && <Alert severity="error">{error}</Alert>}
 
-              <Button type="submit" variant="contained" disabled={loading}>
-                {loading ? "Реєстрація..." : "Зареєструватись як лікар"}
-              </Button>
+                  <Button type="submit" variant="contained" disabled={loading}>
+                    {loading ? "Реєстрація..." : "Зареєструватись як лікар"}
+                  </Button>
+                </Stack>
+              </Box>
             </Stack>
-          </Box>
-        </Stack>
-      </Paper>
-    </Container>
+          </Paper>
+        </Container>
+      </PageBackground>
   );
 }

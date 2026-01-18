@@ -5,6 +5,8 @@ import MedicalCardEditForm from "../components/medical/MedicalCardEditForm.jsx";
 import MedicalCardHeader from "../components/medical/MedicalCardHeader.jsx";
 import MedicalCardView from "../components/medical/MedicalCardView.jsx";
 import MedicalRecordItem from "../components/medical/MedicalRecordItem.jsx";
+import PageBackground from "../components/PageBackground";
+import bg from "../assets/patient_dashboard_page.jpg";
 
 
 export default function PatientMedicalCardPage() {
@@ -42,47 +44,49 @@ export default function PatientMedicalCardPage() {
     if (!card) return null;
 
     return (
-        <Container maxWidth="md">
-            <Stack spacing={3}>
-                <MedicalCardHeader patient={card.patient} />
+        <PageBackground image={bg}>
+            <Container maxWidth="md">
+                <Stack spacing={3}>
+                    <MedicalCardHeader patient={card.patient} />
 
-                <Card
-                    elevation={2}
-                    sx={{
-                        backgroundImage: "linear-gradient(135deg, #fefce8 0%, #fef9c3 100%)",
-                    }}
-                >
-                    <CardContent>
-                        {isEditing ? (
-                            <MedicalCardEditForm
-                                initialValues={{
-                                    blood_type: card.blood_type || "",
-                                    allergies: card.allergies || "",
-                                    chronic_diseases: card.chronic_diseases || "",
-                                }}
-                                onSubmit={handleSave}
-                                onCancel={() => setIsEditing(false)}
-                            />
+                    <Card
+                        elevation={2}
+                        sx={{
+                            backgroundImage: "linear-gradient(135deg, #fefce8 0%, #fef9c3 100%)",
+                        }}
+                    >
+                        <CardContent>
+                            {isEditing ? (
+                                <MedicalCardEditForm
+                                    initialValues={{
+                                        blood_type: card.blood_type || "",
+                                        allergies: card.allergies || "",
+                                        chronic_diseases: card.chronic_diseases || "",
+                                    }}
+                                    onSubmit={handleSave}
+                                    onCancel={() => setIsEditing(false)}
+                                />
+                            ) : (
+                                <MedicalCardView
+                                    card={card}
+                                    onEdit={() => setIsEditing(true)}
+                                />
+                            )}
+                        </CardContent>
+                    </Card>
+
+                    <Typography variant="h5">Історія хвороб</Typography>
+                    <Stack spacing={2}>
+                        {card.records?.length ? (
+                            card.records.map((r) => (
+                                <MedicalRecordItem key={r.id} record={r} canEdit={false} />
+                            ))
                         ) : (
-                            <MedicalCardView
-                                card={card}
-                                onEdit={() => setIsEditing(true)}
-                            />
+                            <Typography color="text.secondary">Записів ще немає</Typography>
                         )}
-                    </CardContent>
-                </Card>
-
-                <Typography variant="h5">Історія хвороб</Typography>
-                <Stack spacing={2}>
-                    {card.records?.length ? (
-                        card.records.map((r) => (
-                            <MedicalRecordItem key={r.id} record={r} canEdit={false} />
-                        ))
-                    ) : (
-                        <Typography color="text.secondary">Записів ще немає</Typography>
-                    )}
+                    </Stack>
                 </Stack>
-            </Stack>
-        </Container>
+            </Container>
+        </PageBackground>
     );
 }

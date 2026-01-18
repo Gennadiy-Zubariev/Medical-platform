@@ -17,6 +17,8 @@ import {DoctorProfileCard} from "../components/profile/DoctorProfileCard";
 import EditDoctorProfileForm from "../components/profile/EditDoctorProfileForm";
 import AppointmentsList from "../components/appointments/AppointmentsList";
 import DoctorSchedulePanel from "../components/profile/DoctorSchedulePanel";
+import PageBackground from "../components/PageBackground";
+import bg from "../assets/doctor_profile_page 1.jpg";
 
 export default function DoctorDashboardPage() {
     const navigate = useNavigate();
@@ -96,44 +98,46 @@ export default function DoctorDashboardPage() {
     };
 
     return (
-        <Layout>
-            <Stack spacing={3}>
-                <Typography variant="h4">Кабінет лікаря</Typography>
+        <PageBackground image={bg}>
+            <Layout>
+                <Stack spacing={3}>
+                    <Typography variant="h4">Кабінет лікаря</Typography>
 
-                {doctor && !editing && (
-                    <DoctorProfileCard profile={doctor} onEdit={() => setEditing(true)} />
-                )}
+                    {doctor && !editing && (
+                        <DoctorProfileCard profile={doctor} onEdit={() => setEditing(true)} />
+                    )}
 
-                {editing && (
-                    <EditDoctorProfileForm
-                        profile={doctor}
-                        onCancel={() => setEditing(false)}
-                        onSaved={() => {
-                            setEditing(false);
-                            loadDoctorProfile();
-                        }}
+                    {editing && (
+                        <EditDoctorProfileForm
+                            profile={doctor}
+                            onCancel={() => setEditing(false)}
+                            onSaved={() => {
+                                setEditing(false);
+                                loadDoctorProfile();
+                            }}
+                        />
+                    )}
+
+                    {doctor && (
+                        <DoctorSchedulePanel
+                            doctor={doctor}
+                            onToggleBooking={toggleBooking}
+                            onUpdateSchedule={updateDoctorSchedule}
+                        />
+                    )}
+
+                    {loading && <Typography>Завантаження...</Typography>}
+                    {error && <Alert severity="error">{error}</Alert>}
+
+                    <AppointmentsList
+                        appointments={appointments}
+                        role="doctor"
+                        onConfirm={(id) => changeStatus(id, "confirmed")}
+                        onComplete={(id) => changeStatus(id, "completed")}
+                        onOpenChat={(id) => navigate(`/chat/${id}`)}
                     />
-                )}
-
-                {doctor && (
-                    <DoctorSchedulePanel
-                        doctor={doctor}
-                        onToggleBooking={toggleBooking}
-                        onUpdateSchedule={updateDoctorSchedule}
-                    />
-                )}
-
-                {loading && <Typography>Завантаження...</Typography>}
-                {error && <Alert severity="error">{error}</Alert>}
-
-                <AppointmentsList
-                    appointments={appointments}
-                    role="doctor"
-                    onConfirm={(id) => changeStatus(id, "confirmed")}
-                    onComplete={(id) => changeStatus(id, "completed")}
-                    onOpenChat={(id) => navigate(`/chat/${id}`)}
-                />
-            </Stack>
-        </Layout>
+                </Stack>
+            </Layout>
+        </PageBackground>
     );
 }
