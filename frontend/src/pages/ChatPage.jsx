@@ -15,6 +15,8 @@ import axiosClient from "../api/axiosClient.js";
 import { getChatRoom, sendChatMessage } from "../api/chat";
 import { getMyProfile } from "../api/accounts";
 import formatDate from "../utils/formatDate";
+import PageBackground from "../components/PageBackground";
+import bg from "../assets/doctors_page.jpg";
 
 export default function ChatPage() {
     const {appointmentId} = useParams();
@@ -199,94 +201,96 @@ export default function ChatPage() {
     );
 
   return (
-    <Container maxWidth="md">
-      <Stack spacing={2}>
-        <Typography variant="h4">Чат (прийом #{appointmentId})</Typography>
+      <PageBackground image={bg}>
+        <Container maxWidth="md">
+          <Stack spacing={2}>
+            <Typography variant="h4">Чат (прийом #{appointmentId})</Typography>
 
-        <Paper
-          variant="outlined"
-          sx={{
-            p: 2,
-            height: 420,
-            overflowY: "auto",
-            backgroundImage: "linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%)",
-          }}
-        >
-          {messages.length === 0 && (
-            <Typography color="text.secondary">
-              Повідомлень ще немає. Напишіть першим 🙂
-            </Typography>
-          )}
+            <Paper
+              variant="outlined"
+              sx={{
+                p: 2,
+                height: 420,
+                overflowY: "auto",
+                backgroundImage: "linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%)",
+              }}
+            >
+              {messages.length === 0 && (
+                <Typography color="text.secondary">
+                  Повідомлень ще немає. Напишіть першим 🙂
+                </Typography>
+              )}
 
-          <Stack spacing={1.5}>
-            {messages.map((m) => {
-              const isMine = me?.id && m.sender?.id === me.id;
-              return (
-                <Stack
-                  key={m.id}
-                  spacing={0.5}
-                  alignItems={isMine ? "flex-end" : "flex-start"}
-                >
-                  <Box
-                    sx={{
-                      maxWidth: "80%",
-                      borderRadius: 2,
-                      border: "1px solid",
-                      borderColor: "divider",
-                      p: 1.5,
-                      backgroundColor: isMine ? "rgba(37, 99, 235, 0.08)" : "grey.50",
-                      whiteSpace: "pre-wrap",
-                    }}
-                  >
-                    <Typography variant="caption" color="text.secondary" display="block">
-                      {m.sender?.first_name || m.sender?.username || "User"}{" "}
-                      {m.sender?.last_name || ""}
-                    </Typography>
-                    <Typography>{m.text}</Typography>
-                    {m.sender?.id === me?.id && (
+              <Stack spacing={1.5}>
+                {messages.map((m) => {
+                  const isMine = me?.id && m.sender?.id === me.id;
+                  return (
+                    <Stack
+                      key={m.id}
+                      spacing={0.5}
+                      alignItems={isMine ? "flex-end" : "flex-start"}
+                    >
+                      <Box
+                        sx={{
+                          maxWidth: "80%",
+                          borderRadius: 2,
+                          border: "1px solid",
+                          borderColor: "divider",
+                          p: 1.5,
+                          backgroundColor: isMine ? "rgba(37, 99, 235, 0.08)" : "grey.50",
+                          whiteSpace: "pre-wrap",
+                        }}
+                      >
+                        <Typography variant="caption" color="text.secondary" display="block">
+                          {m.sender?.first_name || m.sender?.username || "User"}{" "}
+                          {m.sender?.last_name || ""}
+                        </Typography>
+                        <Typography>{m.text}</Typography>
+                        {m.sender?.id === me?.id && (
+                          <Typography variant="caption" color="text.secondary">
+                            {m.is_read ? "✔✔" : "✔"}
+                          </Typography>
+                        )}
+                      </Box>
                       <Typography variant="caption" color="text.secondary">
-                        {m.is_read ? "✔✔" : "✔"}
+                        {formatDate(m.created_at)}
                       </Typography>
-                    )}
-                  </Box>
-                  <Typography variant="caption" color="text.secondary">
-                    {formatDate(m.created_at)}
-                  </Typography>
-                </Stack>
-              );
-            })}
+                    </Stack>
+                  );
+                })}
+              </Stack>
+              <div ref={bottomRef} />
+            </Paper>
+
+            <Divider />
+
+            <Stack spacing={2}>
+              <TextField
+                value={text}
+                onChange={(e) => setText(e.target.value)}
+                onKeyDown={onKeyDown}
+                multiline
+                rows={3}
+                placeholder="Напишіть повідомлення… (Enter — відправити, Shift+Enter — новий рядок)"
+                fullWidth
+              />
+
+              <Stack direction={{ xs: "column", sm: "row" }} spacing={2} justifyContent="flex-end">
+                <Button onClick={() => setText("")} disabled={sending || !text.trim()} variant="outlined">
+                  Очистити
+                </Button>
+                <Button onClick={handleSend} disabled={sending || !text.trim()} variant="contained">
+                  {sending ? "Надсилання…" : "Надіслати"}
+                </Button>
+              </Stack>
+
+              <Typography variant="caption" color="text.secondary">
+                Статус з'єднання: {wsStatus}
+                {roomId ? ` • room_id: ${roomId}` : ""}
+              </Typography>
+            </Stack>
           </Stack>
-          <div ref={bottomRef} />
-        </Paper>
-
-        <Divider />
-
-        <Stack spacing={2}>
-          <TextField
-            value={text}
-            onChange={(e) => setText(e.target.value)}
-            onKeyDown={onKeyDown}
-            multiline
-            rows={3}
-            placeholder="Напишіть повідомлення… (Enter — відправити, Shift+Enter — новий рядок)"
-            fullWidth
-          />
-
-          <Stack direction={{ xs: "column", sm: "row" }} spacing={2} justifyContent="flex-end">
-            <Button onClick={() => setText("")} disabled={sending || !text.trim()} variant="outlined">
-              Очистити
-            </Button>
-            <Button onClick={handleSend} disabled={sending || !text.trim()} variant="contained">
-              {sending ? "Надсилання…" : "Надіслати"}
-            </Button>
-          </Stack>
-
-          <Typography variant="caption" color="text.secondary">
-            Статус з'єднання: {wsStatus}
-            {roomId ? ` • room_id: ${roomId}` : ""}
-          </Typography>
-        </Stack>
-      </Stack>
-    </Container>
+        </Container>
+      </PageBackground>
   );
 }

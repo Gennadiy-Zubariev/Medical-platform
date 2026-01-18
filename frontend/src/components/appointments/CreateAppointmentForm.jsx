@@ -16,6 +16,7 @@ import {
 } from "@mui/material";
 import { createAppointment, getAvailableSlots } from "../../api/appointments.js";
 import { getDoctorsPublic } from "../../api/doctors";
+import { glassCardSx, glassPanelSx } from "../../theme/glass";
 
 export default function CreateAppointmentForm({ onCreated, refreshKey }) {
   const [doctors, setDoctors] = useState([]);
@@ -94,9 +95,7 @@ export default function CreateAppointmentForm({ onCreated, refreshKey }) {
   return (
     <Card
       elevation={2}
-      sx={{
-        backgroundImage: "linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%)",
-      }}
+      sx={glassCardSx}
     >
       <CardContent>
         <Stack spacing={3} component="form" onSubmit={handleSubmit}>

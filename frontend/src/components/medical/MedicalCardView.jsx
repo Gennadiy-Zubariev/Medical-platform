@@ -1,5 +1,6 @@
 import formatDate from "../../utils/formatDate.js";
 import { Button, Stack, Typography } from "@mui/material";
+import { glassCardSx, glassPanelSx } from "../../theme/glass";
 
 
 export default function MedicalCardView({ card, onEdit }) {

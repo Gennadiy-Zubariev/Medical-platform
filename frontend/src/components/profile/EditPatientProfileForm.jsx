@@ -11,6 +11,7 @@ import {
     Typography,
 } from "@mui/material";
 import { updateMyPatientProfile, updateMyUser } from "../../api/accounts";
+import { glassCardSx, glassPanelSx } from "../../theme/glass";
 
 export default function EditPatientProfileForm({ profile, onCancel, onSaved }) {
     if (!profile) return null;
@@ -69,13 +70,9 @@ export default function EditPatientProfileForm({ profile, onCancel, onSaved }) {
     return (
         <Card
             elevation={2}
-            component="form"
-            onSubmit={handleSubmit}
-            sx={{
-                backgroundImage: "linear-gradient(135deg, #fef2f2 0%, #fee2e2 100%)",
-            }}
+            sx={glassCardSx}
         >
-            <CardContent>
+            <CardContent component="form" onSubmit={handleSubmit}>
                 <Stack spacing={3}>
                     <Stack direction={{ xs: "column", sm: "row" }} spacing={3} alignItems="center">
                         <Avatar

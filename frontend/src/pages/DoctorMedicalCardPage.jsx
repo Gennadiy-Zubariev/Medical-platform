@@ -5,6 +5,9 @@ import { getMedicalCardByPatient, deleteMedicalRecord } from "../api/medical";
 import MedicalRecordForm from "../components/medical/MedicalRecordForm.jsx";
 import MedicalRecordItem from "../components/medical/MedicalRecordItem.jsx";
 import { getMyDoctorProfile } from "../api/accounts";
+import PageBackground from "../components/PageBackground";
+import bg from "../assets/doctor_profile_page 1.jpg";
+import { glassCardSx, glassPanelSx } from "../theme/glass";
 
 
 export default function DoctorMedicalCardPage() {
@@ -63,61 +66,61 @@ export default function DoctorMedicalCardPage() {
     };
 
     return (
-        <Container maxWidth="md">
-            <Stack spacing={3}>
-                <Typography variant="h4">
-                    Медична картка: {card.patient.user.first_name} {card.patient.user.last_name}
-                </Typography>
+        <PageBackground image={bg}>
+            <Container maxWidth="md">
+                <Stack spacing={3}>
+                    <Typography variant="h4">
+                        Медична картка: {card.patient.user.first_name} {card.patient.user.last_name}
+                    </Typography>
 
-                <Card
-                    elevation={2}
-                    sx={{
-                        backgroundImage: "linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%)",
-                    }}
-                >
-                    <CardContent>
-                        <Stack spacing={1}>
-                            <Typography><b>Група крові:</b> {card.blood_type || "-"}</Typography>
-                            <Typography><b>Алегрії:</b> {card.allergies || "-"}</Typography>
-                            <Typography><b>Хронічні захворювання:</b> {card.chronic_diseases || "-"}</Typography>
-                        </Stack>
-                    </CardContent>
-                </Card>
+                    <Card
+                        elevation={2}
+                        sx={glassCardSx}
+                    >
+                        <CardContent>
+                            <Stack spacing={1}>
+                                <Typography><b>Група крові:</b> {card.blood_type || "-"}</Typography>
+                                <Typography><b>Алегрії:</b> {card.allergies || "-"}</Typography>
+                                <Typography><b>Хронічні захворювання:</b> {card.chronic_diseases || "-"}</Typography>
+                            </Stack>
+                        </CardContent>
+                    </Card>
 
-                <Stack direction={{ xs: "column", sm: "row" }} spacing={2} alignItems="center">
-                    <Typography variant="h5">Медичні записи</Typography>
-                    <Button onClick={() => setShowCreateForm(true)} variant="contained">
-                        Додати медичний запис
-                    </Button>
-                </Stack>
+                    <Stack direction={{ xs: "column", sm: "row" }} spacing={2} alignItems="center">
+                        <Typography variant="h5">Медичні записи</Typography>
+                        <Button onClick={() => setShowCreateForm(true)} variant="contained">
+                            Додати медичний запис
+                        </Button>
+                    </Stack>
 
-                {card.records.length === 0 && (
-                    <Typography color="text.secondary">Медичних записів немає</Typography>
-                )}
+                    {card.records.length === 0 && (
+                        <Typography color="text.secondary">Медичних записів немає</Typography>
+                    )}
 
-                {showCreateForm && (
-                    <MedicalRecordForm
-                        cardId={card.id}
-                        onCreated={() => {
-                            setShowCreateForm(false);
-                            loadCard();
-                        }}
-                        onCancel={() => setShowCreateForm(false)}
-                    />
-                )}
-
-                <Stack spacing={2}>
-                    {doctor && card.records.map((r) => (
-                        <MedicalRecordItem
-                            key={r.id}
-                            record={r}
-                            canEdit={r.doctor.id === doctor.id}
-                            onDelete={handleDeleteRecord}
-                            onUpdated={loadCard}
+                    {showCreateForm && (
+                        <MedicalRecordForm
+                            cardId={card.id}
+                            onCreated={() => {
+                                setShowCreateForm(false);
+                                loadCard();
+                            }}
+                            onCancel={() => setShowCreateForm(false)}
                         />
-                    ))}
+                    )}
+
+                    <Stack spacing={2}>
+                        {doctor && card.records.map((r) => (
+                            <MedicalRecordItem
+                                key={r.id}
+                                record={r}
+                                canEdit={r.doctor.id === doctor.id}
+                                onDelete={handleDeleteRecord}
+                                onUpdated={loadCard}
+                            />
+                        ))}
+                    </Stack>
                 </Stack>
-            </Stack>
-        </Container>
+            </Container>
+        </PageBackground>
     );
 }

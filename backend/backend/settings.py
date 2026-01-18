@@ -36,6 +36,9 @@ INSTALLED_APPS = [
     "rest_framework.authtoken",
     "rest_framework_simplejwt",
 
+    # Storages
+    "storages",
+
     # Websockets
     "channels",
 
@@ -70,6 +73,28 @@ MIDDLEWARE = [
 
 # Дозволити React фронтенду робити запити
 CORS_ALLOW_ALL_ORIGINS = True
+
+# ---------------------------------------------------
+# SECURITY (HTTPS)
+# ---------------------------------------------------
+if not DEBUG:
+    SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
+    SECURE_SSL_REDIRECT = True
+    SESSION_COOKIE_SECURE = True
+    CSRF_COOKIE_SECURE = True
+    # HSTS
+    SECURE_HSTS_SECONDS = 31536000  # 1 рік
+    SECURE_HSTS_INCLUDE_SUBDOMAINS = True
+    SECURE_HSTS_PRELOAD = True
+    # Додаткові заголовки безпеки
+    SECURE_CONTENT_TYPE_NOSNIFF = True
+    SECURE_BROWSER_XSS_FILTER = True
+    X_FRAME_OPTIONS = "DENY"
+
+CSRF_TRUSTED_ORIGINS = os.getenv(
+    "CSRF_TRUSTED_ORIGINS",
+    "https://localhost,https://127.0.0.1,http://localhost,http://127.0.0.1"
+).split(",")
 
 # ---------------------------------------------------
 # URLs / WSGI / ASGI
@@ -172,8 +197,40 @@ STATIC_URL = "/static/"
 STATIC_ROOT = BASE_DIR / "staticfiles"
 
 
-MEDIA_URL = "/media/"
-MEDIA_ROOT = BASE_DIR / "media"
+# MEDIA_URL = "/medical-media/"
+# MEDIA_ROOT = BASE_DIR / "media"
+
+# MinIO (S3-compatible) storage
+MINIO_ENDPOINT = os.getenv("MINIO_ENDPOINT", "minio:9000")
+MINIO_ACCESS_KEY = os.getenv("MINIO_ACCESS_KEY", "")
+MINIO_SECRET_KEY = os.getenv("MINIO_SECRET_KEY", "")
+MINIO_BUCKET_NAME = os.getenv("MINIO_BUCKET_NAME", "medical-media")
+MINIO_USE_HTTPS = os.getenv("MINIO_USE_HTTPS", "false").lower() == "true"
+MINIO_REGION = os.getenv("MINIO_REGION", "us-east-1")
+MINIO_PUBLIC_URL = os.getenv("MINIO_PUBLIC_URL")
+
+AWS_ACCESS_KEY_ID = MINIO_ACCESS_KEY
+AWS_SECRET_ACCESS_KEY = MINIO_SECRET_KEY
+AWS_STORAGE_BUCKET_NAME = MINIO_BUCKET_NAME
+AWS_S3_ENDPOINT_URL = f"http{'s' if MINIO_USE_HTTPS else ''}://{MINIO_ENDPOINT}"
+AWS_S3_REGION_NAME = MINIO_REGION
+AWS_S3_SIGNATURE_VERSION = "s3v4"
+AWS_S3_ADDRESSING_STYLE = "path"
+AWS_S3_URL_PROTOCOL = "https:" if MINIO_USE_HTTPS else "http:"
+AWS_DEFAULT_ACL = None
+AWS_QUERYSTRING_AUTH = False
+
+if MINIO_PUBLIC_URL:
+    AWS_S3_CUSTOM_DOMAIN = MINIO_PUBLIC_URL
+
+STORAGES = {
+    "default": {
+        "BACKEND": "storages.backends.s3boto3.S3Boto3Storage",
+    },
+    "staticfiles": {
+        "BACKEND": "django.contrib.staticfiles.storage.StaticFilesStorage",
+    },
+}
 
 # ---------------------------------------------------
 # DEFAULT PRIMARY KEY
@@ -181,7 +238,7 @@ MEDIA_ROOT = BASE_DIR / "media"
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 # ---------------------------------------------------
-# CELERY (на майбутнє)
+# CELERY
 # ---------------------------------------------------
 CELERY_BROKER_URL = os.getenv("CELERY_BROKER_URL", "redis://localhost:6379/0")
 CELERY_RESULT_BACKEND = os.getenv("CELERY_RESULT_BACKEND", "redis://localhost:6379/1")

@@ -1,5 +1,6 @@
 import { Link as RouterLink } from "react-router-dom";
 import { Box, Button, Card, CardContent, Chip, Stack, Typography } from "@mui/material";
+import { glassCardSx, glassPanelSx } from "../../theme/glass";
 
 export default function AppointmentsList({
   appointments = [],
@@ -21,11 +22,8 @@ export default function AppointmentsList({
     <Stack spacing={2}>
       {appointments.map((a) => (
         <Card
-          key={a.id}
           elevation={2}
-          sx={{
-            backgroundImage: "linear-gradient(135deg, #fffbeb 0%, #fef3c7 100%)",
-          }}
+          sx={glassCardSx}
         >
           <CardContent>
             <Stack spacing={1.5}>

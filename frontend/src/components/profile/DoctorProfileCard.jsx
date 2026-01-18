@@ -1,4 +1,5 @@
 import {Avatar, Box, Button, Card, CardContent, Chip, Stack, Typography} from "@mui/material";
+import { glassCardSx, glassPanelSx } from "../../theme/glass";
 
 export function DoctorProfileCard({profile, onEdit}) {
     if (!profile) return null;
@@ -33,16 +34,7 @@ export function DoctorProfileCard({profile, onEdit}) {
     return (
         <Card
             elevation={2}
-            sx={{
-                borderRadius: 3,
-                background:
-                    "linear-gradient(135deg, rgba(0, 150, 136, 0.08), rgba(33, 150, 243, 0.08))",
-                transition: "transform 0.2s ease, box-shadow 0.2s ease",
-                "&:hover": {
-                    transform: "translateY(-4px)",
-                    boxShadow: "0 18px 40px rgba(15, 23, 42, 0.12)",
-                },
-            }}
+            sx={glassCardSx}
         >
 
             <CardContent>
@@ -51,15 +43,17 @@ export function DoctorProfileCard({profile, onEdit}) {
                         src={photoURL}
                         alt="Фото профілю"
                         sx={{
-                            width: 96,
-                            height: 96,
+                            width: {xs: 120, sm: 160, md: 200},
+                            height: {xs: 120, sm: 160, md: 200},
                             boxShadow: "0 12px 24px rgba(15, 23, 42, 0.2)",
                             border: "3px solid rgba(255, 255, 255, 0.85)",
+                            flexShrink: 0,
                         }}
                     />
 
                     <Stack spacing={1} sx={{flexGrow: 1}}>
                         <Typography><b>Ім'я:</b> {profile.user.first_name}</Typography>
+                        <Typography><b>Ім'я:</b> {profile.user.last_name}</Typography>
                         <Typography><b>Email:</b> {profile.user.email}</Typography>
                         <Typography><b>Спеціалізація:</b> {profile.specialization ?? "--"}</Typography>
                         <Typography><b>Досвід роботи:</b> {profile.experience_years ?? "--"}</Typography>
@@ -76,10 +70,10 @@ export function DoctorProfileCard({profile, onEdit}) {
                                 boxShadow: "inset 0 1px 0 rgba(255, 255, 255, 0.6)",
                             }}
                         >
-                            <Typography variant="subtitle2" sx={{ mb: 1 }}>
+                            <Typography variant="subtitle2" sx={{mb: 1}}>
                                 Розклад
                             </Typography>
-                            <Stack direction={{ xs: "column", sm: "row" }} spacing={2} alignItems="center">
+                            <Stack direction={{xs: "column", sm: "row"}} spacing={2} alignItems="center">
                                 <Stack spacing={0.5}>
                                     <Typography variant="body2">
                                         <b>Початок:</b> {formatTime(profile.work_start)}
@@ -91,10 +85,10 @@ export function DoctorProfileCard({profile, onEdit}) {
                                 <Stack direction="row" spacing={1} flexWrap="wrap">
                                     {workDayLabels.length > 0 ? (
                                         workDayLabels.map((day) => (
-                                            <Chip key={day} label={day} size="small" variant="outlined" />
+                                            <Chip key={day} label={day} size="small" variant="outlined"/>
                                         ))
                                     ) : (
-                                        <Chip label="--" size="small" variant="outlined" />
+                                        <Chip label="--" size="small" variant="outlined"/>
                                     )}
                                 </Stack>
                             </Stack>
