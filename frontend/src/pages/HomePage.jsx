@@ -1,39 +1,51 @@
-import { Box, Button, Card, CardContent, Container, Grid, Stack, Typography } from "@mui/material";
+import { Box, Button, Container, Stack } from "@mui/material";
 import { Link as RouterLink } from "react-router-dom";
 import PageBackground from "../components/PageBackground";
-import bg from "../assets/home_page.jpg";
+import bg from "../assets/home.png";
 
 export default function HomePage() {
-    return (
-        <PageBackground image={bg}>
-            <Container maxWidth="lg">
-                <Stack spacing={4}>
-                    <Box
-                        sx={{
-                            p: { xs: 3, md: 5 },
-                            borderRadius: 4,
-                            background: "linear-gradient(135deg, #2563eb 0%, #7c3aed 100%)",
-                            color: "common.white",
-                            boxShadow: 3,
-                        }}
-                    >
-                        <Stack spacing={2} maxWidth={640}>
-                            <Typography variant="h3" fontWeight={700}>
-                                Медична платформа для зручних консультацій
-                            </Typography>
-                            <Typography variant="subtitle1" sx={{ opacity: 0.9 }}>
-                                Записуйтесь до лікарів онлайн, переглядайте медичну картку та спілкуйтесь у чаті — все в одному місці.
-                            </Typography>
-                            <Stack direction={{ xs: "column", sm: "row" }} spacing={2}>
-                                <Button component={RouterLink} to="/doctors" variant="outlined" sx={{ color: "common.white", borderColor: "rgba(255,255,255,0.6)" }}>
-                                    Знайти лікаря
-                                </Button>
-                            </Stack>
-                        </Stack>
-                    </Box>
+  return (
+    <PageBackground image={bg}>
+      <Container maxWidth="lg">
+        <Stack
+          sx={{
+            minHeight: "100vh",
+            justifyContent: "center",
+            alignItems: "center", // ⬅ центр по горизонталі
+            textAlign: "center",
+          }}
+        >
+          {/* ВІДСТУП, щоб кнопка була ПІД ТЕКСТОМ */}
+          <Box sx={{ mt: { xs: 16, md: 18 } }}>
+            <Button
+              component={RouterLink}
+              to="/doctors"
+              variant="contained"
+              size="large"
+              sx={{
+                px: { xs: 5, md: 7 },
+                py: { xs: 1.8, md: 2.2 },
+                fontSize: { xs: "1.05rem", md: "1.15rem" },
+                fontWeight: 800,
+                borderRadius: 999,
+                textTransform: "none",
 
-                </Stack>
-            </Container>
-        </PageBackground>
-    );
+                background:
+                  "linear-gradient(135deg, #22c55e 0%, #16a34a 100%)",
+                boxShadow: "0 16px 36px rgba(0,0,0,0.35)",
+
+                "&:hover": {
+                  background:
+                    "linear-gradient(135deg, #34d399 0%, #22c55e 100%)",
+                  transform: "translateY(-2px)",
+                },
+              }}
+            >
+              Знайти лікаря
+            </Button>
+          </Box>
+        </Stack>
+      </Container>
+    </PageBackground>
+  );
 }

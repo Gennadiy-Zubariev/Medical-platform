@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Alert, Button, Card, CardContent, Stack, TextField, Typography } from "@mui/material";
 import { createMedicalRecord } from "../../api/medical.js";
+import { glassCardSx, glassPanelSx } from "../../theme/glass";
 
 export default function MedicalRecordForm({ cardId, onCreated, onCancel }) {
   const [form, setForm] = useState({
@@ -43,14 +44,10 @@ export default function MedicalRecordForm({ cardId, onCreated, onCancel }) {
 
   return (
     <Card
-      elevation={1}
-      component="form"
-      onSubmit={handleSubmit}
-      sx={{
-        backgroundImage: "linear-gradient(135deg, #fdf2f8 0%, #fce7f3 100%)",
-      }}
+      elevation={2}
+      sx={glassCardSx}
     >
-      <CardContent>
+      <CardContent component="form" onSubmit={handleSubmit}>
         <Stack spacing={2}>
           <Typography variant="h6">Додати медичний запис</Typography>
 

@@ -7,6 +7,7 @@ import MedicalRecordItem from "../components/medical/MedicalRecordItem.jsx";
 import { getMyDoctorProfile } from "../api/accounts";
 import PageBackground from "../components/PageBackground";
 import bg from "../assets/doctor_profile_page 1.jpg";
+import { glassCardSx, glassPanelSx } from "../theme/glass";
 
 
 export default function DoctorMedicalCardPage() {
@@ -74,9 +75,7 @@ export default function DoctorMedicalCardPage() {
 
                     <Card
                         elevation={2}
-                        sx={{
-                            backgroundImage: "linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%)",
-                        }}
+                        sx={glassCardSx}
                     >
                         <CardContent>
                             <Stack spacing={1}>

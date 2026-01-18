@@ -1,4 +1,5 @@
 import { Avatar, Button, Card, CardContent, Stack, Typography } from "@mui/material";
+import { glassCardSx, glassPanelSx } from "../../theme/glass";
 
 export default function PatientProfileCard({ profile, onEdit }) {
     if (!profile) return null;
@@ -9,9 +10,7 @@ export default function PatientProfileCard({ profile, onEdit }) {
     return (
         <Card
             elevation={2}
-            sx={{
-                backgroundImage: "linear-gradient(135deg, #ecfdf3 0%, #d1fae5 100%)",
-            }}
+            sx={glassCardSx}
         >
             <CardContent>
                 <Stack direction={{ xs: "column", sm: "row" }} spacing={3} alignItems="center">

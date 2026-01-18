@@ -1,4 +1,5 @@
 import { Typography } from "@mui/material";
+import { glassCardSx, glassPanelSx } from "../../theme/glass";
 
 export default function MedicalCardHeader({ patient }) {
   return (

@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Button, Stack, TextField } from "@mui/material";
+import { glassCardSx, glassPanelSx } from "../../theme/glass";
 
 export default function MedicalCardEditForm({ initialValues, onSubmit, onCancel }) {
   const [form, setForm] = useState(initialValues);

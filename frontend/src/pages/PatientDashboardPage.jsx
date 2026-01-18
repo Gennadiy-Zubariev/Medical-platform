@@ -13,6 +13,7 @@ import EditPatientProfileForm from "../components/profile/EditPatientProfileForm
 import AppointmentsList from "../components/appointments/AppointmentsList";
 import PageBackground from "../components/PageBackground";
 import bg from "../assets/patient_dashboard_page.jpg";
+import {glassCardSx} from "../theme/glass.js";
 
 
 export default function PatientDashboardPage() {
@@ -100,10 +101,8 @@ export default function PatientDashboardPage() {
 
                     {profile && (
                         <Card
-                            elevation={1}
-                            sx={{
-                                backgroundImage: "linear-gradient(135deg, #faf5ff 0%, #f3e8ff 100%)",
-                            }}
+                            elevation={2}
+                            sx={glassCardSx}
                         >
                             <CardContent>
                                 <Button component={RouterLink} to="/patient/medical-card" variant="outlined">

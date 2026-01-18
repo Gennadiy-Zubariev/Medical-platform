@@ -10,6 +10,7 @@ import {
 } from "@mui/material";
 import formatDate from "../../utils/formatDate.js";
 import { updateMyMedicalRecord } from "../../api/medical.js";
+import { glassCardSx, glassPanelSx } from "../../theme/glass";
 
 export default function MedicalRecordItem({
   record,
@@ -48,10 +49,8 @@ export default function MedicalRecordItem({
   if (isEditing) {
     return (
         <Card
-          elevation={1}
-          sx={{
-            backgroundImage: "linear-gradient(135deg, #fef9c3 0%, #fef08a 100%)",
-          }}
+          elevation={2}
+          sx={glassCardSx}
         >
           <CardContent>
             <Stack spacing={2}>
@@ -98,10 +97,8 @@ export default function MedicalRecordItem({
 
   return (
     <Card
-      elevation={1}
-      sx={{
-        backgroundImage: "linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%)",
-      }}
+      elevation={2}
+      sx={glassCardSx}
     >
       <CardContent>
         <Stack spacing={1.5}>

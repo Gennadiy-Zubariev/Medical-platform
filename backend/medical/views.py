@@ -87,10 +87,9 @@ class MedicalRecordViewSet(viewsets.ModelViewSet):
 
         card = MedicalCard.objects.get(pk=card_id)
 
-        has_appointment = Appointment.objects.filter(doctor=doctor, patient=card.patient).exists()
-
-        if not has_appointment:
-            raise PermissionDenied("Ви не маєте прийому з цим пацієнтом.")
+        # has_appointment = Appointment.objects.filter(doctor=doctor, patient=card.patient).exists()
+        # if not has_appointment:
+        #     raise PermissionDenied("Ви не маєте прийому з цим пацієнтом.")
 
         appointment_id = self.request.data.get('appointment')
         appointment = None
