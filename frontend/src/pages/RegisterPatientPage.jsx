@@ -12,6 +12,7 @@ export default function RegisterPatientPage() {
     email: "",
     first_name: "",
     last_name: "",
+    date_of_birth: "",
     insurance_policy: "",
   });
 
@@ -119,6 +120,15 @@ export default function RegisterPatientPage() {
                     value={form.last_name}
                     onChange={handleChange}
                     fullWidth
+                  />
+                  <TextField
+                    name="date_of_birth"
+                    label="Дата народження"
+                    type="date"
+                    value={form.date_of_birth}
+                    onChange={handleChange}
+                    fullWidth
+                    InputLabelProps={{ shrink: true }}
                   />
                   <TextField
                     name="insurance_policy"

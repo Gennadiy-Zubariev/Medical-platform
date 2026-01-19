@@ -28,6 +28,7 @@ class PatientRegisterSerializer(serializers.ModelSerializer):
     """
 
     insurance_policy = serializers.CharField(write_only=True)
+    date_of_birth = serializers.DateField(write_only=True)
 
     class Meta:
         model = User
@@ -37,12 +38,19 @@ class PatientRegisterSerializer(serializers.ModelSerializer):
             "email",
             "first_name",
             "last_name",
+            "date_of_birth",
             "insurance_policy",
         )
         extra_kwargs = {
             "password": {"write_only": True},
             "email": {"required": True},
         }
+
+
+    def validate_date_of_birth(self, value):
+        if value > now().date():
+            raise serializers.ValidationError("Дата народження не може бути у майбутньому.")
+        return value
 
     def validate_insurance_policy(self, value: str):
         """
@@ -63,14 +71,13 @@ class PatientRegisterSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError("Страховий поліс прострочений")
 
 
-        #self._insurance_obj = insurance_obj
         return value
 
     def create(self, validated_data):
         insurance_policy = validated_data.pop("insurance_policy")
         insurance_obj = InsurancePolicy.objects.get(insurance_policy=insurance_policy)
-        # if insurance_obj is None:
-        #     insurance_obj = InsurancePolicy.objects.get(insurance_policy=insurance_policy)
+        date_of_birth = validated_data.pop("date_of_birth", None)
+
 
         user = User.objects.create_user(
             username=validated_data["username"],
@@ -84,6 +91,7 @@ class PatientRegisterSerializer(serializers.ModelSerializer):
         PatientProfile.objects.create(
             user=user,
             insurance_policy=insurance_obj,
+            date_of_birth=date_of_birth
         )
 
         return user

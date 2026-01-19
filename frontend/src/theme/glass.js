@@ -9,9 +9,3 @@ export const glassCardSx = {
   },
 };
 
-export const glassPanelSx = {
-  borderRadius: 2,
-  backgroundColor: "rgba(255, 255, 255, 0.85)",
-  border: "1px solid rgba(255,255,255,0.45)",
-  boxShadow: "inset 0 1px 0 rgba(255, 255, 255, 0.6)",
-};

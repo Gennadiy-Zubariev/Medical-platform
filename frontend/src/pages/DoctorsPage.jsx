@@ -15,6 +15,7 @@ import {
 import { getDoctorSpecializations, getDoctorsPublic } from "../api/doctors";
 import PageBackground from "../components/PageBackground";
 import bg from "../assets/doctors_page.jpg";
+import {glassCardSx} from "../theme/glass.js";
 
 export default function DoctorsPage() {
   const [specializations, setSpecializations] = useState([]);
@@ -88,16 +89,10 @@ export default function DoctorsPage() {
 
             <Grid container spacing={3}>
               {doctors.map((doc, index) => (
-                <Grid item xs={12} sm={6} md={4} key={doc.id} sx={{ display: "flex" }}>
+                <Grid item xs={12} sm={6} md={4} sx={{ display: "flex" }}>
                   <Card
                     elevation={2}
-                    sx={{
-                      width: 330,
-                      height: 220,
-                      display: "flex",
-                      flexDirection: "column",
-                      backgroundImage: "linear-gradient(135deg, #f5f3ff 0%, #ede9fe 100%)",
-                    }}
+                    sx={{ ...glassCardSx, width:320, height:180, display: "flex", flexDirection: "column" }}
                   >
                     <CardContent sx={{ flexGrow: 1 }}>
                       <Stack
