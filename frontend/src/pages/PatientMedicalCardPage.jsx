@@ -7,6 +7,7 @@ import MedicalCardView from "../components/medical/MedicalCardView.jsx";
 import MedicalRecordItem from "../components/medical/MedicalRecordItem.jsx";
 import PageBackground from "../components/PageBackground";
 import bg from "../assets/patient_dashboard_page.jpg";
+import {glassCardSx} from "../theme/glass.js";
 
 
 export default function PatientMedicalCardPage() {
@@ -51,9 +52,7 @@ export default function PatientMedicalCardPage() {
 
                     <Card
                         elevation={2}
-                        sx={{
-                            backgroundImage: "linear-gradient(135deg, #fefce8 0%, #fef9c3 100%)",
-                        }}
+                        sx={glassCardSx}
                     >
                         <CardContent>
                             {isEditing ? (

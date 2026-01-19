@@ -2,6 +2,7 @@ import { Link as RouterLink } from "react-router-dom";
 import { Button, Container, Paper, Stack, Typography } from "@mui/material";
 import PageBackground from "../components/PageBackground";
 import bg from "../assets/login_page.jpg";
+import {glassCardSx} from "../theme/glass.js";
 
 export default function RegisterChoice() {
   return (
@@ -9,10 +10,7 @@ export default function RegisterChoice() {
         <Container maxWidth="sm">
             <Paper
                 elevation={2}
-                sx={{
-                    p: { xs: 3, md: 4 },
-                    backgroundImage: "linear-gradient(135deg, #fff7ed 0%, #ffedd5 100%)",
-                }}
+                sx={glassCardSx}
             >
                 <Stack spacing={3}>
                     <div>

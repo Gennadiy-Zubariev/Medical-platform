@@ -22,6 +22,7 @@ export default function PatientProfileCard({ profile, onEdit }) {
 
                     <Stack spacing={1} sx={{ flexGrow: 1 }}>
                         <Typography><b>Ім'я:</b> {profile.user.first_name}</Typography>
+                        <Typography><b>Прізвище:</b> {profile.user.last_name}</Typography>
                         <Typography><b>Email:</b> {profile.user.email}</Typography>
                         <Typography><b>Номер страховки:</b> {profile.insurance_policy ?? "--"}</Typography>
                         <Typography><b>Дата народження:</b> {profile.date_of_birth ?? "--"}</Typography>
