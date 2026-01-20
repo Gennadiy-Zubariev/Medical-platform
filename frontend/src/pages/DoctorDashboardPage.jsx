@@ -1,6 +1,6 @@
-import { useNavigate } from "react-router-dom";
-import { useEffect, useState } from "react";
-import { Alert, Stack, Typography } from "@mui/material";
+import {useNavigate} from "react-router-dom";
+import {useEffect, useState} from "react";
+import {Alert, Stack, Typography} from "@mui/material";
 import Layout from "../components/Layout";
 import {
     getMyAppointments,
@@ -35,8 +35,8 @@ export default function DoctorDashboardPage() {
                 Array.isArray(data)
                     ? data
                     : Array.isArray(data?.results)
-                    ? data.results
-                    : []
+                        ? data.results
+                        : []
             );
         } catch {
             setError("Не вдалося завантажити записи");
@@ -62,21 +62,21 @@ export default function DoctorDashboardPage() {
 
 
     const updateDoctorSchedule = async (data) => {
-      try {
-        await updateMyDoctorSchedule(data);
-        await loadDoctorProfile();
-        alert("Графік збережено");
-      } catch (e) {
-        console.error(e);
+        try {
+            await updateMyDoctorSchedule(data);
+            await loadDoctorProfile();
+            alert("Графік збережено");
+        } catch (e) {
+            console.error(e);
 
-        const errors = e.response?.data;
-        if (errors) {
-          const msg = Object.values(errors).flat().join("\n");
-          alert(msg);
-        } else {
-          alert("Помилка збереження графіка");
+            const errors = e.response?.data;
+            if (errors) {
+                const msg = Object.values(errors).flat().join("\n");
+                alert(msg);
+            } else {
+                alert("Помилка збереження графіка");
+            }
         }
-      }
     };
 
     const toggleBooking = async () => {
@@ -104,7 +104,7 @@ export default function DoctorDashboardPage() {
                     <Typography variant="h4">Кабінет лікаря</Typography>
 
                     {doctor && !editing && (
-                        <DoctorProfileCard profile={doctor} onEdit={() => setEditing(true)} />
+                        <DoctorProfileCard profile={doctor} onEdit={() => setEditing(true)}/>
                     )}
 
                     {editing && (

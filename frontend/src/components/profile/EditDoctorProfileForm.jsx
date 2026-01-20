@@ -1,4 +1,4 @@
-import { useState } from "react";
+import {useState} from "react";
 import {
     Alert,
     Avatar,
@@ -10,10 +10,10 @@ import {
     TextField,
     Typography,
 } from "@mui/material";
-import { updateMyDoctorProfile, updateMyUser } from "../../api/accounts";
-import { glassCardSx, glassPanelSx } from "../../theme/glass";
+import {updateMyDoctorProfile, updateMyUser} from "../../api/accounts";
+import {glassCardSx} from "../../theme/glass";
 
-export default function EditDoctorProfileForm({ profile, onCancel, onSaved }) {
+export default function EditDoctorProfileForm({profile, onCancel, onSaved}) {
     if (!profile) return null;
 
     const [email, setEmail] = useState(profile.user.email || "");
@@ -36,7 +36,7 @@ export default function EditDoctorProfileForm({ profile, onCancel, onSaved }) {
 
         try {
             if (email !== profile.user.email) {
-                await updateMyUser({ email });
+                await updateMyUser({email});
             }
 
             const formData = new FormData();
@@ -75,11 +75,11 @@ export default function EditDoctorProfileForm({ profile, onCancel, onSaved }) {
         >
             <CardContent component="form" onSubmit={handleSubmit}>
                 <Stack spacing={3}>
-                    <Stack direction={{ xs: "column", sm: "row" }} spacing={3} alignItems="center">
+                    <Stack direction={{xs: "column", sm: "row"}} spacing={3} alignItems="center">
                         <Avatar
                             src={profile.photo || "/avatar-placeholder.png"}
                             alt="Фото лікаря"
-                            sx={{ width: 96, height: 96 }}
+                            sx={{width: 96, height: 96}}
                         />
                         <Box>
                             <Typography variant="h6">Редагувати профіль лікаря</Typography>
@@ -121,7 +121,7 @@ export default function EditDoctorProfileForm({ profile, onCancel, onSaved }) {
                         <TextField
                             label="Стаж (років)"
                             type="number"
-                            inputProps={{ min: 0 }}
+                            inputProps={{min: 0}}
                             value={experienceYears}
                             onChange={(e) => setExperienceYears(e.target.value)}
                             fullWidth
@@ -139,7 +139,7 @@ export default function EditDoctorProfileForm({ profile, onCancel, onSaved }) {
 
                     {error && <Alert severity="error">{error}</Alert>}
 
-                    <Stack direction={{ xs: "column", sm: "row" }} spacing={2}>
+                    <Stack direction={{xs: "column", sm: "row"}} spacing={2}>
                         <Button type="button" variant="outlined" onClick={onCancel}>
                             Скасувати
                         </Button>

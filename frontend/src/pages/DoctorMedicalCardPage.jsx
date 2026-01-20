@@ -1,17 +1,17 @@
-import { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
-import { Alert, Button, Card, CardContent, Container, Stack, Typography } from "@mui/material";
-import { getMedicalCardByPatient, deleteMedicalRecord } from "../api/medical";
+import {useEffect, useState} from "react";
+import {useParams} from "react-router-dom";
+import {Alert, Button, Card, CardContent, Container, Stack, Typography} from "@mui/material";
+import {getMedicalCardByPatient, deleteMedicalRecord} from "../api/medical";
 import MedicalRecordForm from "../components/medical/MedicalRecordForm.jsx";
 import MedicalRecordItem from "../components/medical/MedicalRecordItem.jsx";
-import { getMyDoctorProfile } from "../api/accounts";
+import {getMyDoctorProfile} from "../api/accounts";
 import PageBackground from "../components/PageBackground";
 import bg from "../assets/doctor_profile_page 1.jpg";
-import { glassCardSx, glassPanelSx } from "../theme/glass";
+import {glassCardSx} from "../theme/glass";
 
 
 export default function DoctorMedicalCardPage() {
-    const { patientId } = useParams();
+    const {patientId} = useParams();
     const [card, setCard] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
@@ -19,16 +19,16 @@ export default function DoctorMedicalCardPage() {
     const [showCreateForm, setShowCreateForm] = useState(false);
 
     useEffect(() => {
-      loadDoctor();
+        loadDoctor();
     }, []);
 
     const loadDoctor = async () => {
-      try {
-        const data = await getMyDoctorProfile();
-        setDoctor(data);
-      } catch {
-        console.error("Не вдалося завантажити профіль лікаря");
-      }
+        try {
+            const data = await getMyDoctorProfile();
+            setDoctor(data);
+        } catch {
+            console.error("Не вдалося завантажити профіль лікаря");
+        }
     };
 
     useEffect(() => {
@@ -51,18 +51,18 @@ export default function DoctorMedicalCardPage() {
     if (!card) return null;
 
     const handleDeleteRecord = async (recordId) => {
-      const ok = window.confirm("Видалити цей медичний запис?");
-      if (!ok) return;
+        const ok = window.confirm("Видалити цей медичний запис?");
+        if (!ok) return;
 
-      try {
-        await deleteMedicalRecord(recordId);
-        await loadCard(); // 🔁 оновлюємо список
-      } catch (err) {
-        alert(
-          err.response?.data?.detail ||
-          "Не вдалося видалити медичний запис"
-        );
-      }
+        try {
+            await deleteMedicalRecord(recordId);
+            await loadCard(); // 🔁 updating the list
+        } catch (err) {
+            alert(
+                err.response?.data?.detail ||
+                "Не вдалося видалити медичний запис"
+            );
+        }
     };
 
     return (
@@ -86,7 +86,7 @@ export default function DoctorMedicalCardPage() {
                         </CardContent>
                     </Card>
 
-                    <Stack direction={{ xs: "column", sm: "row" }} spacing={2} alignItems="center">
+                    <Stack direction={{xs: "column", sm: "row"}} spacing={2} alignItems="center">
                         <Typography variant="h5">Медичні записи</Typography>
                         <Button onClick={() => setShowCreateForm(true)} variant="contained">
                             Додати медичний запис

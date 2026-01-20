@@ -7,7 +7,6 @@ from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework.views import APIView
 from rest_framework.response import Response
 
-
 from .models import PatientProfile, DoctorProfile
 from .serializers import (
     UserSerializer,
@@ -24,6 +23,7 @@ from .serializers import (
 from .permissions import IsOwnerOrReadOnly, IsDoctor
 
 User = get_user_model()
+
 
 class UserViewSet(viewsets.ModelViewSet):
     queryset = User.objects.all()
@@ -51,7 +51,7 @@ class UserViewSet(viewsets.ModelViewSet):
 class RegisterPatientView(generics.CreateAPIView):
     """
     POST /api/accounts/register/patient/
-    Реєстрація пацієнта.
+    Register patient.
     """
     serializer_class = PatientRegisterSerializer
     permission_classes = [permissions.AllowAny]
@@ -66,7 +66,7 @@ class RegisterPatientView(generics.CreateAPIView):
 class RegisterDoctorView(generics.CreateAPIView):
     """
     POST /api/accounts/register/doctor/
-    Реєстрація лікаря з перевіркою ліцензії.
+    Register doctor with license verification.
     """
     serializer_class = DoctorRegisterSerializer
     permission_classes = [permissions.AllowAny]
@@ -78,13 +78,11 @@ class RegisterDoctorView(generics.CreateAPIView):
         return Response(UserSerializer(user).data, status=status.HTTP_201_CREATED)
 
 
-
 class PatientProfileViewSet(viewsets.ModelViewSet):
     queryset = PatientProfile.objects.select_related('user')
     serializer_class = PatientProfileSerializer
 
     permission_classes = [permissions.IsAuthenticated, IsOwnerOrReadOnly]
-
 
     def get_queryset(self):
         user = self.request.user
@@ -95,8 +93,8 @@ class PatientProfileViewSet(viewsets.ModelViewSet):
     @action(detail=False, methods=["get", "patch"], url_path="me")
     def me(self, request):
         """
-        GET /api/accounts/patient-profiles/me/  -> поточний профіль
-        PATCH /api/accounts/patient-profiles/me/ -> оновити поточний профіль
+        GET /api/accounts/patient-profiles/me/  -> current profile
+        PATCH /api/accounts/patient-profiles/me/ -> update current profile
         """
         profile = request.user.patient_profile
 
@@ -118,7 +116,6 @@ class DoctorProfileViewSet(viewsets.ModelViewSet):
 
     permission_classes = [permissions.IsAuthenticated, IsOwnerOrReadOnly]
 
-
     def get_queryset(self):
         user = self.request.user
         if user.is_doctor():
@@ -128,8 +125,8 @@ class DoctorProfileViewSet(viewsets.ModelViewSet):
     @action(detail=False, methods=["get", "patch"], url_path="me")
     def me(self, request):
         """
-        GET /api/accounts/doctor-profiles/me/
-        PATCH /api/accounts/doctor-profiles/me/
+        GET /api/accounts/doctor-profiles/me/ -> current profile
+        PATCH /api/accounts/doctor-profiles/me/ -> update current profile
         """
         profile = request.user.doctor_profile
 
@@ -144,7 +141,6 @@ class DoctorProfileViewSet(viewsets.ModelViewSet):
             profile.refresh_from_db()
             return Response(DoctorProfileSerializer(profile).data)
 
-
     @action(
         detail=False,
         methods=["post"],
@@ -152,6 +148,12 @@ class DoctorProfileViewSet(viewsets.ModelViewSet):
         url_path="toggle-booking"
     )
     def toggle_booking(self, request):
+        """
+        Toggles the booking availability status for the doctor's profile. This action
+        is intended for authenticated users with doctor permissions. It updates the
+        `is_booking_open` attribute of the doctor profile for the currently authenticated
+        user.
+        """
         doctor = request.user.doctor_profile
         doctor.is_booking_open = not doctor.is_booking_open
         doctor.save(update_fields=["is_booking_open"])
@@ -160,14 +162,6 @@ class DoctorProfileViewSet(viewsets.ModelViewSet):
             {"is_booking_open": doctor.is_booking_open},
             status=status.HTTP_200_OK
         )
-
-    # @action(detail=False, methods=["patch"], url_path="me/schedule", permission_classes=[permissions.IsAuthenticated])
-    # def update_schedule(self, request):
-    #     profile = request.user.doctor_profile
-    #     serializer = DoctorScheduleUpdateSerializer(profile, data=request.data, partial=True)
-    #     serializer.is_valid(raise_exception=True)
-    #     serializer.save()
-    #     return Response(DoctorProfileSerializer(profile).data, status=status.HTTP_200_OK)
 
 
 class DoctorScheduleView(RetrieveUpdateAPIView):
@@ -181,7 +175,7 @@ class DoctorScheduleView(RetrieveUpdateAPIView):
 class DoctorSpecializationsAPIView(APIView):
     permission_classes = [AllowAny]
 
-    def get(self,request):
+    def get(self, request):
         specs = (
             DoctorProfile.objects
             .exclude(specialization__isnull=True)
@@ -200,11 +194,9 @@ class DoctorPublicListAPIView(generics.ListAPIView):
     def get_queryset(self):
         queryset = DoctorProfile.objects.select_related("user")
 
-
         spec = self.request.query_params.get("specialization")
         if spec:
             queryset = queryset.filter(specialization__iexact=spec)
-
 
         search = self.request.query_params.get("search")
         if search:

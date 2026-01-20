@@ -13,6 +13,16 @@ from registry.models import DoctorLicense, InsurancePolicy
 
 class ChatRoomAPITest(APITestCase):
     def setUp(self):
+        """
+        Prepares test data for unit tests by setting up required users, profiles, and
+        associated objects. This involves creating an insurance policy, doctor license,
+        patient user with profile, doctor user with profile, and an appointment between
+        the patient and doctor.
+
+        :raises: Any exceptions that may occur during the creation of objects required
+                 for the setup of the test environment. These depend on the constraints
+                 and validations defined on the respective models.
+        """
         policy = InsurancePolicy.objects.create(
             insurance_policy="INS-CHAT-1",
             full_name="Chat Patient",
@@ -56,12 +66,29 @@ class ChatRoomAPITest(APITestCase):
         )
 
     def test_patient_can_open_chat_room(self):
+        """
+        Tests that a patient can successfully access a chat room associated with an
+        appointment and that the response returns the correct appointment ID.
+
+        :param self: Reference to the current instance of the test case
+        :return: None
+        """
         self.client.login(username="patient-chat", password="test123")
         response = self.client.get(reverse("chat-rooms-detail", args=[self.appointment.id]))
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.data["appointment"], self.appointment.id)
 
     def test_doctor_can_mark_messages_as_read(self):
+        """
+        Tests the ability for a doctor user to mark chat messages as read.
+
+        This test verifies that when a doctor logs in and sends a request to mark
+        all messages in a specific chat room as read, the functionality is executed
+        successfully, and the messages' status updates reflect the intended "read" state.
+
+        :raises AssertionError: If the HTTP response status codes do not match the expected
+            values or if no messages with the "is_read=True" flag are found after the operation.
+        """
         self.client.login(username="patient-chat", password="test123")
         message_payload = {"text": "Добрий день!"}
         response = self.client.post(

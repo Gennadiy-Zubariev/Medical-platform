@@ -9,11 +9,12 @@ User = get_user_model()
 
 
 class UserSerializer(serializers.ModelSerializer):
-    """Базовий серіалізатор юзера (для /users/me/ тощо)."""
+    """Base user serializer (for /users/me/ etc)."""
 
     class Meta:
         model = User
         fields = ("id", "username", "email", "first_name", "last_name", "role")
+
 
 class UserUpdateSerializer(serializers.ModelSerializer):
     class Meta:
@@ -23,8 +24,8 @@ class UserUpdateSerializer(serializers.ModelSerializer):
 
 class PatientRegisterSerializer(serializers.ModelSerializer):
     """
-    Серіалізатор для реєстрації пацієнта.
-    Створює User з роллю PATIENT + PatientProfile.
+    Serializer for patient registration.
+    Creates a User with the PATIENT + PatientProfile role.
     """
 
     insurance_policy = serializers.CharField(write_only=True)
@@ -46,7 +47,6 @@ class PatientRegisterSerializer(serializers.ModelSerializer):
             "email": {"required": True},
         }
 
-
     def validate_date_of_birth(self, value):
         if value > now().date():
             raise serializers.ValidationError("Дата народження не може бути у майбутньому.")
@@ -54,8 +54,8 @@ class PatientRegisterSerializer(serializers.ModelSerializer):
 
     def validate_insurance_policy(self, value: str):
         """
-        1) Перевіряємо, що такий номер є в офіційному реєстрі.
-        2) Перевіряємо, що він ще не прив’язаний до іншого пацієнта.
+        1) Check that such a number is in the official register.
+        2) We check that he is not yet attached to another patient.
         """
         try:
             insurance_obj = InsurancePolicy.objects.get(insurance_policy=value)
@@ -70,14 +70,12 @@ class PatientRegisterSerializer(serializers.ModelSerializer):
         if insurance_obj.valid_until < now().date():
             raise serializers.ValidationError("Страховий поліс прострочений")
 
-
         return value
 
     def create(self, validated_data):
         insurance_policy = validated_data.pop("insurance_policy")
         insurance_obj = InsurancePolicy.objects.get(insurance_policy=insurance_policy)
         date_of_birth = validated_data.pop("date_of_birth", None)
-
 
         user = User.objects.create_user(
             username=validated_data["username"],
@@ -99,8 +97,8 @@ class PatientRegisterSerializer(serializers.ModelSerializer):
 
 class DoctorRegisterSerializer(serializers.ModelSerializer):
     """
-    Серіалізатор для реєстрації докторів.
-    Перевіряє номер ліцензії по LicenseRegistry.
+    Serializer for doctor registration.
+    Check the license number at LicenseRegistry.
     """
 
     license_number = serializers.CharField(write_only=True)
@@ -126,8 +124,8 @@ class DoctorRegisterSerializer(serializers.ModelSerializer):
 
     def validate_license_number(self, value: str):
         """
-        1) Перевіряємо, що такий номер є в офіційному реєстрі.
-        2) Перевіряємо, що він ще не прив’язаний до іншого доктора.
+        1) Check that such a number is in the official register.
+        2) Check that he is not yet attached to another doctor.
         """
         try:
             license_obj = DoctorLicense.objects.get(license_number=value)
@@ -142,7 +140,6 @@ class DoctorRegisterSerializer(serializers.ModelSerializer):
         if license_obj.valid_until < now().date():
             raise serializers.ValidationError("Ліцензія прострочена")
 
-        # self._license_obj = license_obj
         return value
 
     def create(self, validated_data):
@@ -151,9 +148,6 @@ class DoctorRegisterSerializer(serializers.ModelSerializer):
         experience_years = validated_data.pop("experience_years")
 
         license_obj = DoctorLicense.objects.get(license_number=license_number)
-        # license_obj = getattr(self, "_license_obj", None)
-        # if license_obj is None:
-        #     license_obj = DoctorLicense.objects.get(license_number=license_number)
 
         user = User.objects.create_user(
             username=validated_data["username"],
@@ -195,7 +189,6 @@ class DoctorProfileSerializer(serializers.ModelSerializer):
     license_number = serializers.CharField(source="license_number.license_number", read_only=True)
     is_schedule_ready = serializers.SerializerMethodField()
 
-
     class Meta:
         model = DoctorProfile
         fields = (
@@ -220,8 +213,8 @@ class DoctorProfileSerializer(serializers.ModelSerializer):
 
 class CurrentUserSerializer(serializers.ModelSerializer):
     """
-    Серіалізатор для /users/me/:
-    повертає юзера + вбудовані профілі, якщо вони є.
+    Serializer for /users/me/:
+    returns the user + built-in profiles, if any.
     """
     patient_profile = PatientProfileSerializer(read_only=True)
     doctor_profile = DoctorProfileSerializer(read_only=True)
@@ -263,7 +256,6 @@ class PatientProfileUpdateSerializer(serializers.ModelSerializer):
         if policy.valid_until < now().date():
             raise serializers.ValidationError("Страховий поліс не дійсний")
 
-
         self._insurance_policy = policy
         return value
 
@@ -273,6 +265,7 @@ class PatientProfileUpdateSerializer(serializers.ModelSerializer):
             instance.insurance_policy = self._insurance_policy
 
         return super().update(instance, validated_data)
+
 
 class DoctorProfileUpdateSerializer(serializers.ModelSerializer):
     license_number = serializers.CharField(
@@ -312,6 +305,7 @@ class DoctorProfileUpdateSerializer(serializers.ModelSerializer):
             instance.license_number = self._license_obj
 
         return super().update(instance, validated_data)
+
 
 class DoctorScheduleUpdateSerializer(serializers.ModelSerializer):
     class Meta:
@@ -353,6 +347,7 @@ class DoctorScheduleUpdateSerializer(serializers.ModelSerializer):
 
 class DoctorPublicSerializer(serializers.ModelSerializer):
     user = UserSerializer(read_only=True)
+
     class Meta:
         model = DoctorProfile
         fields = [

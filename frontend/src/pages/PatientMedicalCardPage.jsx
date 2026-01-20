@@ -1,6 +1,6 @@
-import { useEffect, useState, useCallback } from "react";
-import { Alert, Card, CardContent, Container, Stack, Typography } from "@mui/material";
-import { getMyMedicalCard, updateMyMedicalCard } from "../api/medical";
+import {useEffect, useState, useCallback} from "react";
+import {Alert, Card, CardContent, Container, Stack, Typography} from "@mui/material";
+import {getMyMedicalCard, updateMyMedicalCard} from "../api/medical";
 import MedicalCardEditForm from "../components/medical/MedicalCardEditForm.jsx";
 import MedicalCardHeader from "../components/medical/MedicalCardHeader.jsx";
 import MedicalCardView from "../components/medical/MedicalCardView.jsx";
@@ -48,7 +48,7 @@ export default function PatientMedicalCardPage() {
         <PageBackground image={bg}>
             <Container maxWidth="md">
                 <Stack spacing={3}>
-                    <MedicalCardHeader patient={card.patient} />
+                    <MedicalCardHeader patient={card.patient}/>
 
                     <Card
                         elevation={2}
@@ -78,7 +78,7 @@ export default function PatientMedicalCardPage() {
                     <Stack spacing={2}>
                         {card.records?.length ? (
                             card.records.map((r) => (
-                                <MedicalRecordItem key={r.id} record={r} canEdit={false} />
+                                <MedicalRecordItem key={r.id} record={r} canEdit={false}/>
                             ))
                         ) : (
                             <Typography color="text.secondary">Записів ще немає</Typography>

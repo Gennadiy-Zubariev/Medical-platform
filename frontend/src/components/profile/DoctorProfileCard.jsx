@@ -1,5 +1,5 @@
 import {Avatar, Box, Button, Card, CardContent, Chip, Stack, Typography} from "@mui/material";
-import { glassCardSx, glassPanelSx } from "../../theme/glass";
+import {glassCardSx} from "../../theme/glass";
 
 export function DoctorProfileCard({profile, onEdit}) {
     if (!profile) return null;

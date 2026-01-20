@@ -1,201 +1,201 @@
-import { useEffect, useState } from "react";
+import {useEffect, useState} from "react";
 import {
-  Alert,
-  Box,
-  Button,
-  Card,
-  CardContent,
-  CircularProgress,
-  Divider,
-  List,
-  ListItemButton,
-  ListItemText,
-  Stack,
-  TextField,
-  Typography,
+    Alert,
+    Box,
+    Button,
+    Card,
+    CardContent,
+    CircularProgress,
+    Divider,
+    List,
+    ListItemButton,
+    ListItemText,
+    Stack,
+    TextField,
+    Typography,
 } from "@mui/material";
-import { createAppointment, getAvailableSlots } from "../../api/appointments.js";
-import { getDoctorsPublic } from "../../api/doctors";
-import { glassCardSx, glassPanelSx } from "../../theme/glass";
+import {createAppointment, getAvailableSlots} from "../../api/appointments.js";
+import {getDoctorsPublic} from "../../api/doctors";
+import {glassCardSx} from "../../theme/glass";
 
-export default function CreateAppointmentForm({ onCreated, refreshKey }) {
-  const [doctors, setDoctors] = useState([]);
-  const [doctorId, setDoctorId] = useState("");
-  const [date, setDate] = useState("");
-  const [slots, setSlots] = useState([]);
-  const [selectedSlot, setSelectedSlot] = useState("");
-  const [error, setError] = useState(null);
-  const [loading, setLoading] = useState(false);
-  const [search, setSearch] = useState("");
-  const [searching, setSearching] = useState(false);
+export default function CreateAppointmentForm({onCreated, refreshKey}) {
+    const [doctors, setDoctors] = useState([]);
+    const [doctorId, setDoctorId] = useState("");
+    const [date, setDate] = useState("");
+    const [slots, setSlots] = useState([]);
+    const [selectedSlot, setSelectedSlot] = useState("");
+    const [error, setError] = useState(null);
+    const [loading, setLoading] = useState(false);
+    const [search, setSearch] = useState("");
+    const [searching, setSearching] = useState(false);
 
-  useEffect(() => {
-    if (!doctorId || !date) return;
+    useEffect(() => {
+        if (!doctorId || !date) return;
 
-    setError(null);
-    setSlots([]);
-    setSelectedSlot("");
-
-    getAvailableSlots(doctorId, date)
-      .then((data) => setSlots(data))
-      .catch((err) => {
+        setError(null);
         setSlots([]);
-        setError(
-          err.response?.data?.detail ||
-            "Не вдалося завантажити вільні слоти"
-        );
-      });
-  }, [doctorId, date, refreshKey]);
+        setSelectedSlot("");
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    if (!selectedSlot) return;
+        getAvailableSlots(doctorId, date)
+            .then((data) => setSlots(data))
+            .catch((err) => {
+                setSlots([]);
+                setError(
+                    err.response?.data?.detail ||
+                    "Не вдалося завантажити вільні слоти"
+                );
+            });
+    }, [doctorId, date, refreshKey]);
 
-    setLoading(true);
-    setError(null);
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+        if (!selectedSlot) return;
 
-    try {
-      await createAppointment({
-        doctor: doctorId,
-        start_datetime: selectedSlot,
-      });
+        setLoading(true);
+        setError(null);
 
-      setSelectedSlot("");
-      const updatedSlots = await getAvailableSlots(doctorId, date);
-      setSlots(updatedSlots);
-      onCreated?.();
-      alert("Запис створено");
-    } catch (err) {
-      const data = err.response?.data;
-      setError(
-        data?.detail ||
-          data?.non_field_errors?.[0] ||
-          "Не вдалося створити запис"
-      );
-    } finally {
-      setLoading(false);
-    }
-  };
+        try {
+            await createAppointment({
+                doctor: doctorId,
+                start_datetime: selectedSlot,
+            });
 
-  const handleSearch = async (value) => {
-    setSearch(value);
-    if (!value) {
-      setDoctors([]);
-      return;
-    }
-    setSearching(true);
-    try {
-      const data = await getDoctorsPublic({ search: value });
-      setDoctors(data);
-    } finally {
-      setSearching(false);
-    }
-  };
+            setSelectedSlot("");
+            const updatedSlots = await getAvailableSlots(doctorId, date);
+            setSlots(updatedSlots);
+            onCreated?.();
+            alert("Запис створено");
+        } catch (err) {
+            const data = err.response?.data;
+            setError(
+                data?.detail ||
+                data?.non_field_errors?.[0] ||
+                "Не вдалося створити запис"
+            );
+        } finally {
+            setLoading(false);
+        }
+    };
 
-  return (
-    <Card
-      elevation={2}
-      sx={glassCardSx}
-    >
-      <CardContent>
-        <Stack spacing={3} component="form" onSubmit={handleSubmit}>
-          <Box>
-            <Typography variant="h5">Запис до лікаря</Typography>
-            <Typography color="text.secondary">
-              Оберіть лікаря, дату та доступний час.
-            </Typography>
-          </Box>
+    const handleSearch = async (value) => {
+        setSearch(value);
+        if (!value) {
+            setDoctors([]);
+            return;
+        }
+        setSearching(true);
+        try {
+            const data = await getDoctorsPublic({search: value});
+            setDoctors(data);
+        } finally {
+            setSearching(false);
+        }
+    };
 
-          <Box>
-            <TextField
-              label="Пошук лікаря (імʼя або прізвище)"
-              value={search}
-              onChange={(e) => handleSearch(e.target.value)}
-              fullWidth
-            />
-            {searching && (
-              <Stack direction="row" spacing={1} alignItems="center" sx={{ mt: 1 }}>
-                <CircularProgress size={16} />
-                <Typography variant="caption">Пошук лікарів...</Typography>
-              </Stack>
-            )}
-            {doctors.length > 0 && (
-              <Box sx={{ mt: 1, border: "1px solid", borderColor: "divider", borderRadius: 2 }}>
-                <List dense>
-                  {doctors.map((d) => (
-                    <ListItemButton
-                      key={d.id}
-                      onClick={() => {
-                        setDoctorId(d.id);
-                        setDoctors([]);
-                        setSearch(`${d.user.first_name} ${d.user.last_name}`);
-                      }}
-                    >
-                      <ListItemText
-                        primary={`${d.user.first_name} ${d.user.last_name}`}
-                        secondary={d.specialization}
-                      />
-                    </ListItemButton>
-                  ))}
-                </List>
-              </Box>
-            )}
-          </Box>
+    return (
+        <Card
+            elevation={2}
+            sx={glassCardSx}
+        >
+            <CardContent>
+                <Stack spacing={3} component="form" onSubmit={handleSubmit}>
+                    <Box>
+                        <Typography variant="h5">Запис до лікаря</Typography>
+                        <Typography color="text.secondary">
+                            Оберіть лікаря, дату та доступний час.
+                        </Typography>
+                    </Box>
 
-          <Divider />
+                    <Box>
+                        <TextField
+                            label="Пошук лікаря (імʼя або прізвище)"
+                            value={search}
+                            onChange={(e) => handleSearch(e.target.value)}
+                            fullWidth
+                        />
+                        {searching && (
+                            <Stack direction="row" spacing={1} alignItems="center" sx={{mt: 1}}>
+                                <CircularProgress size={16}/>
+                                <Typography variant="caption">Пошук лікарів...</Typography>
+                            </Stack>
+                        )}
+                        {doctors.length > 0 && (
+                            <Box sx={{mt: 1, border: "1px solid", borderColor: "divider", borderRadius: 2}}>
+                                <List dense>
+                                    {doctors.map((d) => (
+                                        <ListItemButton
+                                            key={d.id}
+                                            onClick={() => {
+                                                setDoctorId(d.id);
+                                                setDoctors([]);
+                                                setSearch(`${d.user.first_name} ${d.user.last_name}`);
+                                            }}
+                                        >
+                                            <ListItemText
+                                                primary={`${d.user.first_name} ${d.user.last_name}`}
+                                                secondary={d.specialization}
+                                            />
+                                        </ListItemButton>
+                                    ))}
+                                </List>
+                            </Box>
+                        )}
+                    </Box>
 
-          <TextField
-            label="Оберіть дату"
-            type="date"
-            value={date}
-            onChange={(e) => setDate(e.target.value)}
-            fullWidth
-            InputLabelProps={{ shrink: true }}
-            disabled={!doctorId}
-          />
+                    <Divider/>
 
-          {error && <Alert severity="error">{error}</Alert>}
+                    <TextField
+                        label="Оберіть дату"
+                        type="date"
+                        value={date}
+                        onChange={(e) => setDate(e.target.value)}
+                        fullWidth
+                        InputLabelProps={{shrink: true}}
+                        disabled={!doctorId}
+                    />
 
-          {slots.length > 0 && (
-            <Stack spacing={1}>
-              <Typography variant="subtitle1">Оберіть час:</Typography>
-                <Box
-                  sx={{
-                    display: "grid",
-                    gridTemplateColumns: "repeat(auto-fill, minmax(90px, 1fr))",
-                    gap: 1.5,
-                  }}
-                >
-                  {slots.map((slot) => (
-                    <Button
-                      key={slot}
-                      type="button"
-                      variant={selectedSlot === slot ? "contained" : "outlined"}
-                      onClick={() => setSelectedSlot(slot)}
-                      sx={{
-                        height: 40,
-                        borderRadius: 2,
-                        transition: "0.2s",
-                        "&:hover": {
-                          transform: "scale(1.05)",
-                        },
-                      }}
-                    >
-                      {new Date(slot).toLocaleTimeString([], {
-                        hour: "2-digit",
-                        minute: "2-digit",
-                      })}
+                    {error && <Alert severity="error">{error}</Alert>}
+
+                    {slots.length > 0 && (
+                        <Stack spacing={1}>
+                            <Typography variant="subtitle1">Оберіть час:</Typography>
+                            <Box
+                                sx={{
+                                    display: "grid",
+                                    gridTemplateColumns: "repeat(auto-fill, minmax(90px, 1fr))",
+                                    gap: 1.5,
+                                }}
+                            >
+                                {slots.map((slot) => (
+                                    <Button
+                                        key={slot}
+                                        type="button"
+                                        variant={selectedSlot === slot ? "contained" : "outlined"}
+                                        onClick={() => setSelectedSlot(slot)}
+                                        sx={{
+                                            height: 40,
+                                            borderRadius: 2,
+                                            transition: "0.2s",
+                                            "&:hover": {
+                                                transform: "scale(1.05)",
+                                            },
+                                        }}
+                                    >
+                                        {new Date(slot).toLocaleTimeString([], {
+                                            hour: "2-digit",
+                                            minute: "2-digit",
+                                        })}
+                                    </Button>
+                                ))}
+                            </Box>
+                        </Stack>
+                    )}
+
+                    <Button type="submit" variant="contained" disabled={!selectedSlot || loading}>
+                        {loading ? "Створення..." : "Записатись"}
                     </Button>
-                  ))}
-                </Box>
-            </Stack>
-          )}
-
-          <Button type="submit" variant="contained" disabled={!selectedSlot || loading}>
-            {loading ? "Створення..." : "Записатись"}
-          </Button>
-        </Stack>
-      </CardContent>
-    </Card>
-  );
+                </Stack>
+            </CardContent>
+        </Card>
+    );
 }

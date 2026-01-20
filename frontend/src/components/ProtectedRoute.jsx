@@ -8,7 +8,7 @@ export default function ProtectedRoute({ children, role }) {
 
     if (!isAuthenticated) return <Navigate to="/login" replace />;
 
-    // якщо сторінка для лікарів, а користувач не лікар
+    // If the page is for doctors and the user is not a doctor
     if (role && user.role !== role) {
         return <Navigate to="/" replace />;
     }

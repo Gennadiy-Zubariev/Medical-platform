@@ -1,6 +1,6 @@
-import { useNavigate, Link as RouterLink } from "react-router-dom";
-import { useEffect, useState } from "react";
-import { Alert, Button, Card, CardContent, Stack, Typography } from "@mui/material";
+import {useNavigate, Link as RouterLink} from "react-router-dom";
+import {useEffect, useState} from "react";
+import {Alert, Button, Card, CardContent, Stack, Typography} from "@mui/material";
 import Layout from "../components/Layout";
 import {
     getMyAppointments,
@@ -24,7 +24,7 @@ export default function PatientDashboardPage() {
     const [profile, setProfile] = useState(null);
     const [editing, setEditing] = useState(false);
 
-    // 🔑 ключ для примусового оновлення слотів у формі
+    // 🔑 key to force the slots to be updated in the form
     const [refreshSlotsKey, setRefreshSlotsKey] = useState(0);
 
     const loadAppointments = async () => {
@@ -65,10 +65,10 @@ export default function PatientDashboardPage() {
         try {
             await cancelAppointment(appointmentId);
 
-            // оновлюємо список записів
+            // Updating the list of entries
             await loadAppointments();
 
-            // 🔥 сигнал формі: слоти треба перезавантажити
+            // 🔥 Signal Form: Slots need to be reloaded
             setRefreshSlotsKey((k) => k + 1);
         } catch (err) {
             alert(
@@ -85,7 +85,7 @@ export default function PatientDashboardPage() {
                     <Typography variant="h4">Кабінет пацієнта</Typography>
 
                     {profile && !editing && (
-                        <PatientProfileCard profile={profile} onEdit={() => setEditing(true)} />
+                        <PatientProfileCard profile={profile} onEdit={() => setEditing(true)}/>
                     )}
 
                     {editing && (

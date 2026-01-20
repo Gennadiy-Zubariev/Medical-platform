@@ -9,8 +9,8 @@ from .serializers import ChatRoomSerializer, ChatMassageSerializer
 from .permissions import IsChatParticipant
 from appointments.models import Appointment
 
-class ChatRoomViewSet(viewsets.ViewSet):
 
+class ChatRoomViewSet(viewsets.ViewSet):
     permission_classes = [permissions.IsAuthenticated, IsChatParticipant]
 
     def retrieve(self, request, pk=None):
@@ -50,6 +50,20 @@ class ChatRoomViewSet(viewsets.ViewSet):
 
     @action(detail=True, methods=['post'])
     def mark_as_read(self, request, pk=None):
+        """
+        Marks all unread chat messages as read for a specific chat room associated with an
+        appointment, except for messages sent by the requesting user.
+
+        This endpoint is designed to ensure that a user can explicitly mark messages
+        as read within the context of their associated chat room.
+
+        :param request: The HTTP request object that must include the user making
+            the request.
+        :param pk: The primary key of the appointment for which associated chat
+            messages need to be marked as read.
+        :return: A Response object containing a dictionary with the key 'status'
+            and value 'ok'.
+        """
         appointment = Appointment.objects.get(pk=pk)
         room = ChatRoom.objects.get(appointment=appointment)
 

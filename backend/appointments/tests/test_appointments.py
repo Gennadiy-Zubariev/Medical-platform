@@ -10,6 +10,20 @@ from registry.models import DoctorLicense, InsurancePolicy
 
 class AppointmentAPITest(APITestCase):
     def setUp(self):
+        """
+        Sets up initial test environment and creates the required data for testing purposes. This method initializes
+        user accounts and profiles for both a patient and a doctor in addition to their respective insurance and license
+        details. The doctor is assigned specific work parameters including their schedule, working hours, specialization,
+        and slot duration. Following this setup, the client is logged in as the patient user.
+
+        Attributes:
+            patient_user (User): Instance of the User model representing the patient user account.
+            patient (PatientProfile): Instance of the PatientProfile model associated with the patient user.
+            doctor_user (User): Instance of the User model representing the doctor user account.
+            doctor (DoctorProfile): Instance of the DoctorProfile model associated with the doctor user.
+
+        :return: None
+        """
         policy = InsurancePolicy.objects.create(
             insurance_policy="INS-APT-1",
             full_name="Patient User",
@@ -55,6 +69,17 @@ class AppointmentAPITest(APITestCase):
         self.assertEqual(response.data['reason'], "Болить голова")
 
     def test_doctor_sees_own_appointments(self):
+        """
+        Tests whether a doctor can view their own appointments and no others.
+
+        This function verifies that after creating an appointment between a doctor and a patient,
+        the doctor can retrieve the appointment by logging into the system and accessing the
+        appointment list API endpoint. It ensures that the appointment list fetched by the doctor
+        contains only their appointments and nothing else.
+
+        :param self: The test case instance.
+        :return: None
+        """
         Appointment.objects.create(
             patient=self.patient,
             doctor=self.doctor,

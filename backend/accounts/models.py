@@ -4,8 +4,6 @@ from django.db import models
 from registry.models import DoctorLicense, InsurancePolicy
 
 
-
-
 class User(AbstractUser):
     """
     Custom User model based on AbstractUser.
@@ -19,20 +17,16 @@ class User(AbstractUser):
     role = models.CharField(choices=Roles.choices, max_length=20, default=Roles.PATIENT)
     phone_number = models.CharField(max_length=11, blank=True, null=True)
 
-
-
     def is_doctor(self):
-        """Повертає True, якщо у користувача створено DoctorProfile"""
+        """Return True, if user created DoctorProfile"""
         return self.role == self.Roles.DOCTOR
 
-
     def is_patient(self):
-        """Повертає True, якщо у користувача створено PatientProfile"""
+        """Return True, if user created PatientProfile"""
         return self.role == self.Roles.PATIENT
 
     def __str__(self):
         return f'{self.username} ({self.role})'
-
 
 
 class DoctorProfile(models.Model):
@@ -79,7 +73,6 @@ class DoctorProfile(models.Model):
                 and self.slot_duration > 0
         )
 
-
     def __str__(self):
         return f'Dr. {self.user.username} ({self.specialization})'
 
@@ -97,15 +90,11 @@ class PatientProfile(models.Model):
     date_of_birth = models.DateField(blank=True, null=True)
     address = models.CharField(max_length=255, blank=True)
     photo = models.ImageField(upload_to='patient_photos/', blank=True, null=True)
-    insurance_policy= models.OneToOneField(
+    insurance_policy = models.OneToOneField(
         InsurancePolicy,
         on_delete=models.PROTECT,
         related_name='patient',
     )
 
-
     def __str__(self):
         return f'Patient {self.user.username}'
-
-
-

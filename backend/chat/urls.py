@@ -5,5 +5,4 @@ from .views import ChatRoomViewSet
 router = DefaultRouter()
 router.register(r'rooms', ChatRoomViewSet, basename='chat-rooms')
 
-
 urlpatterns = router.urls
