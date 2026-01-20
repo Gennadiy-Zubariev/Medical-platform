@@ -7,9 +7,21 @@ from registry.models import InsurancePolicy
 
 User = get_user_model()
 
+
 class AccountsAPITest(APITestCase):
 
     def test_register_patient_create_profile(self):
+        """
+        Test case for registering a patient and creating their profile.
+
+        This test creates an insurance policy, simulates a patient registration request,
+        and validates the creation of a new user and their associated patient profile.
+
+        :raises AssertionError: Raised if the response status code is not 201 or the user
+            does not have a patient profile.
+
+        :return: None
+        """
         policy = InsurancePolicy.objects.create(
             insurance_policy="INS-123",
             full_name="Test User",

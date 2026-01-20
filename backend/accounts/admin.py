@@ -15,4 +15,3 @@ class UserAdmin(admin.ModelAdmin):
 
 admin.site.register(PatientProfile)
 admin.site.register(DoctorProfile)
-

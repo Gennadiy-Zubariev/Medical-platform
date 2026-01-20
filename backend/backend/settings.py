@@ -3,7 +3,7 @@ from pathlib import Path
 from datetime import timedelta
 from dotenv import load_dotenv
 
-# Завантажуємо .env (рекомендовано)
+# Load .env
 load_dotenv()
 
 # ---------------------------------------------------
@@ -42,10 +42,10 @@ INSTALLED_APPS = [
     # Websockets
     "channels",
 
-    # CORS (корисно для React)
+    # CORS (useful for React)
     "corsheaders",
 
-    # Наші додатки
+    # Our applications
     "accounts",
     "appointments",
     "medical",
@@ -71,7 +71,7 @@ MIDDLEWARE = [
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
 ]
 
-# Дозволити React фронтенду робити запити
+# Allow React frontend to make queries
 CORS_ALLOW_ALL_ORIGINS = True
 
 # ---------------------------------------------------
@@ -86,7 +86,7 @@ if not DEBUG:
     SECURE_HSTS_SECONDS = 31536000  # 1 рік
     SECURE_HSTS_INCLUDE_SUBDOMAINS = True
     SECURE_HSTS_PRELOAD = True
-    # Додаткові заголовки безпеки
+    # Additional Security Headers
     SECURE_CONTENT_TYPE_NOSNIFF = True
     SECURE_BROWSER_XSS_FILTER = True
     X_FRAME_OPTIONS = "DENY"
@@ -195,7 +195,6 @@ TEMPLATES = [
 # ---------------------------------------------------
 STATIC_URL = "/static/"
 STATIC_ROOT = BASE_DIR / "staticfiles"
-
 
 # MEDIA_URL = "/medical-media/"
 # MEDIA_ROOT = BASE_DIR / "media"

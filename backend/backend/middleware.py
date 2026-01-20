@@ -6,7 +6,6 @@ from django.contrib.auth.models import AnonymousUser
 from django.db import close_old_connections
 from rest_framework_simplejwt.authentication import JWTAuthentication
 
-
 User = get_user_model()
 
 
@@ -37,5 +36,5 @@ class JwtAuthMiddleware:
             return AnonymousUser()
 
 
-def JwtAuthMiddlewareStack(inner):
-    return JwtAuthMiddleware(AuthMiddlewareStack(inner))
+# def JwtAuthMiddlewareStack(inner):
+#     return JwtAuthMiddleware(AuthMiddlewareStack(inner))

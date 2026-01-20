@@ -21,8 +21,8 @@ export async function setAppointmentStatus(id, status) {
 
 
 export async function getAvailableSlots(doctorId, date) {
-  const res = await axiosClient.get(
-    `appointments/available-slots/?doctor=${doctorId}&date=${date}`
-  );
-  return res.data;
+    const res = await axiosClient.get(
+        `appointments/available-slots/?doctor=${doctorId}&date=${date}`
+    );
+    return res.data;
 }

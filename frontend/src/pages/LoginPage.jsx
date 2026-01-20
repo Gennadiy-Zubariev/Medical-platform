@@ -1,7 +1,7 @@
-import { useState } from "react";
-import { useNavigate } from "react-router-dom";
-import { Alert, Box, Button, Container, Paper, Stack, TextField, Typography } from "@mui/material";
-import { useAuth } from "../context/AuthContext";
+import {useState} from "react";
+import {useNavigate} from "react-router-dom";
+import {Alert, Box, Button, Container, Paper, Stack, TextField, Typography} from "@mui/material";
+import {useAuth} from "../context/AuthContext";
 import PageBackground from "../components/PageBackground";
 import bg from "../assets/login_page.jpg";
 
@@ -9,7 +9,7 @@ export default function LoginPage() {
     const [username, setUsername] = useState("");
     const [password, setPassword] = useState("");
     const navigate = useNavigate();
-    const { login, error } = useAuth();
+    const {login, error} = useAuth();
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -28,7 +28,7 @@ export default function LoginPage() {
                 <Paper
                     elevation={2}
                     sx={{
-                        p: { xs: 3, md: 4 },
+                        p: {xs: 3, md: 4},
                         backgroundImage: "linear-gradient(135deg, #ecfeff 0%, #e0f2fe 100%)",
                     }}
                 >
@@ -62,7 +62,7 @@ export default function LoginPage() {
 
                                 {error && <Alert severity="error">{error}</Alert>}
 
-                                <Stack direction={{ xs: "column", sm: "row" }} spacing={2}>
+                                <Stack direction={{xs: "column", sm: "row"}} spacing={2}>
                                     <Button type="submit" variant="contained" fullWidth>
                                         Увійти
                                     </Button>

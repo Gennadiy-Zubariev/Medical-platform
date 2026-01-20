@@ -1,5 +1,5 @@
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
-import { Box } from "@mui/material";
+import {BrowserRouter as Router, Routes, Route} from "react-router-dom";
+import {Box} from "@mui/material";
 import Header from "./components/Header";
 import RegisterChoice from "./pages/RegisterChoice";
 import RegisterPatientPage from "./pages/RegisterPatientPage";
@@ -16,26 +16,25 @@ import DoctorsPage from "./pages/DoctorsPage";
 import DoctorDetailPage from "./pages/DoctorDetailPage";
 
 
-
 export default function App() {
     return (
         <Router>
-            <Header />
-            <Box component="main" sx={{ minHeight: "100vh", py: { xs: 3, md: 4 } }}>
+            <Header/>
+            <Box component="main" sx={{minHeight: "100vh", py: {xs: 3, md: 4}}}>
                 <Routes>
-                    <Route path="/" element={<HomePage />} />
+                    <Route path="/" element={<HomePage/>}/>
 
-                    <Route path="/login" element={<LoginPage />} />
-                    <Route path="/register" element={<RegisterChoice />} />
+                    <Route path="/login" element={<LoginPage/>}/>
+                    <Route path="/register" element={<RegisterChoice/>}/>
 
-                    <Route path="/register/patient" element={<RegisterPatientPage />} />
-                    <Route path="/register/doctor" element={<RegisterDoctorPage />} />
+                    <Route path="/register/patient" element={<RegisterPatientPage/>}/>
+                    <Route path="/register/doctor" element={<RegisterDoctorPage/>}/>
 
                     <Route
                         path="/doctor/dashboard"
                         element={(
                             <ProtectedRoute role="doctor">
-                                <DoctorDashboardPage />
+                                <DoctorDashboardPage/>
                             </ProtectedRoute>
                         )}
                     />
@@ -43,7 +42,7 @@ export default function App() {
                         path="/patient/dashboard"
                         element={(
                             <ProtectedRoute role="patient">
-                                <PatientDashboardPage />
+                                <PatientDashboardPage/>
                             </ProtectedRoute>
                         )}
                     />
@@ -51,7 +50,7 @@ export default function App() {
                         path="/patient/medical-card"
                         element={(
                             <ProtectedRoute role="patient">
-                                <PatientMedicalCardPage />
+                                <PatientMedicalCardPage/>
                             </ProtectedRoute>
                         )}
                     />
@@ -59,7 +58,7 @@ export default function App() {
                         path="/doctor/medical-card/:patientId"
                         element={(
                             <ProtectedRoute role="doctor">
-                                <DoctorMedicalCardPage />
+                                <DoctorMedicalCardPage/>
                             </ProtectedRoute>
                         )}
                     />
@@ -67,12 +66,12 @@ export default function App() {
                         path="/chat/:appointmentId"
                         element={(
                             <ProtectedRoute>
-                                <ChatPage />
+                                <ChatPage/>
                             </ProtectedRoute>
                         )}
                     />
-                    <Route path="/doctors" element={<DoctorsPage />} />
-                    <Route path="/doctors/:id" element={<DoctorDetailPage />} />
+                    <Route path="/doctors" element={<DoctorsPage/>}/>
+                    <Route path="/doctors/:id" element={<DoctorDetailPage/>}/>
                 </Routes>
             </Box>
         </Router>

@@ -1,7 +1,7 @@
 from rest_framework import permissions
 
 class IsOwnerOrDoctor(permissions.BasePermission):
-    message = 'You must be the owner or doctor to perform this action.'
+    message = 'Ви повинні бути власником або лікарем, щоб виконати цю дію.'
 
     def has_object_permission(self, request, view, obj):
         if request.user.is_doctor:

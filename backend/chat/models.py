@@ -5,6 +5,9 @@ from django.db import models
 
 
 class ChatRoom(models.Model):
+    """
+        - ChatRoom is a model that represents a chat room between a doctor and a patient.
+    """
     appointment = models.OneToOneField(Appointment, on_delete=models.CASCADE, related_name="chat_room")
 
     created_at = models.DateTimeField(auto_now_add=True)
@@ -14,6 +17,9 @@ class ChatRoom(models.Model):
 
 
 class ChatMessage(models.Model):
+    """
+        - ChatMessage is a model that represents a message sent in a chat room.
+    """
     room = models.ForeignKey(
         ChatRoom,
         on_delete=models.CASCADE,
@@ -33,5 +39,3 @@ class ChatMessage(models.Model):
 
     def __str__(self):
         return f'Повідомлення від {self.sender.username} у чаті {self.room.id}'
-
-

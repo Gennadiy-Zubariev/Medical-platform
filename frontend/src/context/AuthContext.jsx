@@ -1,16 +1,16 @@
-import { createContext, useContext, useEffect, useState } from "react";
-import { loginUser, getMyProfile } from "../api/accounts";
+import {createContext, useContext, useEffect, useState} from "react";
+import {loginUser, getMyProfile} from "../api/accounts";
 
 const AuthContext = createContext(null)
 
-// тут зберігаємо об'єкт користувача з бекенду поки перевіряємо токен
-export function AuthProvider({ children }) {
+// Here we store the user object from the backend while we check the token
+export function AuthProvider({children}) {
     const [user, setUser] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
 
 // -------------------------------------------------------
-//     ПЕРЕВІРКА ТОКЕНУ ПРИ ПЕРЕЗАПУСКУ СТОРІНКИ
+//     CHECKING THE TOKEN WHEN RESTARTING THE PAGE
 // -------------------------------------------------------
 
     useEffect(() => {
@@ -25,29 +25,29 @@ export function AuthProvider({ children }) {
                 const res = await getMyProfile();
                 setUser(res);
             } catch (err) {
-              console.error("Помилка отримання профілю", err);
-              // Якщо ми на сторінці логіну, не треба нічого видаляти або ресетати,
-              // бо це може бути застарілий токен, який ми якраз збираємось замінити
-              if (window.location.pathname !== "/login") {
-                localStorage.removeItem("access");
-                localStorage.removeItem("refresh");
-              }
+                console.error("Помилка отримання профілю", err);
+                // If we are on the login page, we do not need to delete or reset anything,
+                // Because it could be an obsolete token that we're just about to replace
+                if (window.location.pathname !== "/login") {
+                    localStorage.removeItem("access");
+                    localStorage.removeItem("refresh");
+                }
             } finally {
-              setLoading(false);
+                setLoading(false);
             }
         })();
     }, [])
 
 
 // -------------------------------------------------------
-//     ЛОГІН
+//     LOGIN
 // -------------------------------------------------------
 
     const login = async (username, password) => {
         try {
             setError(null);
 
-            const res = await loginUser({ username, password });
+            const res = await loginUser({username, password});
             console.log('Login Response:', res);
 
             const access = res.access;
@@ -59,17 +59,17 @@ export function AuthProvider({ children }) {
             const profile = await getMyProfile();
             setUser(profile);
 
-            return { success:true, role: profile.role };
+            return {success: true, role: profile.role};
 
-        }   catch (err) {
+        } catch (err) {
             console.error('Login Error:', err);
             setError('Невірний логін або пароль!');
-            return { success:false, error:err };
+            return {success: false, error: err};
         }
     };
 
 // -------------------------------------------------------
-//     ЛОГАУТ
+//     LOGOUT
 // -------------------------------------------------------
 
     const logout = () => {
@@ -79,7 +79,7 @@ export function AuthProvider({ children }) {
     };
 
 // -------------------------------------------------------
-//     ЩО ПОВЕРТАЄМО У СИСТЕМУ
+//     WHAT WE RETURN TO THE SYSTEM
 // -------------------------------------------------------
 
     const value = {

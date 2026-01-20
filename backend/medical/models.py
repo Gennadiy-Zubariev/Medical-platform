@@ -1,9 +1,6 @@
 from django.db import models
 from django.conf import settings
 
-# from accounts.models import PatientProfile, DoctorProfile
-# from appointments.models import Appointment
-
 
 class MedicalCard(models.Model):
     patient = models.OneToOneField(
@@ -20,6 +17,7 @@ class MedicalCard(models.Model):
 
     def __str__(self):
         return f'Медкартка {self.patient.user.username}'
+
 
 class MedicalRecord(models.Model):
     card = models.ForeignKey(MedicalCard, on_delete=models.CASCADE, related_name='records')
@@ -46,9 +44,3 @@ class MedicalRecord(models.Model):
 
     def __str__(self):
         return f'Запис {self.diagnosis} для {self.card.patient.user.username}'
-
-
-
-
-
-

@@ -7,15 +7,6 @@ For more information on this file, see
 https://docs.djangoproject.com/en/5.2/howto/deployment/asgi/
 """
 
-# import os
-#
-# from django.core.asgi import get_asgi_application
-#
-# os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'backend.settings')
-#
-# application = get_asgi_application()
-
-
 import os
 
 import django
@@ -29,7 +20,7 @@ django.setup()
 # Імпортуємо після django.setup(), щоб уникнути проблем з налаштуваннями
 from channels.auth import AuthMiddlewareStack
 from chat.middleware import JwtAuthMiddleware  # ← ваш кастомний middleware
-from chat.routing import websocket_urlpatterns   # ← ваші websocket-шляхи
+from chat.routing import websocket_urlpatterns  # ← ваші websocket-шляхи
 
 # Основний ASGI-роутер
 application = ProtocolTypeRouter({
