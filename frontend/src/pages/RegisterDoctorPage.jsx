@@ -135,6 +135,7 @@ export default function RegisterDoctorPage() {
                                 <TextField
                                     name="license_number"
                                     label="Номер ліцензії"
+                                    helperText="Формат: LIC-XXXXXX, наприклад LIC-000001 … LIC-001000"
                                     value={form.license_number}
                                     onChange={handleChange}
                                     required

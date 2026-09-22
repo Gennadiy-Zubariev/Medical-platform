@@ -132,6 +132,7 @@ export default function RegisterPatientPage() {
                                 <TextField
                                     name="insurance_policy"
                                     label="Номер медичного страхування"
+                                    helperText="Формат: INS-XXXXXX, наприклад INS-000001 … INS-001000"
                                     value={form.insurance_policy}
                                     onChange={handleChange}
                                     required
