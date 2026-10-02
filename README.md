@@ -8,6 +8,19 @@
 
 A web platform for booking doctor appointments: registration verified against official registries (doctor license / patient insurance policy), appointment booking, medical records, and real-time chat between doctor and patient.
 
+### Screenshots
+
+<table>
+<tr><td width="50%"><img src="docs/screenshots/login.png" alt="Login"><br><sub>Login</sub></td><td width="50%"><img src="docs/screenshots/registration.png" alt="Registration"><br><sub>Registration</sub></td></tr>
+<tr><td width="50%"><img src="docs/screenshots/doctor_registration.png" alt="Doctor registration"><br><sub>Doctor registration</sub></td><td width="50%"><img src="docs/screenshots/patient_registration.png" alt="Patient registration"><br><sub>Patient registration</sub></td></tr>
+<tr><td width="50%"><img src="docs/screenshots/find_doctor_all.png" alt="Find a doctor"><br><sub>Find a doctor</sub></td><td width="50%"><img src="docs/screenshots/find_doctor_with_filter.png" alt="Search with filters"><br><sub>Search with filters</sub></td></tr>
+<tr><td width="50%"><img src="docs/screenshots/patient_appointment_to_doctor.png" alt="Booking an appointment"><br><sub>Booking an appointment</sub></td><td width="50%"><img src="docs/screenshots/patient_me.png" alt="Patient profile"><br><sub>Patient profile</sub></td></tr>
+<tr><td width="50%"><img src="docs/screenshots/patient_me_change_profile.png" alt="Edit patient profile"><br><sub>Edit patient profile</sub></td><td width="50%"><img src="docs/screenshots/patient_medical_card.png" alt="Patient medical card"><br><sub>Patient medical card</sub></td></tr>
+<tr><td width="50%"><img src="docs/screenshots/doctor_me.png" alt="Doctor profile"><br><sub>Doctor profile</sub></td><td width="50%"><img src="docs/screenshots/change_doctor_prifile.png" alt="Edit doctor profile"><br><sub>Edit doctor profile</sub></td></tr>
+<tr><td width="50%"><img src="docs/screenshots/doctor_me_patient_cards_with_chat.png" alt="Doctor's patients and chats"><br><sub>Doctor's patients and chats</sub></td><td width="50%"><img src="docs/screenshots/doctor_patient_medical_card.png" alt="Doctor view of a medical card"><br><sub>Doctor view of a medical card</sub></td></tr>
+<tr><td width="50%"><img src="docs/screenshots/chat_with_doctor.png" alt="Chat (patient side)"><br><sub>Chat (patient side)</sub></td><td width="50%"><img src="docs/screenshots/chat_with_patient.png" alt="Chat (doctor side)"><br><sub>Chat (doctor side)</sub></td></tr>
+</table>
+
 ### Tech stack
 
 **Backend:** Django 5 / Django REST Framework, JWT auth (SimpleJWT), Channels (WebSocket chat) on Redis, Celery, PostgreSQL, MinIO (S3-compatible file storage).
@@ -92,7 +105,7 @@ docker compose exec web python manage.py seed_demo
 You can optionally set the amounts:
 
 ```bash
-docker compose exec web python manage.py seed_demo --doctors 10 --patients 20 --registry-size 500
+docker compose exec web python manage.py seed_demo --doctors 15 --patients 20 --registry-size 500
 ```
 
 The command is idempotent — safe to re-run.
@@ -101,6 +114,18 @@ Demo accounts created:
 - Doctors: `doctor1` … `doctorN`
 - Patients: `patient1` … `patientN`
 - Password for all demo accounts: `Demo12345!`
+
+#### Doctor photos
+
+Put the doctors' photos into `backend/media/doctor_photos/` **before** running `seed_demo`. File names decide the gender (and so the doctor's name):
+
+- `male_1.jpg … male_8.jpg` — male doctors
+- `female_1.jpg … female_7.jpg` — female doctors
+- formats: `.jpg`, `.jpeg`, `.png`, `.webp`; square portrait (~512×512), up to 1 MB
+- files without the `male_` / `female_` prefix are ignored; if no photos are found, doctors are created without a photo
+- `male_8` → Dr. Gregory House, `female_7` → Mildred Ratched (see `SPECIAL_DOCTORS` in `seed_demo.py`)
+
+<!-- Photos from the web (add your images/credits here): -->
 
 #### Useful commands
 
@@ -157,6 +182,19 @@ cd frontend && npm install && npm run dev
 ## Українська
 
 Веб-платформа для запису пацієнтів до лікарів: реєстрація з перевіркою за офіційними реєстрами (ліцензія лікаря / страховий поліс пацієнта), запис на прийом, медичні картки, чат між лікарем і пацієнтом у реальному часі.
+
+### Скриншоти
+
+<table>
+<tr><td width="50%"><img src="docs/screenshots/login.png" alt="Вхід"><br><sub>Вхід</sub></td><td width="50%"><img src="docs/screenshots/registration.png" alt="Реєстрація"><br><sub>Реєстрація</sub></td></tr>
+<tr><td width="50%"><img src="docs/screenshots/doctor_registration.png" alt="Реєстрація лікаря"><br><sub>Реєстрація лікаря</sub></td><td width="50%"><img src="docs/screenshots/patient_registration.png" alt="Реєстрація пацієнта"><br><sub>Реєстрація пацієнта</sub></td></tr>
+<tr><td width="50%"><img src="docs/screenshots/find_doctor_all.png" alt="Пошук лікаря"><br><sub>Пошук лікаря</sub></td><td width="50%"><img src="docs/screenshots/find_doctor_with_filter.png" alt="Пошук з фільтрами"><br><sub>Пошук з фільтрами</sub></td></tr>
+<tr><td width="50%"><img src="docs/screenshots/patient_appointment_to_doctor.png" alt="Запис на прийом"><br><sub>Запис на прийом</sub></td><td width="50%"><img src="docs/screenshots/patient_me.png" alt="Профіль пацієнта"><br><sub>Профіль пацієнта</sub></td></tr>
+<tr><td width="50%"><img src="docs/screenshots/patient_me_change_profile.png" alt="Редагування профілю пацієнта"><br><sub>Редагування профілю пацієнта</sub></td><td width="50%"><img src="docs/screenshots/patient_medical_card.png" alt="Медична картка пацієнта"><br><sub>Медична картка пацієнта</sub></td></tr>
+<tr><td width="50%"><img src="docs/screenshots/doctor_me.png" alt="Профіль лікаря"><br><sub>Профіль лікаря</sub></td><td width="50%"><img src="docs/screenshots/change_doctor_prifile.png" alt="Редагування профілю лікаря"><br><sub>Редагування профілю лікаря</sub></td></tr>
+<tr><td width="50%"><img src="docs/screenshots/doctor_me_patient_cards_with_chat.png" alt="Пацієнти та чати лікаря"><br><sub>Пацієнти та чати лікаря</sub></td><td width="50%"><img src="docs/screenshots/doctor_patient_medical_card.png" alt="Медична картка у лікаря"><br><sub>Медична картка у лікаря</sub></td></tr>
+<tr><td width="50%"><img src="docs/screenshots/chat_with_doctor.png" alt="Чат (пацієнт)"><br><sub>Чат (пацієнт)</sub></td><td width="50%"><img src="docs/screenshots/chat_with_patient.png" alt="Чат (лікар)"><br><sub>Чат (лікар)</sub></td></tr>
+</table>
 
 ### Стек технологій
 
@@ -242,7 +280,7 @@ docker compose exec web python manage.py seed_demo
 Опційно можна вказати кількість:
 
 ```bash
-docker compose exec web python manage.py seed_demo --doctors 10 --patients 20 --registry-size 500
+docker compose exec web python manage.py seed_demo --doctors 15 --patients 20 --registry-size 500
 ```
 
 Команда ідемпотентна — її можна безпечно запускати повторно.
@@ -251,6 +289,18 @@ docker compose exec web python manage.py seed_demo --doctors 10 --patients 20 --
 - Лікарі: `doctor1` … `doctorN`
 - Пацієнти: `patient1` … `patientN`
 - Пароль для всіх демо-акаунтів: `Demo12345!`
+
+#### Фото лікарів
+
+Покладіть фото лікарів у `backend/media/doctor_photos/` **до** запуску `seed_demo`. Стать (а отже й ім'я лікаря) визначається за назвою файлу:
+
+- `male_1.jpg … male_8.jpg` — лікарі-чоловіки
+- `female_1.jpg … female_7.jpg` — лікарки
+- формати: `.jpg`, `.jpeg`, `.png`, `.webp`; квадратний портрет (~512×512), до 1 МБ
+- файли без префікса `male_` / `female_` ігноруються; якщо фото немає — лікарі створюються без фото
+- `male_8` → доктор Грегорі Хаус, `female_7` → Мілдред Ретчед (див. `SPECIAL_DOCTORS` у `seed_demo.py`)
+
+<!-- Фото з інтернету (додайте сюди зображення/джерела): -->
 
 #### Корисні команди
 

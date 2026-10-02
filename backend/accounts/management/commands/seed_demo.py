@@ -1,7 +1,10 @@
 import random
+from pathlib import Path
 from datetime import date, datetime, time, timedelta
 
+from django.conf import settings
 from django.contrib.auth import get_user_model
+from django.core.files import File
 from django.core.management.base import BaseCommand
 from django.utils.timezone import make_aware
 
@@ -12,7 +15,16 @@ from registry.models import DoctorLicense, InsurancePolicy
 
 User = get_user_model()
 
-DOCTOR_FIRST_NAMES = ["Олена", "Ігор", "Марія", "Андрій", "Наталія", "Богдан", "Юлія", "Сергій", "Тетяна", "Віктор"]
+DOCTOR_PHOTOS_DIR = Path(settings.BASE_DIR) / "media" / "doctor_photos"
+PHOTO_EXTENSIONS = {".jpg", ".jpeg", ".png", ".webp"}
+# Особливі лікарі: ім'я файлу фото (без розширення) -> (ім'я, прізвище, спеціалізація)
+SPECIAL_DOCTORS = {
+    "male_8": ("Грегорі", "Хаус", "Діагност"),
+    "female_7": ("Мілдред", "Ретчед", "Терапевт"),
+}
+MALE_DOCTOR_NAMES = ["Ігор", "Андрій", "Богдан", "Сергій", "Віктор", "Олександр", "Михайло", "Тарас"]
+FEMALE_DOCTOR_NAMES = ["Олена", "Марія", "Наталія", "Юлія", "Тетяна", "Оксана", "Людмила", "Леся"]
+DOCTOR_FIRST_NAMES = MALE_DOCTOR_NAMES + FEMALE_DOCTOR_NAMES
 DOCTOR_LAST_NAMES = [
     "Коваленко", "Шевченко", "Бондаренко", "Ткаченко", "Кравець",
     "Мельник", "Олійник", "Поліщук", "Гончар", "Савчук",
@@ -40,7 +52,7 @@ class Command(BaseCommand):
     help = "Наповнює базу демо-даними (реєстри, лікарі, пацієнти, записи) для локальної розробки/скріншотів."
 
     def add_arguments(self, parser):
-        parser.add_argument("--doctors", type=int, default=8, help="Кількість лікарів для створення.")
+        parser.add_argument("--doctors", type=int, default=15, help="Кількість лікарів для створення.")
         parser.add_argument("--patients", type=int, default=15, help="Кількість пацієнтів для створення.")
         parser.add_argument(
             "--registry-size",
@@ -104,20 +116,46 @@ class Command(BaseCommand):
             ))
         InsurancePolicy.objects.bulk_create(policies, batch_size=500)
 
+    def _load_doctor_photos(self):
+        """Фото з backend/media/doctor_photos: male_*.jpg -> чоловік, female_*.jpg -> жінка."""
+        photos = {"male": [], "female": []}
+        if DOCTOR_PHOTOS_DIR.is_dir():
+            for path in sorted(DOCTOR_PHOTOS_DIR.iterdir()):
+                if path.suffix.lower() not in PHOTO_EXTENSIONS:
+                    continue
+                for gender in photos:
+                    if path.name.lower().startswith(f"{gender}_"):
+                        photos[gender].append(path)
+        return photos
+
     def _seed_doctors(self, n):
         doctors = []
+        photos = self._load_doctor_photos()
+        # чергуємо стать, поки є фото обох типів; далі — те, що лишилось
+        queue = []
+        males, females = list(photos["male"]), list(photos["female"])
+        while males or females:
+            if males:
+                queue.append(("male", males.pop(0)))
+            if females:
+                queue.append(("female", females.pop(0)))
+        if not queue:
+            self.stdout.write("Фото лікарів не знайдено в media/doctor_photos — лікарі будуть без фото.")
         used_license_ids = set(DoctorProfile.objects.values_list("license_number_id", flat=True))
         licenses = list(
             DoctorLicense.objects.exclude(id__in=used_license_ids).order_by("id")[:n]
         )
         for i, license_obj in enumerate(licenses, start=1):
             username = f"doctor{i}"
+            gender, photo_path = queue[i - 1] if i <= len(queue) else (random.choice(["male", "female"]), None)
+            special = SPECIAL_DOCTORS.get(photo_path.stem.lower()) if photo_path else None
+            names = MALE_DOCTOR_NAMES if gender == "male" else FEMALE_DOCTOR_NAMES
             user, created = User.objects.get_or_create(
                 username=username,
                 defaults=dict(
                     email=f"{username}@demo.local",
-                    first_name=random.choice(DOCTOR_FIRST_NAMES),
-                    last_name=random.choice(DOCTOR_LAST_NAMES),
+                    first_name=special[0] if special else random.choice(names),
+                    last_name=special[1] if special else random.choice(DOCTOR_LAST_NAMES),
                     role=User.Roles.DOCTOR,
                 ),
             )
@@ -130,7 +168,7 @@ class Command(BaseCommand):
                 defaults=dict(
                     license_number=license_obj,
                     bio="Досвідчений спеціаліст, орієнтований на індивідуальний підхід до кожного пацієнта.",
-                    specialization=SPECIALIZATIONS[i % len(SPECIALIZATIONS)],
+                    specialization=special[2] if special else SPECIALIZATIONS[i % len(SPECIALIZATIONS)],
                     experience_years=random.randint(3, 25),
                     work_start=time(9, 0),
                     work_end=time(17, 0),
@@ -139,6 +177,9 @@ class Command(BaseCommand):
                     is_booking_open=True,
                 ),
             )
+            if photo_path and not profile.photo:
+                with photo_path.open("rb") as f:
+                    profile.photo.save(photo_path.name, File(f), save=True)
             doctors.append(profile)
         return doctors
 
